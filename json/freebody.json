@@ -1,0 +1,34 @@
+{
+    "exercises": [
+        {
+            "title": "Exercise 1: Lift",
+            "inst": "txt/fb1.html",
+            "ans": [
+                {"mag": 1,"type":"app"},
+                {"mag": 1, "type":"g"},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""}
+            ]
+        },
+        {
+            "title": "Exercise 2: Push a book",
+            "inst": "txt/fb2.html",
+            "ans": [
+                {"mag": 1,"type":"n"},
+                {"mag": 1, "type":"g"},
+                {"mag": 1, "type":"fr"},
+                {"mag": 1, "type":"app"}
+            ]
+        },
+        {
+            "title": "Exercise 3: Football in air",
+            "inst": "txt/football.html",
+            "ans": [
+                {"mag": 0,"type":""},
+                {"mag": 1, "type":"g"},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""}
+            ]
+        }
+    ]
+}

@@ -1,0 +1,56 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link type="text/css" rel="stylesheet" href="css/rocket.css">
+    <title>Free Body Diagrams</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="js/freeBody.js"></script>
+</head>
+
+<body>
+
+    <div id="pickForce" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">×</span>
+                <h2>Force</h2>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        <input type="radio" name="force" value="g" id="g" checked>
+                        <label for="g">Gravity</label>
+                        <li>
+                            <input type="radio" name="force" value="fr" id="fr" checked>
+                            <label for="fr">Friction</label>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="appWrap">
+        <h1>Free Body Diagrams</h1>
+        <hr>
+        <div class="instructions">
+            <h2 id="inst">Problem</h2>
+            <div id="stage"> </div>
+        </div>
+        <div id="interactive">
+            <div id="buttonBlock">
+                <button id="prev">Prev</button>
+                <button id="submit">Submit</button>
+                <button id="next">Next</button>
+            </div>
+            <hr>
+            <div id="container"></div>
+        </div>
+
+    </div>
+</body>
+
+</html>
