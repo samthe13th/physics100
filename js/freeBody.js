@@ -269,7 +269,7 @@ function handleDown() {
             console.log("HANDLE DOWN: currentArrow.dir = " + currentArrow.dir + ", force = " + currentArrow.force);
             getArrowByAngle(closestAngle(findAngle())).force = 0;
             getArrowByAngle(closestAngle(findAngle())).visible = false;
-            getArrowByAngle(closestAngle(findAngle())).forces.frame = 0;
+            getArrowByAngle(closestAngle(findAngle())).forces.setFrames(0,0,0);
             
             currentArrow = game.add.graphics(0, 0);
             currentArrow.ID = arrowID;
