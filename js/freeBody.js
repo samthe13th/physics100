@@ -129,25 +129,25 @@ function create() {
 
     console.log("sAngle: " + sArrow.angle);
     var fDist = 130;
-/*
-    nArrow.forces = game.add.button(anchor.x, anchor.y - fDist, 'forces', showForceMenu, this, 1, 1, 1);
-    sArrow.forces = game.add.button(anchor.x, anchor.y + fDist, 'forces', showForceMenu, this, 1, 1, 1);
-    wArrow.forces = game.add.button(anchor.x - fDist, anchor.y, 'forces', showForceMenu, this, 1, 1, 1);
-    eArrow.forces = game.add.button(anchor.x + fDist, anchor.y, 'forces', showForceMenu, this, 1, 1, 1);
-       nArrow.forces.pivot.set(nArrow.forces.width / 2, nArrow.forces.height / 2);
+
+    nArrow.forces = game.add.button(anchor.x, anchor.y - fDist, 'forces', showForceMenu, this, 0, 0, 0);
+    sArrow.forces = game.add.button(anchor.x, anchor.y + fDist, 'forces', showForceMenu, this, 0, 0, 0);
+    wArrow.forces = game.add.button(anchor.x - fDist, anchor.y, 'forces', showForceMenu, this, 0, 0, 0);
+    eArrow.forces = game.add.button(anchor.x + fDist, anchor.y, 'forces', showForceMenu, this, 0, 0, 0);
+    nArrow.forces.pivot.set(nArrow.forces.width / 2, nArrow.forces.height / 2);
     sArrow.forces.pivot.set(sArrow.forces.width / 2, sArrow.forces.height / 2);
     wArrow.forces.pivot.set(wArrow.forces.width / 2, wArrow.forces.height / 2);
     eArrow.forces.pivot.set(eArrow.forces.width / 2, eArrow.forces.height / 2);
-*/
+
     nArrowAbs.forces = game.add.button(anchor.x, anchor.y - fDist, 'forces', showForceMenu, this, 0, 0, 0);
-    nArrowAbs.forces.pivot.set(nArrowAbs.forces.width/2, nArrowAbs.forces.height/2);
+    nArrowAbs.forces.pivot.set(nArrowAbs.forces.width / 2, nArrowAbs.forces.height / 2);
     sArrowAbs.forces = game.add.button(anchor.x, anchor.y + fDist, 'forces', showForceMenu, this, 0, 0, 0);
-    sArrowAbs.forces.pivot.set(sArrowAbs.forces.width/2, sArrowAbs.forces.height/2);
+    sArrowAbs.forces.pivot.set(sArrowAbs.forces.width / 2, sArrowAbs.forces.height / 2);
     wArrowAbs.forces = game.add.button(anchor.x - fDist, anchor.y, 'forces', showForceMenu, this, 0, 0, 0);
-    wArrowAbs.forces.pivot.set(wArrowAbs.forces.width/2, wArrowAbs.forces.height/2);
+    wArrowAbs.forces.pivot.set(wArrowAbs.forces.width / 2, wArrowAbs.forces.height / 2);
     eArrowAbs.forces = game.add.button(anchor.x + fDist, anchor.y, 'forces', showForceMenu, this, 0, 0, 0);
-    eArrowAbs.forces.pivot.set(eArrowAbs.forces.width/2, eArrowAbs.forces.height/2);
-    
+    eArrowAbs.forces.pivot.set(eArrowAbs.forces.width / 2, eArrowAbs.forces.height / 2);
+
 
     graphicsGroup = game.add.group();
     graphicsGroup.add(graphics);
@@ -156,12 +156,12 @@ function create() {
     graphicsGroup.add(sArrow);
     graphicsGroup.add(wArrow);
     graphicsGroup.add(eArrow);
-    
+    */
     graphicsGroup.add(nArrow.forces);
     graphicsGroup.add(sArrow.forces);
     graphicsGroup.add(wArrow.forces);
     graphicsGroup.add(eArrow.forces);
-    */
+
     /*
     graphicsGroup.add(nArrow.plusBtn);
     graphicsGroup.add(sArrow.plusBtn);
@@ -269,13 +269,13 @@ function handleDown() {
             console.log("HANDLE DOWN: currentArrow.dir = " + currentArrow.dir + ", force = " + currentArrow.force);
             getArrowByAngle(closestAngle(findAngle())).force = 0;
             getArrowByAngle(closestAngle(findAngle())).visible = false;
-            getArrowByAngle(closestAngle(findAngle())).forces.setFrames(0,0,0);
-            
+            getArrowByAngle(closestAngle(findAngle())).forces.setFrames(0, 0, 0);
+
             currentArrow = game.add.graphics(0, 0);
             currentArrow.ID = arrowID;
             arrowID++;
             currentArrow.visible = true;
-            
+
             drawArrow(currentArrow, closestAngle(findAngle()), arrowLength, 0xffffff);
         } else { console.log("no arrow here") }
     }
@@ -534,7 +534,7 @@ function setUpExercise(json) {
 }
 
 function setUpInteractives() {
-    /*
+
     nArrow.force = 0;
     sArrow.force = 0;
     wArrow.force = 0;
@@ -549,7 +549,7 @@ function setUpInteractives() {
     sArrow.forces.frame = 0;
     wArrow.forces.frame = 0;
     eArrow.forces.frame = 0;
-  */   
+
     nArrowAbs.forces.frame = 0;
     sArrowAbs.forces.frame = 0;
     wArrowAbs.forces.frame = 0;
@@ -567,8 +567,8 @@ function setUpInteractives() {
 
 function showForceMenu() {
     group.visible = true;
-    group.x =  game.world.centerX - group.width/2;
-    group.y =  game.world.centerY;
+    group.x = game.world.centerX - group.width / 2;
+    group.y = game.world.centerY - 15;
     gBtn.text.visible = true;
     appBtn.text.visible = true;
     nBtn.text.visible = true;
@@ -668,6 +668,32 @@ function closestAngle(a) {
 }
 
 function rotate(rads) {
+    if (rads == 0) {
+        angleText.visible = false;
+        nArrow.visible = false;
+        sArrow.visible = false;
+        wArrow.visible = false;
+        eArrow.visible = false;
+        nArrow.force = 0;
+        sArrow.force = 0;
+        wArrow.force = 0;
+        eArrow.force = 0;
+        nArrow.fType = "";
+        sArrow.fType = "";
+        wArrow.fType = "";
+        eArrow.fType = "";
+        nArrow.forces.frame = 0;
+        sArrow.forces.frame = 0;
+        wArrow.forces.frame = 0;
+        eArrow.forces.frame = 0;
+        nArrow.forces.visible = false;
+        sArrow.forces.visbile = false;
+        wArrow.forces.visible = false;
+        eArrow.forces.visible = false;
+    } else {
+        angleText.visible = true;
+    }
+
     axis2.rotation = rads;
     graphicsGroup.rotation = rads;
     graphics1.clear();
@@ -675,6 +701,11 @@ function rotate(rads) {
     graphics1.arc(game.world.centerX, game.world.centerY, 40, game.math.degToRad(-90), rads - Math.PI / 2, false);
     graphics1.z = 1;
     nArrow.radAngle = rads;
+    nArrow.forces.rotation = -rads;
+    sArrow.forces.rotation = -rads;
+    wArrow.forces.rotation = -rads;
+    eArrow.forces.rotation = -rads;
+
     if (nArrow.force > 0) {
         drawArrow(nArrow, nArrow.radAngle, arrowLength, 0x000000);
     }
@@ -692,7 +723,7 @@ function rotate(rads) {
     }
     angleArray2 = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
     console.log(angleArray2);
-    angleText.text = Math.round(Math.round(rads*180/Math.PI));
+    angleText.text = Math.round(Math.round(rads * 180 / Math.PI));
     angleText.x = 1.2 * arrowLength * Math.sin(rads / 2) + game.world.centerX - 10;
     angleText.y = game.world.centerY - 1.2 * arrowLength * Math.cos(rads / 2);
 }
