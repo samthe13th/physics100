@@ -7,6 +7,7 @@ function preload() {
     game.load.spritesheet('rotateBtn', 'assets/freebody/rotateBtn.png', 50, 50, 3);
     game.load.image('handle', 'assets/freebody/handle.png', 30, 30);
     game.load.image('anchor', 'assets/freebody/anchor.png', 15, 15);
+    game.load.image('deg', 'assets/freebody/deg.png', 10,10);
 }
 var group;
 var nArrow;
@@ -42,6 +43,7 @@ var arrowArray;
 var arrowID = 0;
 var angleText;
 var selectedArrow;
+var deg;
 
 function ansArray() {
     var ans = [nArrow, sArrow, wArrow, eArrow, nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs];
@@ -59,7 +61,9 @@ function rotateAction() {
 var testLine;
 
 function create() {
-
+   
+    deg = game.add.sprite(100,100,'deg',0);
+    deg.visible = false;
     graphics1 = game.add.graphics(0, 0);
     anchor = game.add.button(0, 0, 'anchor', createArrow, this, 0, 0, 0);
     anchor.anchor.set(0.5);
@@ -231,7 +235,7 @@ function create() {
 
     group.visible = false;
     arrowArray = [nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs, nArrow, sArrow, wArrow, eArrow];
-    angleText = game.add.text(0, 0, "", { font: "17px Arial", weight: "bold", fill: "white", align: "center" });
+    angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
     angleText.pivot.set(angleText.width / 2, angleText.height / 2);
     window.graphics = graphics;
 }
@@ -690,8 +694,10 @@ function rotate(rads) {
         sArrow.forces.visbile = false;
         wArrow.forces.visible = false;
         eArrow.forces.visible = false;
+        deg.visible = false;
     } else {
         angleText.visible = true;
+        deg.visible = true;
     }
 
     axis2.rotation = rads;
@@ -724,8 +730,17 @@ function rotate(rads) {
     angleArray2 = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
     console.log(angleArray2);
     angleText.text = Math.round(Math.round(rads * 180 / Math.PI));
+    
     angleText.x = 1.2 * arrowLength * Math.sin(rads / 2) + game.world.centerX - 10;
     angleText.y = game.world.centerY - 1.2 * arrowLength * Math.cos(rads / 2);
+    deg.x = angleText.x + 20;
+    deg.y = angleText.y - 10;
+    if (Math.round(Math.round(rads * 180 / Math.PI)) > 99){
+        deg.x += 10;
+    }
+    if (Math.round(Math.round(rads * 180 / Math.PI)) < 10){
+        deg.x -= 10;
+    }
 }
 
 function render() {
