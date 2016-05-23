@@ -567,8 +567,8 @@ function setUpInteractives() {
 
 function showForceMenu() {
     group.visible = true;
-    group.x = game.input.mousePointer.x - 5;
-    group.y = game.input.mousePointer.y - 5;
+    group.x =  game.world.centerX - group.width/2;
+    group.y =  game.world.centerY;
     gBtn.text.visible = true;
     appBtn.text.visible = true;
     nBtn.text.visible = true;
