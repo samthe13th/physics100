@@ -11,45 +11,44 @@
 
 <body>
 
-    <div id="pickForce" class="modal">
+    <div id="feedback" class="modal">
 
         <!-- Modal content -->
         <div class="modal-content">
             <div class="modal-header">
                 <span class="close">×</span>
-                <h2>Force</h2>
+                <h2 id="percent"></h2>
             </div>
             <div class="modal-body">
-                <ul>
-                    <li>
-                        <input type="radio" name="force" value="g" id="g" checked>
-                        <label for="g">Gravity</label>
-                        <li>
-                            <input type="radio" name="force" value="fr" id="fr" checked>
-                            <label for="fr">Friction</label>
-                </ul>
+                <p id="feedbackTxt">ff</p>
             </div>
         </div>
 
     </div>
 
     <div class="appWrap">
-        <h1>Free Body Diagrams</h1>
+        <div style="text-align: center">
+            <button class="nav" id="prev">PREV</button>
+            <h1 id="appTitle">Free Body Problems</h1>
+            <button class="nav" id="next">NEXT</button>
+        </div>
         <hr>
         <div class="instructions">
-            <h2 id="inst">Problem</h2>
-            <div id="stage"> </div>
+            <h2 id="pTitle">Problem</h2>
+            <img id="pImg"></img>
+            <div id="instr"> </div>
         </div>
         <div id="interactive">
-            <div id="buttonBlock">
-                <button id="prev">Prev</button>
-                <button id="submit">Submit</button>
-                <button id="next">Next</button>
-            </div>
-            <hr>
             <div id="container"></div>
+            <hr>
+            <div id="buttonBlock">
+                <strong><p class="answer" id="unknown"></p></strong>
+                <p class="answer"> = </p>
+                <input id="ans"></input>
+                <p class="answer" id="units"></p>
+                <button id="submit">Submit</button>
+            </div>
         </div>
-
     </div>
 </body>
 

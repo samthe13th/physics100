@@ -6,15 +6,17 @@ h1 {
 h2 {
     text-align: center;
     font-family: Arial, sans-serif;
-    font-size: 20px; 
+    font-size: 24px; 
 }
 body {
     border: 2px, solid, black;
 }
 input {
-    height: 30px;
+    height: 35px;
     width: 50px;
-    border: 2px, solid, black;
+    border: 1px, solid, black;
+    margin-top: 10px;
+    margin-bottom:10px;
     font-size: 20px;
 }
 input[type="radio"]{
@@ -23,24 +25,24 @@ input[type="radio"]{
     padding-bottom: 5px;
     height: 2em;
 }
+sub {
+    font-size: 16px;
+}
 .forceBtn{
     border-style:solid;
     padding-bottom:20px;
 }
 button {
     border-style: solid;
-    border-color: grey;
+    border-color: black;
     border-width: 3px;
     background-color: white;
     border-radius: 5px;
     font-size: 20px;
     font-family: Arial, sans-serif;
-    color: grey;
+    color: black;
     padding: 10px;
-    margin-top: 18px;
-    margin-bottom: 20px;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin:5px;
     font-weight: bold;
     cursor: pointer;
 }
@@ -49,14 +51,28 @@ button:hover{
     border-color: black;
     color: black;
 }
+#appTitle{
+    width: 500px;
+    display: inline-block;
+    padding:4px;
+    margin-top:4px;
+}
+.nav {
+    display: inline-block;
+    font-size:18px;
+}
+#submit {
+    float: right;
+    margin-top: 0px;
+}
 #submit:hover{
-    color: orangered;
-    border-color: orangered;
+    color: #009900;
+    border-color: #009900;
 }
 p {
     margin-right: 10px;
     font-family: Arial, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
 }
 .rocketHead {
     font-family: Arial, sans-serif;
@@ -69,6 +85,10 @@ p {
     display: inline-block;
     border-style: none;
     padding: 15px;
+}
+.answer {
+    display: inline;
+    font-size:26px;
 }
 #launchBtn{
     background-color: darkorange;
@@ -133,10 +153,10 @@ iframe {
     position: relative;
     background-color: #fefefe;
     margin-left: 20%;
+    margin-right:20%;
     margin-top:130px;
     padding: 0;
     border: 1px solid #888;
-    width: 200px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;

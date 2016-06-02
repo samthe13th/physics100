@@ -1,34 +1,55 @@
 {
     "exercises": [
         {
-            "title": "Exercise 1: Lift",
-            "inst": "txt/fb1.html",
-            "ans": [
-                {"mag": 1,"type":"app"},
-                {"mag": 1, "type":"g"},
+            "forces": ["Normal", "Gravity", "A on B", "B on A", "Push", "None"],
+            "title": "Exercise 1: Two Blocks",
+            "inst": "instr/2blocks1.html",
+            "img": "instr/diagrams/boxdiagram.png",
+            "fb": [
+                {"mag": 0,"type":""},
                 {"mag": 0, "type":""},
-                {"mag": 0, "type":""}
-            ]
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
+                {"mag": 1, "type":"n"},
+                {"mag": 1, "type":"g"},
+                {"mag": 1, "type":"BonA"},
+                {"mag": 2, "type":"push"}
+            ],
+            "rot": 0,
+            "unk": "F<sub>(B on A)</sub>",
+            "units": "N",
+            "ans": 2
         },
         {
+            "forces": ["Normal", "Gravity", "Friction", "Push", "None"],
             "title": "Exercise 2: Push a book",
-            "inst": "txt/fb2.html",
-            "ans": [
+            "inst": "instr/fb2.html",
+            "img": "instr/diagrams/2blocks1.JPG",
+            "fb": [
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
                 {"mag": 1,"type":"n"},
                 {"mag": 1, "type":"g"},
                 {"mag": 1, "type":"fr"},
-                {"mag": 1, "type":"app"}
-            ]
+                {"mag": 0, "type":""}
+            ],
+            "rot": 0,
+            "unk": "F<sub>right</sub>",
+            "units": "N",
+            "ans": 0
         },
         {
             "title": "Exercise 3: Football in air",
-            "inst": "txt/football.html",
-            "ans": [
+            "inst": "instr/football.html",
+            "fb": [
                 {"mag": 0,"type":""},
                 {"mag": 1, "type":"g"},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""}
-            ]
+            ],
+            "ans": 1
         }
     ]
 }
