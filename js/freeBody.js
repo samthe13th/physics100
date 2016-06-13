@@ -342,13 +342,13 @@ function handleUp() {
         currentArrow.destroy();
         console.log('MOVE ARROW DIR = ' + moveArrow.dir);
         console.log('SELECTED ARROW DIR = ' + selectedArrow.dir + "SELECTED ARROW FORCE = " + selectedArrow.force);
-    
+
     }
-       if (moveArrow.dir == selectedArrow.dir ) {
-            moveArrow.fType = selectedArrow.fType
-       } else {
-           moveArrow.fType = "";
-       }      
+    if (moveArrow.dir == selectedArrow.dir) {
+        moveArrow.fType = selectedArrow.fType
+    } else {
+        moveArrow.fType = "";
+    }
 }
 
 function setFrames(arrow) {
@@ -741,43 +741,43 @@ function drawArc(rads) {
 
 function render() {
     //Debuggig displays
- /*
-  
-    game.debug.text("nArrow Abs: " + nArrowAbs.fType + " // nArrow Rel: " + nArrow.fType, 10, 330);
-    game.debug.text("eArrow Abs: " + eArrowAbs.fType + " // eArrow Rel: " + eArrow.fType, 10, 350);
-    game.debug.text("sArrow Abs: " + sArrowAbs.fType + " // sArrow Rel: " + sArrow.fType, 10, 370);
-    game.debug.text("wArrow Abs: " + wArrowAbs.fType + " // wArrow Rel: " + wArrow.fType, 10, 390);
-    
-    game.debug.text("Move Arrow: " + moveArrow.fType, 10, 20);
-    // game.debug.text("Selected Arrow: " + selectedArrow.fType, 10, 350);
-    // game.debug.text("Current Arrow: " + currentArrow.fType, 10, 330);
-    // game.debug.text("Handle: " + "(" + handle.x + "," + handle.y + ")", 10, 330);
-    //game.debug.text("World: " + "(" + game.world.centerX + "," + game.world.centerY + ")", 10, 350);
-   
-   
-   game.debug.text("move arrow: " + moveArrow.fType + " " + moveArrow.forces.frame, 10, 340);
-   game.debug.text("selected arrow: " + selectedArrow.fType + " " + selectedArrow.forces.frame + " " + selectedArrow.forces.visible, 10, 355);
-   game.debug.text("hyp2: " + hyp2, 10, 370);
-   
-    var adjAngle;
-    var currentDir;
-    if (currentArrow == null) {
-        currentDir = "none";
-        currentID = -1;
-    } else {
-        currentDir = currentArrow.dir;
-        currentID = currentArrow.ID;
-    }
-    game.debug.geom(testLine);
-    // game.debug.lineInfo(testLine, 10, 32);
-    if (testLine.angle < 0) { adjAngle = 2 * Math.PI - Math.abs(testLine.angle) }
-    else { adjAngle = testLine.angle };
-    //  game.debug.text("adjusted angle: " + adjAngle, 10, 90);
-    game.debug.text("current arrow: " + currentDir + " " + currentID, 10, 340);
-    game.debug.text("distance from center2: " + hyp2, 10, 355);
-    game.debug.text("angle: " + findAngle(), 10, 370);
-    game.debug.text("snap to: " + closestAngle(findAngle()), 10, 385);
-  */
+    /*
+     
+       game.debug.text("nArrow Abs: " + nArrowAbs.fType + " // nArrow Rel: " + nArrow.fType, 10, 330);
+       game.debug.text("eArrow Abs: " + eArrowAbs.fType + " // eArrow Rel: " + eArrow.fType, 10, 350);
+       game.debug.text("sArrow Abs: " + sArrowAbs.fType + " // sArrow Rel: " + sArrow.fType, 10, 370);
+       game.debug.text("wArrow Abs: " + wArrowAbs.fType + " // wArrow Rel: " + wArrow.fType, 10, 390);
+       
+       game.debug.text("Move Arrow: " + moveArrow.fType, 10, 20);
+       // game.debug.text("Selected Arrow: " + selectedArrow.fType, 10, 350);
+       // game.debug.text("Current Arrow: " + currentArrow.fType, 10, 330);
+       // game.debug.text("Handle: " + "(" + handle.x + "," + handle.y + ")", 10, 330);
+       //game.debug.text("World: " + "(" + game.world.centerX + "," + game.world.centerY + ")", 10, 350);
+      
+      
+      game.debug.text("move arrow: " + moveArrow.fType + " " + moveArrow.forces.frame, 10, 340);
+      game.debug.text("selected arrow: " + selectedArrow.fType + " " + selectedArrow.forces.frame + " " + selectedArrow.forces.visible, 10, 355);
+      game.debug.text("hyp2: " + hyp2, 10, 370);
+      
+       var adjAngle;
+       var currentDir;
+       if (currentArrow == null) {
+           currentDir = "none";
+           currentID = -1;
+       } else {
+           currentDir = currentArrow.dir;
+           currentID = currentArrow.ID;
+       }
+       game.debug.geom(testLine);
+       // game.debug.lineInfo(testLine, 10, 32);
+       if (testLine.angle < 0) { adjAngle = 2 * Math.PI - Math.abs(testLine.angle) }
+       else { adjAngle = testLine.angle };
+       //  game.debug.text("adjusted angle: " + adjAngle, 10, 90);
+       game.debug.text("current arrow: " + currentDir + " " + currentID, 10, 340);
+       game.debug.text("distance from center2: " + hyp2, 10, 355);
+       game.debug.text("angle: " + findAngle(), 10, 370);
+       game.debug.text("snap to: " + closestAngle(findAngle()), 10, 385);
+     */
 }
 
 $(document).ready(function() {
@@ -826,7 +826,7 @@ $(document).ready(function() {
         var fbTxt = "Feedback goes here";
         var fbHeader = document.getElementById("modal-header");
         for (var i = 0; i < aLength; i++) {
-            console.log("Ans " + i + " = " + a[i].fType + " " + a[i].force + " Soln " + i + " = " + fb[i].type);
+            console.log("Ans " + i + " = " + a[i].fType + " " + a[i].force + " Soln " + i + " = " + fb[i].type + " " + fb[i].mag);
             if (a[i].fType != fb[i].type) {
                 fbAns = false;
                 percent -= aWorth;
@@ -836,16 +836,17 @@ $(document).ready(function() {
             var numAns = false;
             percent -= aWorth;
         };
-        if ((a[7].force - a[6].force) != (fb[7].mag - fb[6].mag)) {
-            percent -= aWorth;
-        };
+        percent -= getMagError(a, fb, aWorth);
         if (fbAns && numAns == false) {
             fbTxt = "Not quite! Your freebody diagram is correct, but your final answer is not.";
         } else if (numAns && fbAns == false) {
             fbTxt = "Not quite! You got the final answer correct, but the free body diagram incorrect.";
         } else if (numAns == false && fbAns == false) {
             fbTxt = "Not quite.  Try again!";
-        } else {
+        } else if (getMagError(a, fb, aWorth) > 0) {
+            fbTxt = "Close! But check that your force magnitudes are correct (represented by the relative LENGTHS of your arrows)"
+        }
+        else {
             fbTxt = "Correct! Great job.";
         }
         if (percent < 0) {
@@ -854,13 +855,26 @@ $(document).ready(function() {
         $("#percent").text(Math.round(percent) + "%");
         feedback.style.display = "block";
         $("#feedbackTxt").text(fbTxt);
-        if (percent < 91) {
-            fbHeader.style.backgroundColor = "#FF6633";
-        } else {
-            fbHeader.style.backgroundColor = "#5cb85c";
-        }
     });
 });
+
+function getMagError(a, fb, worth) {
+    var me = 0;
+    var aLength = a.length;
+    if (fb.majorForce == null) {
+        if ((a[7].force - a[6].force) != (fb[7].mag - fb[6].mag)
+            || (a[5].force - a[4].force) != (fb[5].mag - fb[4].mag)
+            || (a[3].force - a[2].force) != (fb[3].mag - fb[2].mag)
+            || (a[1].force - a[0].force != (fb[1].mag - fb[0].mag))
+        ) { me += worth; }
+    } else {
+        if (a[majorForce].force != 2) {
+            me += worth;
+        }
+    }
+
+    return me;
+}
 
 function resetFBD() {
     rotate(0);

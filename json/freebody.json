@@ -15,13 +15,14 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""}
          ],
+         "majorForce": null,
          "rot": 0,
          "unk": "F<sub>N</sub>",
          "units": "N",
          "ans": "98"       
         },
         {
-            "forces": ["Normal", "Gravity", "A on B", "B on A", "Push", "None"],
+            "forces": ["Normal", "Gravity", "A on B", "B on A", "Push"],
             "title": "Two Blocks",
             "inst": "instr/2blocks1.html",
             "img": "instr/diagrams/boxdiagram.png",
@@ -35,6 +36,7 @@
                 {"mag": 1, "type":"BonA"},
                 {"mag": 2, "type":"push"}
             ],
+            "majorForce": 7,
             "rot": 0,
             "unk": "F<sub>(B on A)</sub>",
             "units": "N",
