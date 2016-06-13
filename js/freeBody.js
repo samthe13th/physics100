@@ -259,6 +259,7 @@ function createArrow() {
 
 function handleDown() {
     if (handle.x == game.world.centerX && handle.y == game.world.centerY) {
+        moveArrow.fType = "";
         createArrow();
     } else if (getArrowByAngle(closestAngle(findAngle())).force != 0) {
         moveArrow = getArrowByAngle(closestAngle(findAngle()));
@@ -327,11 +328,11 @@ function handleUp() {
                 selectedArrow.forces.x = (fDiff + arrowLength) * Math.sin(cAngle - axis2.rotation) + game.world.centerX;
                 selectedArrow.forces.y = game.world.centerY - (fDiff + arrowLength) * Math.cos(cAngle - axis2.rotation);
             }
-            console.log("nArrowAbs MAG = " + nArrowAbs.force);
             if (selectedArrow.fType == "") {
                 showForceMenu();
             } else {
                 selectedArrow.fType = moveArrow.fType;
+                selectedArrow.visible = true;
                 setFrames(selectedArrow);
                 console.log("selectedArrow frame: " + selectedArrow.forces.frame);
                 selectedArrow.forces.visible;
@@ -341,10 +342,13 @@ function handleUp() {
         currentArrow.destroy();
         console.log('MOVE ARROW DIR = ' + moveArrow.dir);
         console.log('SELECTED ARROW DIR = ' + selectedArrow.dir + "SELECTED ARROW FORCE = " + selectedArrow.force);
-        if (moveArrow.dir != selectedArrow.dir || selectedArrow.force == 0) {
-            moveArrow.fType = "";
-        }
+    
     }
+       if (moveArrow.dir == selectedArrow.dir ) {
+            moveArrow.fType = selectedArrow.fType
+       } else {
+           moveArrow.fType = "";
+       }      
 }
 
 function setFrames(arrow) {
@@ -737,19 +741,19 @@ function drawArc(rads) {
 
 function render() {
     //Debuggig displays
-
-    /*
-    game.debug.text("nArrow Abs: " + nArrowAbs.fType, 10, 330);
-    game.debug.text("eArrow Abs: " + eArrowAbs.fType, 10, 350);
-    game.debug.text("sArrow Abs: " + sArrowAbs.fType, 10, 370);
-    game.debug.text("wArrow Abs: " + wArrowAbs.fType, 10, 390);
-    */
-    // game.debug.text("Move Arrow: " + moveArrow.fType, 10, 370);
+ /*
+  
+    game.debug.text("nArrow Abs: " + nArrowAbs.fType + " // nArrow Rel: " + nArrow.fType, 10, 330);
+    game.debug.text("eArrow Abs: " + eArrowAbs.fType + " // eArrow Rel: " + eArrow.fType, 10, 350);
+    game.debug.text("sArrow Abs: " + sArrowAbs.fType + " // sArrow Rel: " + sArrow.fType, 10, 370);
+    game.debug.text("wArrow Abs: " + wArrowAbs.fType + " // wArrow Rel: " + wArrow.fType, 10, 390);
+    
+    game.debug.text("Move Arrow: " + moveArrow.fType, 10, 20);
     // game.debug.text("Selected Arrow: " + selectedArrow.fType, 10, 350);
     // game.debug.text("Current Arrow: " + currentArrow.fType, 10, 330);
     // game.debug.text("Handle: " + "(" + handle.x + "," + handle.y + ")", 10, 330);
     //game.debug.text("World: " + "(" + game.world.centerX + "," + game.world.centerY + ")", 10, 350);
-    /*
+   
    
    game.debug.text("move arrow: " + moveArrow.fType + " " + moveArrow.forces.frame, 10, 340);
    game.debug.text("selected arrow: " + selectedArrow.fType + " " + selectedArrow.forces.frame + " " + selectedArrow.forces.visible, 10, 355);
