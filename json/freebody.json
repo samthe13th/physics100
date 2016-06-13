@@ -32,19 +32,19 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
-                {"mag": 1, "type":"n"},
-                {"mag": 1, "type":"g"},
-                {"mag": 1, "type":"BonA"},
-                {"mag": 2, "type":"push"}
+                {"mag": 1, "type":"Normal"},
+                {"mag": 1, "type":"Gravity"},
+                {"mag": 1, "type":"B on A"},
+                {"mag": 2, "type":"Push"}
             ],
             "majorForce": 7,
             "rot": 0,
             "unk": "F<sub>(B on A)</sub>",
             "units": "N",
-            "ans": 2
+            "ans": "2"
         },
         {
-            "forces": ["Normal", "Gravity", "Friction", "Push", "Momentum"],
+            "forces": ["Normal", "Gravity", "Friction", "Push", "Tension"],
             "title": "Curling",
             "inst": "instr/fb2.html",
             "img": "instr/diagrams/curlingRock.png",
@@ -53,17 +53,19 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
-                {"mag": 1,"type":"n"},
-                {"mag": 1, "type":"g"},
-                {"mag": 1, "type":"fr"},
+                {"mag": 1,"type":"Normal"},
+                {"mag": 1, "type":"Gravity"},
+                {"mag": 1, "type":"Friction"},
                 {"mag": 0, "type":""}
             ],
+            "majorForce": null,
             "rot": 0,
             "unk": "F<sub>right</sub>",
             "units": "N",
             "ans": 0
         },
         {
+            "forces": ["Normal", "Gravity", "Friction", "Push", "Air"],
             "title": "Football in air",
             "inst": "instr/football.html",
             "img": "instr/diagrams/football.png",
@@ -73,13 +75,14 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 0,"type":""},
-                {"mag": 1, "type":"g"},
+                {"mag": 1, "type":"Gravity"},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""}
             ],
+            "majorForce": null,
             "rot": 0,
             "unk": "F<sub>N</sub>",
-            "unit": "N",
+            "units": "N",
             "ans": 0
         }
     ]

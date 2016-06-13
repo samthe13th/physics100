@@ -3,7 +3,7 @@ var game = new Phaser.Game(350, 400, Phaser.CANVAS, 'container', { preload: prel
 function preload() {
     game.load.spritesheet('arrowBtns', 'assets/freebody/btnSheet.png', 20, 20);
     game.load.spritesheet('forceBtns', 'assets/freebody/btnsBlank.png', 100, 30, 3);
-    game.load.spritesheet('forces', 'assets/freebody/forceSheet.png', 40, 40, 6);
+    game.load.spritesheet('forces', 'assets/freebody/forceSheet.png', 40, 40, 9);
     game.load.spritesheet('rotateBtn', 'assets/freebody/rotateBtn.png', 50, 50, 3);
     game.load.image('handle', 'assets/freebody/handle.png', 30, 30);
     game.load.image('anchor', 'assets/freebody/anchor.png', 15, 15);
@@ -137,6 +137,11 @@ function create() {
     setUpInteractives();
     angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
     angleText.pivot.set(angleText.width / 2, angleText.height / 2);
+    
+        $.getJSON("json/freebody.json", function(data) {
+        json = data;
+        setUpExercise(json);
+    });
 
 /*
     var buttonBlock = game.add.graphics(0, 0);
@@ -390,6 +395,7 @@ function handleUp() {
 }
 
 function setFrames(arrow) {
+    console.log("SET FRAMES // " + arrow.fType);
     if (arrow.fType == "Gravity") {
         arrow.forces.frame = 1;
     } else if (arrow.fType == "Normal") {
@@ -400,6 +406,12 @@ function setFrames(arrow) {
         arrow.forces.frame = 4;
     } else if (arrow.fType == "B on A") {
         arrow.forces.frame = 5;
+    } else if (arrow.fType == "Tension"){
+        arrow.forces.frame = 6;
+    } else if (arrow.fType == "Air"){
+        arrow.forces.frame = 7;
+    } else if (arrow.fType == "Friction"){
+        arrow.forces.frame = 8;
     }
 }
 
@@ -547,7 +559,7 @@ function setUpExercise(json) {
     var pImg = json.exercises[page - 1].img;
     var pGif = json.exercises[page - 1].gif;
     var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
-    var forceArray = json.exercises[page - 1].forces;
+    forceArray = json.exercises[page - 1].forces;
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
     $('#instr').load(json.exercises[page - 1].inst);
@@ -825,9 +837,8 @@ $(document).ready(function() {
     var feedback = document.getElementById("feedback");
     var json;
     var span = document.getElementsByClassName("close")[0];
-    $.getJSON("json/freebody.json", function(data) {
+        $.getJSON("json/freebody.json", function(data) {
         json = data;
-        setUpExercise(json);
     });
 
     span.onclick = function() {
@@ -907,12 +918,9 @@ function getMagError(a, fb, worth) {
             || (a[3].force - a[2].force) != (fb[3].mag - fb[2].mag)
             || (a[1].force - a[0].force != (fb[1].mag - fb[0].mag))
         ) { me += worth; }
-    } else {
-        if (a[majorForce].force != 2) {
+    } else if (a[majorForce].force != 2) {
             me += worth;
-        }
     }
-
     return me;
 }
 
