@@ -54,6 +54,7 @@ var rotHandleOffset = 35;
 var currentRotHandle = "";
 var page = 1;
 var moveArrow = { "fType": "" };
+var menuMode = false;
 
 function ansArray() {
     var ans = [nArrow, sArrow, wArrow, eArrow, nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs];
@@ -136,13 +137,23 @@ function create() {
 
     var buttonBlock = game.add.graphics(0, 0);
     buttonBlock.beginFill(0xeae6de);
-    buttonBlock.drawRect(game.input.mousePointer.x + 5, game.input.mousePointer.y - 65, 110, 160);
+    buttonBlock.drawRect(game.world.centerX, game.world.centerY, 110, 160);
+    buttonBlock.pivot.set(buttonBlock.width/2, buttonBlock.height/2);
 
-    gBtn = game.add.button(game.input.mousePointer.x + 10, game.input.mousePointer.y - 60, 'forceBtns', function() { forceSelect(gBtn) }, this, 1, 0, 0);
-    pushBtn = game.add.button(game.input.mousePointer.x + 10, game.input.mousePointer.y - 30, 'forceBtns', function() { forceSelect(pushBtn) }, this, 1, 0, 0);
-    nBtn = game.add.button(game.input.mousePointer.x + 10, game.input.mousePointer.y, 'forceBtns', function() { forceSelect(nBtn) }, this, 1, 0, 0);
-    aBtn = game.add.button(game.input.mousePointer.x + 10, game.input.mousePointer.y + 30, 'forceBtns', function() { forceSelect(aBtn) }, this, 1, 0, 0);
-    bBtn = game.add.button(game.input.mousePointer.x + 10, game.input.mousePointer.y + 60, 'forceBtns', function() { forceSelect(bBtn) }, this, 1, 0, 0);
+    var buttonBG = game.add.graphics(0, 0);
+    buttonBG.beginFill(0x000000, 0.5);
+    buttonBG.drawRect(0, 0, game.width, game.height);
+
+    gBtn = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function() { forceSelect(gBtn) }, this, 1, 0, 0);
+    gBtn.pivot.set(gBtn.width/2, gBtn.height/2);
+    pushBtn = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function() { forceSelect(pushBtn) }, this, 1, 0, 0);
+    pushBtn.pivot.set(pushBtn.width/2, pushBtn.height/2);
+    nBtn = game.add.button(game.world.centerX, game.world.centerY, 'forceBtns', function() { forceSelect(nBtn) }, this, 1, 0, 0);
+    nBtn.pivot.set(nBtn.width/2,nBtn.height/2);
+    aBtn = game.add.button(game.world.centerX, game.world.centerY + 30, 'forceBtns', function() { forceSelect(aBtn) }, this, 1, 0, 0);
+    aBtn.pivot.set(aBtn.width/2, aBtn.height/2);
+    bBtn = game.add.button(game.world.centerX, game.world.centerY + 60, 'forceBtns', function() { forceSelect(bBtn) }, this, 1, 0, 0);
+    bBtn.pivot.set(bBtn.width/2, bBtn.height/2);
 
     gBtn.forceOut = true;
     pushBtn.forceOut = true;
@@ -156,16 +167,11 @@ function create() {
     aBtn.id = "AonB";
     bBtn.id = "BonA";
 
-    gBtn.text = game.add.text(gBtn.x + 20, gBtn.y + 6, "Gravity", { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
-    gBtn.text.visible = false;
-    pushBtn.text = game.add.text(pushBtn.x + 28, pushBtn.y + 6, "Push", { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
-    pushBtn.text.visible = false;
-    nBtn.text = game.add.text(nBtn.x + 20, nBtn.y + 6, "Normal", { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
-    nBtn.text.visible = false;
-    aBtn.text = game.add.text(aBtn.x + 20, aBtn.y + 6, "A on B", { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
-    aBtn.text.visible = false;
-    bBtn.text = game.add.text(bBtn.x + 20, bBtn.y + 6, "B on A", { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
-    bBtn.text.visible = false;
+    addBtnText(gBtn, "Gravity");
+    addBtnText(pushBtn, "Push");
+    addBtnText(nBtn, "Normal");
+    addBtnText(aBtn, "A on B");
+    addBtnText(bBtn, "B on A");
 
     window.rich = gBtn;
     window.rich = pushBtn;
@@ -174,7 +180,7 @@ function create() {
     window.rich = bBtn;
 
     group = game.add.group();
-
+    group.add(buttonBG);
     group.add(buttonBlock);
     group.add(gBtn);
     group.add(pushBtn);
@@ -186,12 +192,18 @@ function create() {
     group.add(nBtn.text);
     group.add(aBtn.text);
     group.add(bBtn.text);
-
     group.visible = false;
     //arrowArray = [nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs, nArrow, sArrow, wArrow, eArrow];
     angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
     angleText.pivot.set(angleText.width / 2, angleText.height / 2);
     window.graphics = graphics;
+}
+
+function addBtnText(btn, txt){
+    btn.text = game.add.text(btn.x - btn.width/2, btn.y - btn.height/2, txt, { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
+    btn.text.x += (btn.width - btn.text.width) / 2;
+    btn.text.y += btn.height - btn.text.height;
+    btn.text.visible = false;
 }
 
 function setUpArrow(arrow, dir, radAngle) {
@@ -506,9 +518,8 @@ function setUpInteractives() {
 }
 
 function showForceMenu() {
+    menuMode = true;
     group.visible = true;
-    group.x = game.world.centerX - group.width / 2;
-    group.y = game.world.centerY - 15;
     gBtn.text.visible = true;
     pushBtn.text.visible = true;
     nBtn.text.visible = true;
@@ -523,49 +534,54 @@ function forceSelect(btn) {
     selectedArrow.forces.visible = true;
     selectedArrow.fType = btn.id;
     setFrames(selectedArrow);
+    menuMode = false;
 }
 
 function update() {
     var aLength = arrowLength + 8;
     var ca = closestAngle(findAngle());
     var cArrow = getArrowByAngle(ca);
-    rotHandle.visible = false;
-    rotHandle2.visible = false;
-    rotHandle3.visible = false;
-    rotHandle4.visible = false;
-    handle.visible = false;
-    if (arrowHere()) {
-        handle.visible = true;
-    }
-    if (hyp2 < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
-        aLength = 0;
-    } else if (hyp2 > 90) {
-        arrowLength = 100;
-    } else {
-        arrowLength = 50;
-    }
+    if (menuMode == false) {
+        rotHandle.visible = false;
+        rotHandle2.visible = false;
+        rotHandle3.visible = false;
+        rotHandle4.visible = false;
+        handle.visible = false;
+        if (arrowHere()) {
+            handle.visible = true;
+        }
+        if (hyp2 < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
+            aLength = 0;
+        } else if (hyp2 > 90) {
+            arrowLength = 100;
+        } else {
+            arrowLength = 50;
+        }
 
-    if (hyp2 > 120) {
-        if (rotHandles.rotation == 0) {
-            if (cArrow.dir == "N abs") {
-                rotHandle.visible = true;
-            } else if (cArrow.dir == "E abs") {
-                rotHandle2.visible = true;
-            } else if (cArrow.dir == "S abs") {
-                rotHandle3.visible = true;
-            } else {
-                rotHandle4.visible = true;
-            }
-        } else
-            if (cArrow.dir == "N rel" || (cArrow.dir == "E abs" && rotHandles.rotation == Math.PI / 2)) {
-                rotHandle.visible = true;
-            } else if (cArrow.dir == "E rel" || (cArrow.dir == "S abs" && rotHandles.rotation == Math.PI / 2)) {
-                rotHandle2.visible = true;
-            } else if (cArrow.dir == "S rel" || (cArrow.dir == "W abs" && rotHandles.rotation == Math.PI / 2)) {
-                rotHandle3.visible = true;
-            } else if (cArrow.dir == "W rel" || (cArrow.dir == "N abs" && rotHandles.rotation == Math.PI / 2)) {
-                rotHandle4.visible = true;
-            } else { }
+        if (hyp2 > 120) {
+            if (rotHandles.rotation == 0) {
+                if (cArrow.dir == "N abs") {
+                    rotHandle.visible = true;
+                } else if (cArrow.dir == "E abs") {
+                    rotHandle2.visible = true;
+                } else if (cArrow.dir == "S abs") {
+                    rotHandle3.visible = true;
+                } else {
+                    rotHandle4.visible = true;
+                }
+            } else
+                if (cArrow.dir == "N rel" || (cArrow.dir == "E abs" && rotHandles.rotation == Math.PI / 2)) {
+                    rotHandle.visible = true;
+                } else if (cArrow.dir == "E rel" || (cArrow.dir == "S abs" && rotHandles.rotation == Math.PI / 2)) {
+                    rotHandle2.visible = true;
+                } else if (cArrow.dir == "S rel" || (cArrow.dir == "W abs" && rotHandles.rotation == Math.PI / 2)) {
+                    rotHandle3.visible = true;
+                } else if (cArrow.dir == "W rel" || (cArrow.dir == "N abs" && rotHandles.rotation == Math.PI / 2)) {
+                    rotHandle4.visible = true;
+                } else { }
+
+        }
+
     }
 
     hyp2 = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
@@ -719,10 +735,14 @@ function drawArc(rads) {
 }
 
 function render() {
+    //Debuggig displays
+
+    /*
     game.debug.text("nArrow Abs: " + nArrowAbs.fType, 10, 330);
     game.debug.text("eArrow Abs: " + eArrowAbs.fType, 10, 350);
     game.debug.text("sArrow Abs: " + sArrowAbs.fType, 10, 370);
     game.debug.text("wArrow Abs: " + wArrowAbs.fType, 10, 390);
+    */
     // game.debug.text("Move Arrow: " + moveArrow.fType, 10, 370);
     // game.debug.text("Selected Arrow: " + selectedArrow.fType, 10, 350);
     // game.debug.text("Current Arrow: " + currentArrow.fType, 10, 330);
