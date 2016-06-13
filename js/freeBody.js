@@ -138,22 +138,22 @@ function create() {
     var buttonBlock = game.add.graphics(0, 0);
     buttonBlock.beginFill(0xeae6de);
     buttonBlock.drawRect(game.world.centerX, game.world.centerY, 110, 160);
-    buttonBlock.pivot.set(buttonBlock.width/2, buttonBlock.height/2);
+    buttonBlock.pivot.set(buttonBlock.width / 2, buttonBlock.height / 2);
 
     var buttonBG = game.add.graphics(0, 0);
     buttonBG.beginFill(0x000000, 0.5);
     buttonBG.drawRect(0, 0, game.width, game.height);
 
     gBtn = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function() { forceSelect(gBtn) }, this, 1, 0, 0);
-    gBtn.pivot.set(gBtn.width/2, gBtn.height/2);
+    gBtn.pivot.set(gBtn.width / 2, gBtn.height / 2);
     pushBtn = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function() { forceSelect(pushBtn) }, this, 1, 0, 0);
-    pushBtn.pivot.set(pushBtn.width/2, pushBtn.height/2);
+    pushBtn.pivot.set(pushBtn.width / 2, pushBtn.height / 2);
     nBtn = game.add.button(game.world.centerX, game.world.centerY, 'forceBtns', function() { forceSelect(nBtn) }, this, 1, 0, 0);
-    nBtn.pivot.set(nBtn.width/2,nBtn.height/2);
+    nBtn.pivot.set(nBtn.width / 2, nBtn.height / 2);
     aBtn = game.add.button(game.world.centerX, game.world.centerY + 30, 'forceBtns', function() { forceSelect(aBtn) }, this, 1, 0, 0);
-    aBtn.pivot.set(aBtn.width/2, aBtn.height/2);
+    aBtn.pivot.set(aBtn.width / 2, aBtn.height / 2);
     bBtn = game.add.button(game.world.centerX, game.world.centerY + 60, 'forceBtns', function() { forceSelect(bBtn) }, this, 1, 0, 0);
-    bBtn.pivot.set(bBtn.width/2, bBtn.height/2);
+    bBtn.pivot.set(bBtn.width / 2, bBtn.height / 2);
 
     gBtn.forceOut = true;
     pushBtn.forceOut = true;
@@ -199,8 +199,8 @@ function create() {
     window.graphics = graphics;
 }
 
-function addBtnText(btn, txt){
-    btn.text = game.add.text(btn.x - btn.width/2, btn.y - btn.height/2, txt, { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
+function addBtnText(btn, txt) {
+    btn.text = game.add.text(btn.x - btn.width / 2, btn.y - btn.height / 2, txt, { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
     btn.text.x += (btn.width - btn.text.width) / 2;
     btn.text.y += btn.height - btn.text.height;
     btn.text.visible = false;
@@ -867,6 +867,8 @@ function resetFBD() {
         arrowArray[i].visible = false;
         arrowArray[i].forces.visible = false;
     }
+    angleText.visible = false;
+    deg.visible = false;
 }
 
 function arrowHere() {
