@@ -134,6 +134,8 @@ function create() {
     graphicsGroup.x = game.world.centerX;
     graphicsGroup.y = game.world.centerY;
     setUpInteractives();
+    angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
+    angleText.pivot.set(angleText.width / 2, angleText.height / 2);
 
     var buttonBlock = game.add.graphics(0, 0);
     buttonBlock.beginFill(0xeae6de);
@@ -194,8 +196,7 @@ function create() {
     group.add(bBtn.text);
     group.visible = false;
     //arrowArray = [nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs, nArrow, sArrow, wArrow, eArrow];
-    angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
-    angleText.pivot.set(angleText.width / 2, angleText.height / 2);
+
     window.graphics = graphics;
 }
 
