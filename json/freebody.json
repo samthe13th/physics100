@@ -1,8 +1,28 @@
 {
     "exercises": [
         {
+         "title": "Block",
+         "inst": "instr/block.html",
+         "img": "instr/diagrams/block.png",
+         "gif": "instr/diagrams/capture1.gif",
+         "fb": [
+                {"mag": 0,"type":""},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
+                {"mag": 1, "type":"n"},
+                {"mag": 1, "type":"g"},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""}
+         ],
+         "rot": 0,
+         "unk": "F<sub>N</sub>",
+         "units": "N",
+         "ans": "98"       
+        },
+        {
             "forces": ["Normal", "Gravity", "A on B", "B on A", "Push", "None"],
-            "title": "Exercise 1: Two Blocks",
+            "title": "Two Blocks",
             "inst": "instr/2blocks1.html",
             "img": "instr/diagrams/boxdiagram.png",
             "fb": [
@@ -22,9 +42,9 @@
         },
         {
             "forces": ["Normal", "Gravity", "Friction", "Push", "None"],
-            "title": "Exercise 2: Push a book",
+            "title": "Curling",
             "inst": "instr/fb2.html",
-            "img": "instr/diagrams/2blocks1.JPG",
+            "img": "instr/diagrams/curlingRock.png",
             "fb": [
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
@@ -41,15 +61,23 @@
             "ans": 0
         },
         {
-            "title": "Exercise 3: Football in air",
+            "title": "Football in air",
             "inst": "instr/football.html",
+            "img": "instr/diagrams/football.png",
             "fb": [
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
+                {"mag": 0, "type":""},
                 {"mag": 0,"type":""},
                 {"mag": 1, "type":"g"},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""}
             ],
-            "ans": 1
+            "rot": 0,
+            "unk": "F<sub>N</sub>",
+            "unit": "N",
+            "ans": 0
         }
     ]
 }
