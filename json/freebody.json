@@ -1,6 +1,7 @@
 {
     "exercises": [
         {
+         "forces": ["Gravity", "Push", "Normal", "Tension", "Friction"],
          "title": "Block",
          "inst": "instr/block.html",
          "img": "instr/diagrams/block.png",
@@ -10,8 +11,8 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
-                {"mag": 1, "type":"n"},
-                {"mag": 1, "type":"g"},
+                {"mag": 1, "type":"Normal"},
+                {"mag": 1, "type":"Gravity"},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""}
          ],
@@ -43,7 +44,7 @@
             "ans": 2
         },
         {
-            "forces": ["Normal", "Gravity", "Friction", "Push", "None"],
+            "forces": ["Normal", "Gravity", "Friction", "Push", "Momentum"],
             "title": "Curling",
             "inst": "instr/fb2.html",
             "img": "instr/diagrams/curlingRock.png",

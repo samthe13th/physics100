@@ -55,6 +55,7 @@ var currentRotHandle = "";
 var page = 1;
 var moveArrow = { "fType": "" };
 var menuMode = false;
+var forceBtns;
 
 function ansArray() {
     var ans = [nArrow, sArrow, wArrow, eArrow, nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs];
@@ -137,6 +138,7 @@ function create() {
     angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
     angleText.pivot.set(angleText.width / 2, angleText.height / 2);
 
+/*
     var buttonBlock = game.add.graphics(0, 0);
     buttonBlock.beginFill(0xeae6de);
     buttonBlock.drawRect(game.world.centerX, game.world.centerY, 110, 160);
@@ -196,9 +198,45 @@ function create() {
     group.add(bBtn.text);
     group.visible = false;
     //arrowArray = [nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs, nArrow, sArrow, wArrow, eArrow];
-
+*/
     window.graphics = graphics;
 }
+
+function setUpForceBtns(btnArray) {
+    forceBtns = [];
+
+    var buttonBlock = game.add.graphics(0, 0);
+    buttonBlock.beginFill(0xeae6de);
+    buttonBlock.drawRect(game.world.centerX, game.world.centerY, 110, 160);
+    buttonBlock.pivot.set(buttonBlock.width / 2, buttonBlock.height / 2);
+
+    var buttonBG = game.add.graphics(0, 0);
+    buttonBG.beginFill(0x000000, 0.5);
+    buttonBG.drawRect(0, 0, game.width, game.height);
+
+    group = game.add.group();
+    group.add(buttonBG);
+    group.add(buttonBlock);
+
+    forceBtns[0] = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function() { forceSelect(forceBtns[0]) }, this, 1, 0, 0);
+    forceBtns[1] = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function() { forceSelect(forceBtns[1]) }, this, 1, 0, 0);
+    forceBtns[2] = game.add.button(game.world.centerX, game.world.centerY, 'forceBtns', function() { forceSelect(forceBtns[2]) }, this, 1, 0, 0);
+    forceBtns[3] = game.add.button(game.world.centerX, game.world.centerY + 30, 'forceBtns', function() { forceSelect(forceBtns[3]) }, this, 1, 0, 0);
+    forceBtns[4] = game.add.button(game.world.centerX, game.world.centerY + 60, 'forceBtns', function() { forceSelect(forceBtns[4]) }, this, 1, 0, 0);
+
+    for (var i = 0; i < 5; i++) {
+        forceBtns[i].pivot.set(forceBtns[i].width / 2, forceBtns[i].height / 2);
+        forceBtns[i].forceOut = true;
+        forceBtns[i].id = btnArray[i];
+        addBtnText(forceBtns[i], btnArray[i]);
+        window.rich = forceBtns[i];
+        group.add(forceBtns[i]);
+        group.add(forceBtns[i].text);
+    }
+
+    group.visible = false;
+}
+
 
 function addBtnText(btn, txt) {
     btn.text = game.add.text(btn.x - btn.width / 2, btn.y - btn.height / 2, txt, { font: "18px Arial", weight: "bold", fill: "0x000000", align: "center" });
@@ -352,15 +390,15 @@ function handleUp() {
 }
 
 function setFrames(arrow) {
-    if (arrow.fType == "g") {
+    if (arrow.fType == "Gravity") {
         arrow.forces.frame = 1;
-    } else if (arrow.fType == "n") {
+    } else if (arrow.fType == "Normal") {
         arrow.forces.frame = 2;
-    } else if (arrow.fType == "push") {
+    } else if (arrow.fType == "Push") {
         arrow.forces.frame = 3;
-    } else if (arrow.fType == "AonB") {
+    } else if (arrow.fType == "A on B") {
         arrow.forces.frame = 4;
-    } else if (arrow.fType == "BonA") {
+    } else if (arrow.fType == "B on A") {
         arrow.forces.frame = 5;
     }
 }
@@ -509,12 +547,14 @@ function setUpExercise(json) {
     var pImg = json.exercises[page - 1].img;
     var pGif = json.exercises[page - 1].gif;
     var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
+    var forceArray = json.exercises[page - 1].forces;
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
     $('#instr').load(json.exercises[page - 1].inst);
     $('#pGif').attr('src', pGif);
     $('#unknown').html(json.exercises[page - 1].unk);
     $('#units').text(json.exercises[page - 1].units);
+    setUpForceBtns(forceArray);
 }
 
 function setUpInteractives() {
@@ -525,11 +565,11 @@ function setUpInteractives() {
 function showForceMenu() {
     menuMode = true;
     group.visible = true;
-    gBtn.text.visible = true;
-    pushBtn.text.visible = true;
-    nBtn.text.visible = true;
-    aBtn.text.visible = true;
-    bBtn.text.visible = true;
+    forceBtns[0].text.visible = true;
+    forceBtns[1].text.visible = true;
+    forceBtns[2].text.visible = true;
+    forceBtns[3].text.visible = true;
+    forceBtns[4].text.visible = true;
 }
 
 function forceSelect(btn) {
