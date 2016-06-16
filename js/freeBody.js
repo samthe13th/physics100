@@ -29,7 +29,7 @@ var rotHandle;
 var rotHandle2;
 var rotHandle3;
 var rotHandle4;
-var axis2;
+var rAxis;
 var handle;
 var graphicsGroup;
 var hyp;
@@ -216,18 +216,18 @@ function createAxis(axis) {
     axis.moveTo(0, game.world.centerY);
     axis.lineTo(game.world.width, game.world.centerY);
     axis.visible = true;
-    axis2 = game.add.graphics(0, 0);
-    axis2.lineStyle(1, 0xffffff, 0.60)
-    axis2.moveTo(game.world.centerX, -100);
-    axis2.lineTo(game.world.centerX, game.world.width + 100);
-    axis2.moveTo(-100, game.world.centerY);
-    axis2.lineTo(game.world.width + 100, game.world.centerY);
-    axis2.visible = true;
-    axis2.pivot.x = game.world.centerX;
-    axis2.pivot.y = game.world.centerY;
-    axis2.x = game.world.centerX;
-    axis2.y = game.world.centerY;
-    axis2.inputEnabled = true;
+    rAxis = game.add.graphics(0, 0);
+    rAxis.lineStyle(1, 0xffffff, 0.60)
+    rAxis.moveTo(game.world.centerX, -100);
+    rAxis.lineTo(game.world.centerX, game.world.width + 100);
+    rAxis.moveTo(-100, game.world.centerY);
+    rAxis.lineTo(game.world.width + 100, game.world.centerY);
+    rAxis.visible = true;
+    rAxis.pivot.x = game.world.centerX;
+    rAxis.pivot.y = game.world.centerY;
+    rAxis.x = game.world.centerX;
+    rAxis.y = game.world.centerY;
+    rAxis.inputEnabled = true;
 }
 
 function angleConvert(angle) {
@@ -315,8 +315,8 @@ function handleUp() {
                 selectedArrow.forces.x = (fDiff + arrowLength) * Math.sin(cAngle) + game.world.centerX;
                 selectedArrow.forces.y = game.world.centerY - (fDiff + arrowLength) * Math.cos(cAngle);
             } else {
-                selectedArrow.forces.x = (fDiff + arrowLength) * Math.sin(cAngle - axis2.rotation) + game.world.centerX;
-                selectedArrow.forces.y = game.world.centerY - (fDiff + arrowLength) * Math.cos(cAngle - axis2.rotation);
+                selectedArrow.forces.x = (fDiff + arrowLength) * Math.sin(cAngle - rAxis.rotation) + game.world.centerX;
+                selectedArrow.forces.y = game.world.centerY - (fDiff + arrowLength) * Math.cos(cAngle - rAxis.rotation);
             }
             if (selectedArrow.fType == "") {
                 showForceMenu();
@@ -648,7 +648,7 @@ function closestAngle(a) {
 }
 
 function rotate(rads) {
-    if (axis2.rotation == 0) {
+    if (rAxis.rotation == 0) {
         angleText.visible = false;
         fb.nArrow.visible = false;
         fb.sArrow.visible = false;
@@ -666,17 +666,13 @@ function rotate(rads) {
         fb.sArrow.forces.frame = 0;
         fb.wArrow.forces.frame = 0;
         fb.eArrow.forces.frame = 0;
-        // fb.nArrow.forces.visible = false;
-        //fb.sArrow.forces.visbile = false;
-        //fb.wArrow.forces.visible = false;
-        //fb.eArrow.forces.visible = false;
         deg.visible = false;
     } else {
         angleText.visible = true;
         deg.visible = true;
     }
 
-    axis2.rotation = rads;
+    rAxis.rotation = rads;
     graphicsGroup.rotation = rads;
     rotHandles.rotation = rads;
     drawArc(rads);
@@ -737,35 +733,6 @@ function render() {
        game.debug.text("fb.wArrow Abs: " + fb.wArrowAbs.fType + " // fb.wArrow Rel: " + fb.wArrow.fType, 10, 390);
        
        game.debug.text("Move Arrow: " + moveArrow.fType, 10, 20);
-      
-       // game.debug.text("Selected Arrow: " + selectedArrow.fType, 10, 350);
-       // game.debug.text("Current Arrow: " + currentArrow.fType, 10, 330);
-       // game.debug.text("Handle: " + "(" + handle.x + "," + handle.y + ")", 10, 330);
-       //game.debug.text("World: " + "(" + game.world.centerX + "," + game.world.centerY + ")", 10, 350);
-      
-      
-      game.debug.text("move arrow: " + moveArrow.fType + " " + moveArrow.forces.frame, 10, 340);
-      game.debug.text("selected arrow: " + selectedArrow.fType + " " + selectedArrow.forces.frame + " " + selectedArrow.forces.visible, 10, 355);
-      game.debug.text("hyp: " + hyp, 10, 370);
-      
-       var adjAngle;
-       var currentDir;
-       if (currentArrow == null) {
-           currentDir = "none";
-           currentID = -1;
-       } else {
-           currentDir = currentArrow.dir;
-           currentID = currentArrow.ID;
-       }
-       game.debug.geom(testLine);
-       // game.debug.lineInfo(testLine, 10, 32);
-       if (testLine.angle < 0) { adjAngle = 2 * Math.PI - Math.abs(testLine.angle) }
-       else { adjAngle = testLine.angle };
-       //  game.debug.text("adjusted angle: " + adjAngle, 10, 90);
-       game.debug.text("current arrow: " + currentDir + " " + currentID, 10, 340);
-       game.debug.text("distance from center2: " + hyp, 10, 355);
-       game.debug.text("angle: " + findAngle(), 10, 370);
-       game.debug.text("snap to: " + closestAngle(findAngle()), 10, 385);
      */
 }
 
@@ -876,11 +843,9 @@ function resetFBD() {
 }
 
 function arrowHere() {
-
     if (hyp < 20) {
         return true;
     }
-
     if (getArrowByAngle(closestAngle(findAngle())) != null) {
 
         if ((getArrowByAngle(closestAngle(findAngle())).force == 1 && hyp > 50 && hyp < 80)
