@@ -1,3 +1,5 @@
+'use strict'
+
 var game = new Phaser.Game(350, 400, Phaser.CANVAS, 'container', { preload: preload, create: create, update: update, render: render }, true);
 
 function preload() {
@@ -56,6 +58,8 @@ var page = 1;
 var moveArrow = { "fType": "" };
 var menuMode = false;
 var forceBtns;
+var arcGraphics;
+var anchor;
 
 function ansArray() {
     var ans = [nArrow, sArrow, wArrow, eArrow, nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs];
@@ -139,7 +143,7 @@ function create() {
     angleText.pivot.set(angleText.width / 2, angleText.height / 2);
     
         $.getJSON("json/freebody.json", function(data) {
-        json = data;
+        var json = data;
         setUpExercise(json);
     });
 
@@ -559,7 +563,7 @@ function setUpExercise(json) {
     var pImg = json.exercises[page - 1].img;
     var pGif = json.exercises[page - 1].gif;
     var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
-    forceArray = json.exercises[page - 1].forces;
+    var forceArray = json.exercises[page - 1].forces;
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
     $('#instr').load(json.exercises[page - 1].inst);
