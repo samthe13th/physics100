@@ -8,60 +8,33 @@ function preload() {
     game.load.spritesheet('forces', 'assets/freebody/forceSheet.png', 40, 40, 9);
     game.load.spritesheet('rotateBtn', 'assets/freebody/rotateBtn.png', 50, 50, 3);
     game.load.image('handle', 'assets/freebody/handle.png', 30, 30);
-    game.load.image('anchor', 'assets/freebody/anchor.png', 15, 15);
+    game.load.image('forceCenter', 'assets/freebody/anchor.png', 15, 15);
     game.load.image('deg', 'assets/freebody/deg.png', 10, 10);
     game.load.image('capture1', 'instr/diagrams/capture1.gif');
     game.load.image('rotHandle', 'assets/freebody/rotateHandle.png');
 }
 
 var page = 1;
-var fDist = 100;
-var group;
-var box_width = 0;
-var arrowLength = 50;
-var magLength = 50;
-var ahSide = 18;
-var btnMargin = 20;
-var btnWidth = 20;
-var currentArrow;
-var rotBtn;
-var rotHandle;
-var rotHandle2;
-var rotHandle3;
-var rotHandle4;
-var rAxis;
-var handle;
-var graphicsGroup;
-var hyp;
-var testArrow;
-var arrowArray;
-var arrowID = 0;
-var angleText;
-var selectedArrow = { "fType": "" };
-var deg;
-var rotHyp;
-var rotHandleOffset = 35;
-var currentRotHandle = "";
-var moveArrow = { "fType": "" };
 var menuMode = false;
-var forceBtns;
+//Graphics Groups
+var graphicsGroup;
+var arrowGroup;
+var rotHandlesGroup;
 var arcGraphics;
-var anchor;
+var forceBtns;
+//Graphics Properties
+var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
 
-//Creates a module (IFFE object) to contain freebody functions and variables!
+//Freebody Module
 var fb = (function() {
-    alert("freebody module invoked");
-    var nArrow, sArrow, wArrow, eArrow, nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs;
+    var nArrow, sArrow, wArrow, eArrow, nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs, currentArrow, selectedArrow;
+    var arrowArray;
+    var rotHandle, rotHandle2, rotHandle3, rotHandle4, currentRotHandle;
+    var angleText, deg, rAxis, forceCenter, handle, hyp, rotHyp;
     var rFb = {};
-    
-    rFb.nArrow;
-    rFb.sArrow;
-    rFb.eArrow;
-    rFb.wArrow;
-    rFb.nArrowAbs;
-    rFb.sArrowAbs;
-    rFb.wArrowAbs;
-    rFb.eArrowAbs;
+    rFb.selectedArrow = { "fType": "" };
+    rFb.moveArrow = { "fType": "" };
+    rFb.currentRotHandle = "";
 
     return rFb;
 } ());
@@ -73,28 +46,28 @@ function ansArray() {
 }
 
 function create() {
-    selectedArrow.forces = game.add.sprite(0, 0, 'forces', 0);
-    moveArrow.forces = game.add.sprite(0, 0, 'forces', 0);
-    moveArrow.dir = "";
-    arrowArray = [];
-    rotHyp = game.world.height / 2 - rotHandleOffset;
+    fb.selectedArrow.forces = game.add.sprite(0, 0, 'forces', 0);
+    fb.moveArrow.forces = game.add.sprite(0, 0, 'forces', 0);
+    fb.moveArrow.dir = "";
+    fb.arrowArray = [];
+    fb.rotHyp = game.world.height / 2 - gp.rotHandleOffset;
     arcGraphics = game.add.graphics(0, 0);
-    anchor = game.add.button(0, 0, 'anchor', createArrow, this, 0, 0, 0);
-    anchor.anchor.set(0.5);
-    anchor.x = game.world.centerX;
-    anchor.y = game.world.centerY;
-    handle = game.add.sprite(0, 0, 'handle', 0);
-    handle.anchor.set(0.5);
-    handle.inputEnabled = true;
-    handle.events.onInputDown.add(handleDown, this);
-    handle.events.onInputUp.add(handleUp, this);
+    fb.forceCenter = game.add.button(0, 0, 'forceCenter', createArrow, this, 0, 0, 0);
+    fb.forceCenter.anchor.set(0.5);
+    fb.forceCenter.x = game.world.centerX;
+    fb.forceCenter.y = game.world.centerY;
+    fb.handle = game.add.sprite(0, 0, 'handle', 0);
+    fb.handle.anchor.set(0.5);
+    fb.handle.inputEnabled = true;
+    fb.handle.events.onInputDown.add(handleDown, this);
+    fb.handle.events.onInputUp.add(handleUp, this);
 
-    createRotHandle();
+    createRotHandles();
     createAxis();
 
     var graphics = game.add.graphics(game.world.centerX, game.world.centerY);
     graphics.lineStyle(3, 0x000000);
-    graphics.drawRect(-box_width / 2, -box_width / 2, box_width, box_width);
+    graphics.drawRect(-gp.boxWidth / 2, -gp.boxWidth / 2, gp.boxWidth, gp.boxWidth);
     fb.nArrow = game.add.graphics(0, 0);
     fb.sArrow = game.add.graphics(0, 0);
     fb.wArrow = game.add.graphics(0, 0);
@@ -113,22 +86,22 @@ function create() {
     setUpArrow(fb.wArrow, "W rel", 3 * Math.PI / 2);
     setUpArrow(fb.eArrow, "E rel", Math.PI / 2);
 
-    fb.nArrow.forces = game.add.sprite(anchor.x, anchor.y - fDist, 'forces', 0);
-    fb.sArrow.forces = game.add.sprite(anchor.x, anchor.y + fDist, 'forces', 0);
-    fb.wArrow.forces = game.add.sprite(anchor.x - fDist, anchor.y, 'forces', 0);
-    fb.eArrow.forces = game.add.sprite(anchor.x + fDist, anchor.y, 'forces', 0);
+    fb.nArrow.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y - gp.fDist, 'forces', 0);
+    fb.sArrow.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y + gp.fDist, 'forces', 0);
+    fb.wArrow.forces = game.add.sprite(fb.forceCenter.x - gp.fDist, fb.forceCenter.y, 'forces', 0);
+    fb.eArrow.forces = game.add.sprite(fb.forceCenter.x + gp.fDist, fb.forceCenter.y, 'forces', 0);
     fb.nArrow.forces.pivot.set(fb.nArrow.forces.width / 2, fb.nArrow.forces.height / 2);
     fb.sArrow.forces.pivot.set(fb.sArrow.forces.width / 2, fb.sArrow.forces.height / 2);
     fb.wArrow.forces.pivot.set(fb.wArrow.forces.width / 2, fb.wArrow.forces.height / 2);
     fb.eArrow.forces.pivot.set(fb.eArrow.forces.width / 2, fb.eArrow.forces.height / 2);
 
-    fb.nArrowAbs.forces = game.add.sprite(anchor.x, anchor.y - fDist, 'forces', 0);
+    fb.nArrowAbs.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y - gp.fDist, 'forces', 0);
     fb.nArrowAbs.forces.pivot.set(fb.nArrowAbs.forces.width / 2, fb.nArrowAbs.forces.height / 2);
-    fb.sArrowAbs.forces = game.add.sprite(anchor.x, anchor.y + fDist, 'forces', 0);
+    fb.sArrowAbs.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y + gp.fDist, 'forces', 0);
     fb.sArrowAbs.forces.pivot.set(fb.sArrowAbs.forces.width / 2, fb.sArrowAbs.forces.height / 2);
-    fb.wArrowAbs.forces = game.add.sprite(anchor.x - fDist, anchor.y, 'forces', 0);
+    fb.wArrowAbs.forces = game.add.sprite(fb.forceCenter.x - gp.fDist, fb.forceCenter.y, 'forces', 0);
     fb.wArrowAbs.forces.pivot.set(fb.wArrowAbs.forces.width / 2, fb.wArrowAbs.forces.height / 2);
-    fb.eArrowAbs.forces = game.add.sprite(anchor.x + fDist, anchor.y, 'forces', 0);
+    fb.eArrowAbs.forces = game.add.sprite(fb.forceCenter.x + gp.fDist, fb.forceCenter.y, 'forces', 0);
     fb.eArrowAbs.forces.pivot.set(fb.eArrowAbs.forces.width / 2, fb.eArrowAbs.forces.height / 2);
 
     graphicsGroup = game.add.group();
@@ -144,10 +117,10 @@ function create() {
     graphicsGroup.x = game.world.centerX;
     graphicsGroup.y = game.world.centerY;
     setUpInteractives();
-    angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
-    angleText.pivot.set(angleText.width / 2, angleText.height / 2);
-    
-        $.getJSON("json/freebody.json", function(data) {
+    fb.angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
+    fb.angleText.pivot.set(fb.angleText.width / 2, fb.angleText.height / 2);
+
+    $.getJSON("json/freebody.json", function(data) {
         var json = data;
         setUpExercise(json);
     });
@@ -167,9 +140,9 @@ function setUpForceBtns(btnArray) {
     buttonBG.beginFill(0x000000, 0.5);
     buttonBG.drawRect(0, 0, game.width, game.height);
 
-    group = game.add.group();
-    group.add(buttonBG);
-    group.add(buttonBlock);
+    arrowGroup = game.add.group();
+    arrowGroup.add(buttonBG);
+    arrowGroup.add(buttonBlock);
 
     forceBtns[0] = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function() { forceSelect(forceBtns[0]) }, this, 1, 0, 0);
     forceBtns[1] = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function() { forceSelect(forceBtns[1]) }, this, 1, 0, 0);
@@ -183,11 +156,11 @@ function setUpForceBtns(btnArray) {
         forceBtns[i].id = btnArray[i];
         addBtnText(forceBtns[i], btnArray[i]);
         window.rich = forceBtns[i];
-        group.add(forceBtns[i]);
-        group.add(forceBtns[i].text);
+        arrowGroup.add(forceBtns[i]);
+        arrowGroup.add(forceBtns[i].text);
     }
 
-    group.visible = false;
+    arrowGroup.visible = false;
 }
 
 
@@ -201,33 +174,33 @@ function addBtnText(btn, txt) {
 function setUpArrow(arrow, dir, radAngle) {
     arrow.dir = dir;
     arrow.radAngle = radAngle;
-    arrowArray.push(arrow);
+    fb.arrowArray.push(arrow);
     arrow.fType = "";
     arrow.force = 0;
 }
 
 function createAxis(axis) {
     var axis = game.add.graphics(0, 0);
-    deg = game.add.sprite(100, 100, 'deg', 0);
-    deg.visible = false;
+    fb.deg = game.add.sprite(100, 100, 'deg', 0);
+    fb.deg.visible = false;
     axis.lineStyle(1, 0xffffff, 0.2);
     axis.moveTo(game.world.centerX, 0);
     axis.lineTo(game.world.centerX, game.world.height);
     axis.moveTo(0, game.world.centerY);
     axis.lineTo(game.world.width, game.world.centerY);
     axis.visible = true;
-    rAxis = game.add.graphics(0, 0);
-    rAxis.lineStyle(1, 0xffffff, 0.60)
-    rAxis.moveTo(game.world.centerX, -100);
-    rAxis.lineTo(game.world.centerX, game.world.width + 100);
-    rAxis.moveTo(-100, game.world.centerY);
-    rAxis.lineTo(game.world.width + 100, game.world.centerY);
-    rAxis.visible = true;
-    rAxis.pivot.x = game.world.centerX;
-    rAxis.pivot.y = game.world.centerY;
-    rAxis.x = game.world.centerX;
-    rAxis.y = game.world.centerY;
-    rAxis.inputEnabled = true;
+    fb.rAxis = game.add.graphics(0, 0);
+    fb.rAxis.lineStyle(1, 0xffffff, 0.60)
+    fb.rAxis.moveTo(game.world.centerX, -100);
+    fb.rAxis.lineTo(game.world.centerX, game.world.width + 100);
+    fb.rAxis.moveTo(-100, game.world.centerY);
+    fb.rAxis.lineTo(game.world.width + 100, game.world.centerY);
+    fb.rAxis.visible = true;
+    fb.rAxis.pivot.x = game.world.centerX;
+    fb.rAxis.pivot.y = game.world.centerY;
+    fb.rAxis.x = game.world.centerX;
+    fb.rAxis.y = game.world.centerY;
+    fb.rAxis.inputEnabled = true;
 }
 
 function angleConvert(angle) {
@@ -240,103 +213,99 @@ function angleConvert(angle) {
 
 function createArrow() {
     console.log("create arrow");
-    currentArrow = game.add.graphics(0, 0);
-    currentArrow.visible = true;
-    currentArrow.ID = arrowID;
-    arrowID++;
-    drawArrow(currentArrow, findAngle(), 0, 0xFFFFFF);
+    fb.currentArrow = game.add.graphics(0, 0);
+    fb.currentArrow.visible = true;
+    drawArrow(fb.currentArrow, findAngle(), 0, 0xFFFFFF);
 }
 
 function handleDown() {
-    if (handle.x == game.world.centerX && handle.y == game.world.centerY) {
-        moveArrow.fType = "";
+    if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
+        fb.moveArrow.fType = "";
         createArrow();
     } else if (getArrowByAngle(closestAngle(findAngle())).force != 0) {
-        moveArrow = getArrowByAngle(closestAngle(findAngle()));
+        fb.moveArrow = getArrowByAngle(closestAngle(findAngle()));
         console.log("HANLDE DOWN: findArrow.fType = " + getArrowByAngle(closestAngle(findAngle())).fType);
-        console.log("HANDLE DOWN: moveArrow.dir = " + moveArrow.dir + ", force = " + moveArrow.force, ", fType = " + moveArrow.fType);
+        console.log("fb.handle DOWN: fb.moveArrow.dir = " + fb.moveArrow.dir + ", force = " + fb.moveArrow.force, ", fType = " + fb.moveArrow.fType);
         getArrowByAngle(closestAngle(findAngle())).force = 0;
         getArrowByAngle(closestAngle(findAngle())).visible = false;
         getArrowByAngle(closestAngle(findAngle())).forces.frame = 0;
 
-        currentArrow = game.add.graphics(0, 0);
-        currentArrow.ID = arrowID;
-        arrowID++;
-        currentArrow.visible = true;
+        fb.currentArrow = game.add.graphics(0, 0);
+        fb.currentArrow.visible = true;
 
-        drawArrow(currentArrow, closestAngle(findAngle()), arrowLength, 0xffffff);
+        drawArrow(fb.currentArrow, closestAngle(findAngle()), gp.arrowLength, 0xffffff);
     } else { console.log("no arrow here") }
 
 }
 
 function handleUp() {
     var cAngle = closestAngle(findAngle());
-    if (currentArrow != null) {
-        if (handle.x == game.world.centerX && handle.y == game.world.centerY) {
-            currentArrow.force = 0;
-            drawArrow(currentArrow, 0, 0);
+    if (fb.currentArrow != null) {
+        if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
+            fb.currentArrow.force = 0;
+            drawArrow(fb.currentArrow, 0, 0);
         } else {
             if (cAngle == fb.nArrowAbs.radAngle || cAngle == 2 * Math.PI) {
                 setForce(fb.nArrowAbs);
                 fb.nArrowAbs.visible = true;
-                drawArrow(fb.nArrowAbs, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.nArrowAbs, cAngle, gp.arrowLength, 0x000000);
             } else if (cAngle == fb.sArrowAbs.radAngle) {
                 setForce(fb.sArrowAbs);
                 fb.sArrowAbs.visible = true;
-                drawArrow(fb.sArrowAbs, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.sArrowAbs, cAngle, gp.arrowLength, 0x000000);
             } else if (cAngle == fb.wArrowAbs.radAngle) {
                 setForce(fb.wArrowAbs);
                 fb.wArrowAbs.visible = true;
-                drawArrow(fb.wArrowAbs, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.wArrowAbs, cAngle, gp.arrowLength, 0x000000);
             } else if (cAngle == fb.eArrowAbs.radAngle) {
                 setForce(fb.eArrowAbs);
                 fb.eArrowAbs.visible = true;
-                drawArrow(fb.eArrowAbs, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.eArrowAbs, cAngle, gp.arrowLength, 0x000000);
             } else if (cAngle == fb.nArrow.radAngle) {
                 setForce(fb.nArrow);
                 fb.nArrow.visible = true;
-                drawArrow(fb.nArrow, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.nArrow, cAngle, gp.arrowLength, 0x000000);
             } else if (cAngle == fb.eArrow.radAngle) {
                 setForce(fb.eArrow);
                 fb.eArrow.visible = true;
-                drawArrow(fb.eArrow, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.eArrow, cAngle, gp.arrowLength, 0x000000);
             } else if (cAngle == fb.sArrow.radAngle) {
                 setForce(fb.sArrow);
                 fb.sArrow.visible = true;
-                drawArrow(fb.sArrow, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.sArrow, cAngle, gp.arrowLength, 0x000000);
             } else if (cAngle == fb.wArrow.radAngle) {
                 setForce(fb.wArrow);
                 fb.wArrow.visible = true;
-                drawArrow(fb.wArrow, cAngle, arrowLength, 0x000000);
+                drawArrow(fb.wArrow, cAngle, gp.arrowLength, 0x000000);
             }
             var fDiff = 38;
-            selectedArrow = getArrowByAngle(closestAngle(findAngle()));
-            if (selectedArrow.dir == "N abs" || selectedArrow.dir == "S abs" || selectedArrow.dir == "W abs" || selectedArrow.dir == "E abs") {
-                selectedArrow.forces.x = (fDiff + arrowLength) * Math.sin(cAngle) + game.world.centerX;
-                selectedArrow.forces.y = game.world.centerY - (fDiff + arrowLength) * Math.cos(cAngle);
+            fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
+            if (fb.selectedArrow.dir == "N abs" || fb.selectedArrow.dir == "S abs" || fb.selectedArrow.dir == "W abs" || fb.selectedArrow.dir == "E abs") {
+                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cAngle) + game.world.centerX;
+                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cAngle);
             } else {
-                selectedArrow.forces.x = (fDiff + arrowLength) * Math.sin(cAngle - rAxis.rotation) + game.world.centerX;
-                selectedArrow.forces.y = game.world.centerY - (fDiff + arrowLength) * Math.cos(cAngle - rAxis.rotation);
+                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cAngle - fb.rAxis.rotation) + game.world.centerX;
+                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cAngle - fb.rAxis.rotation);
             }
-            if (selectedArrow.fType == "") {
+            if (fb.selectedArrow.fType == "") {
                 showForceMenu();
             } else {
-                selectedArrow.fType = moveArrow.fType;
-                selectedArrow.visible = true;
-                setFrames(selectedArrow);
-                console.log("selectedArrow frame: " + selectedArrow.forces.frame);
-                selectedArrow.forces.visible = true;
+                fb.selectedArrow.fType = fb.moveArrow.fType;
+                fb.selectedArrow.visible = true;
+                setFrames(fb.selectedArrow);
+                console.log("fb.selectedArrow frame: " + fb.selectedArrow.forces.frame);
+                fb.selectedArrow.forces.visible = true;
             }
         }
-        currentArrow.destroy();
-        console.log('MOVE ARROW DIR = ' + moveArrow.dir);
-        console.log('SELECTED ARROW DIR = ' + selectedArrow.dir + "SELECTED ARROW FORCE = " + selectedArrow.force);
+        fb.currentArrow.destroy();
+        console.log('MOVE ARROW DIR = ' + fb.moveArrow.dir);
+        console.log('SELECTED ARROW DIR = ' + fb.selectedArrow.dir + "SELECTED ARROW FORCE = " + fb.selectedArrow.force);
 
     }
-    if (moveArrow.dir == selectedArrow.dir) {
-        moveArrow.fType = selectedArrow.fType
+    if (fb.moveArrow.dir == fb.selectedArrow.dir) {
+        fb.moveArrow.fType = fb.selectedArrow.fType
     } else {
-        moveArrow.fType = "";
+        fb.moveArrow.fType = "";
     }
 }
 
@@ -352,22 +321,22 @@ function setFrames(arrow) {
         arrow.forces.frame = 4;
     } else if (arrow.fType == "B on A") {
         arrow.forces.frame = 5;
-    } else if (arrow.fType == "Tension"){
+    } else if (arrow.fType == "Tension") {
         arrow.forces.frame = 6;
-    } else if (arrow.fType == "Air"){
+    } else if (arrow.fType == "Air") {
         arrow.forces.frame = 7;
-    } else if (arrow.fType == "Friction"){
+    } else if (arrow.fType == "Friction") {
         arrow.forces.frame = 8;
     }
 }
 
 function setForce(arrow) {
-    console.log("arrowLength = " + arrowLength);
-    console.log("SETFORCE //// Set " + arrow.dir + " fType to " + moveArrow.fType);
-    arrow.fType = moveArrow.fType;
-    if (arrowLength == 100) {
+    console.log("gp.arrowLength = " + gp.arrowLength);
+    console.log("SETFORCE //// Set " + arrow.dir + " fType to " + fb.moveArrow.fType);
+    arrow.fType = fb.moveArrow.fType;
+    if (gp.arrowLength == 100) {
         arrow.force = 2;
-    } else if (arrowLength == 50) {
+    } else if (gp.arrowLength == 50) {
         arrow.force = 1;
     } else {
         arrow.force = 0;
@@ -380,70 +349,53 @@ function getArrowByAngle(a) {
     if (a2 == 2 * Math.PI) {
         a2 = 0;
     }
-    for (var i = 0; i < arrowArray.length; i++) {
-        if (a2 == arrowArray[i].radAngle) {
-            return arrowArray[i];
+    for (var i = 0; i < fb.arrowArray.length; i++) {
+        if (a2 == fb.arrowArray[i].radAngle) {
+            return fb.arrowArray[i];
         }
     }
     return null;
 }
 
-var rotHandles;
-function createRotHandle() {
-    rotHandles = game.add.group();
-    rotHandle = game.add.sprite(0, - rotHyp, 'rotHandle');
-    rotHandle2 = game.add.sprite(rotHyp, 0, 'rotHandle');
-    rotHandle3 = game.add.sprite(0, rotHyp, 'rotHandle');
-    rotHandle4 = game.add.sprite(- rotHyp, 0, 'rotHandle');
-    rotHandle2.rotation = Math.PI / 2;
-    rotHandle3.rotation = Math.PI;
-    rotHandle4.rotation = 3 * Math.PI / 2;
-    rotHandle.pivot.set(rotHandle.width / 2, rotHandle.height / 2);
-    rotHandle2.pivot.set(rotHandle.width / 2, rotHandle.height / 2)
-    rotHandle3.pivot.set(rotHandle.width / 2, rotHandle.height / 2);
-    rotHandle4.pivot.set(rotHandle.width / 2, rotHandle.height / 2);
-    rotHandle.inputEnabled = true;
-    rotHandle2.inputEnabled = true;
-    rotHandle3.inputEnabled = true;
-    rotHandle4.inputEnabled = true;
-    rotHandle.visible = false;
-    rotHandle2.visible = false;
-    rotHandle3.visible = false;
-    rotHandle4.visible = false;
-    rotHandle.events.onInputDown.add(function() { rotHandleDown(rotHandle) }, this);
-    rotHandle2.events.onInputDown.add(function() { rotHandleDown(rotHandle2) }, this);
-    rotHandle3.events.onInputDown.add(function() { rotHandleDown(rotHandle3) }, this);
-    rotHandle4.events.onInputDown.add(function() { rotHandleDown(rotHandle4) }, this);
-    rotHandle.events.onInputUp.add(function() { rotHandleUp(rotHandle) }, this);
-    rotHandle2.events.onInputUp.add(function() { rotHandleUp(rotHandle2) }, this);
-    rotHandle3.events.onInputUp.add(function() { rotHandleUp(rotHandle3) }, this);
-    rotHandle4.events.onInputUp.add(function() { rotHandleUp(rotHandle4) }, this);
-    rotHandle.pos = 0;
-    rotHandle2.pos = Math.PI / 2;
-    rotHandle3.pos = Math.PI;
-    rotHandle4.pos = 3 * Math.PI / 2;
-    rotHandles.add(rotHandle);
-    rotHandles.add(rotHandle2);
-    rotHandles.add(rotHandle3);
-    rotHandles.add(rotHandle4);
-    rotHandles.handleSelected = false;
-    rotHandles.pivot.set(0, 0);
-    rotHandles.x = game.world.centerX;
-    rotHandles.y = game.world.centerY;
+function setUpRotHandle(rotH, angle) {
+    rotH.rotation = angle;
+    rotH.pivot.set(rotH.width / 2, rotH.height / 2);
+    rotH.inputEnabled = true;
+    rotH.visible = false;
+    rotH.events.onInputDown.add(function() { rotHandleDown(rotH) }, this);
+    rotH.events.onInputUp.add(function() { rotHandleUp(rotH) }, this);
+    rotH.pos = angle;
+    rotHandlesGroup.add(rotH);
+}
+
+function createRotHandles() {
+    rotHandlesGroup = game.add.group();
+    fb.rotHandle = game.add.sprite(0, - fb.rotHyp, 'rotHandle');
+    fb.rotHandle2 = game.add.sprite(fb.rotHyp, 0, 'rotHandle');
+    fb.rotHandle3 = game.add.sprite(0, fb.rotHyp, 'rotHandle');
+    fb.rotHandle4 = game.add.sprite(- fb.rotHyp, 0, 'rotHandle');
+    setUpRotHandle(fb.rotHandle, 0);
+    setUpRotHandle(fb.rotHandle2, Math.PI / 2);
+    setUpRotHandle(fb.rotHandle3, Math.PI);
+    setUpRotHandle(fb.rotHandle4, 3*Math.PI/2);
+    rotHandlesGroup.handleSelected = false;
+    rotHandlesGroup.pivot.set(0, 0);
+    rotHandlesGroup.x = game.world.centerX;
+    rotHandlesGroup.y = game.world.centerY;
 }
 
 function rotHandleDown(h) {
     console.log("Rotate axis: " + findAngle());
-    console.log("Rot handle btn DOWN");
-    rotHandles.handleSelected = true;
-    currentRotHandle = h;
-    console.log("Current rot Handle = " + currentRotHandle.dir);
+    console.log("Rot fb.handle btn DOWN");
+    rotHandlesGroup.handleSelected = true;
+    fb.currentRotHandle = h;
+    console.log("Current rot fb.handle = " + fb.currentRotHandle.dir);
 }
 
 function rotHandleUp(h) {
-    rotHandles.handleSelected = false;
-    currentRotHandle = "";
-    console.log("Rot handle btn UP");
+    rotHandlesGroup.handleSelected = false;
+    fb.currentRotHandle = "";
+    console.log("Rot fb.handle btn UP");
 }
 
 function up() {
@@ -457,9 +409,8 @@ function down() {
 }
 
 function drawArrow(arrow, rot, hyp, color) {
-    var aLength = arrowLength;
+    var aLength = gp.arrowLength;
     arrow.clear();
-
 
     if (hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
         aLength = 0;
@@ -470,9 +421,9 @@ function drawArrow(arrow, rot, hyp, color) {
         arrow.lineStyle(1, color);
         arrow.beginFill(color);
         arrow.moveTo(game.width / 2, game.height / 2 - aLength);
-        arrow.lineTo(game.width / 2 - ahSide / 2, game.height / 2 - aLength);
-        arrow.lineTo(game.width / 2, game.height / 2 - aLength - ahSide);
-        arrow.lineTo(game.width / 2 + ahSide / 2, game.height / 2 - aLength);
+        arrow.lineTo(game.width / 2 - gp.arrowHead / 2, game.height / 2 - aLength);
+        arrow.lineTo(game.width / 2, game.height / 2 - aLength - gp.arrowHead);
+        arrow.lineTo(game.width / 2 + gp.arrowHead / 2, game.height / 2 - aLength);
         arrow.lineTo(game.width / 2, game.height / 2 - aLength);
         arrow.endFill();
         arrow.pivot.x = game.world.centerX;
@@ -512,7 +463,7 @@ function setUpInteractives() {
 
 function showForceMenu() {
     menuMode = true;
-    group.visible = true;
+    arrowGroup.visible = true;
     forceBtns[0].text.visible = true;
     forceBtns[1].text.visible = true;
     forceBtns[2].text.visible = true;
@@ -522,77 +473,77 @@ function showForceMenu() {
 
 function forceSelect(btn) {
     console.log(btn.id);
-    group.visible = false;
-    console.log("fnc forceSelect // Selected Arrow = " + selectedArrow.dir)
-    selectedArrow.forces.visible = true;
-    selectedArrow.fType = btn.id;
-    setFrames(selectedArrow);
+    arrowGroup.visible = false;
+    console.log("fnc forceSelect // Selected Arrow = " + fb.selectedArrow.dir)
+    fb.selectedArrow.forces.visible = true;
+    fb.selectedArrow.fType = btn.id;
+    setFrames(fb.selectedArrow);
     menuMode = false;
 }
 
 function update() {
-    var aLength = arrowLength + 8;
+    var aLength = gp.arrowLength + 8;
     var ca = closestAngle(findAngle());
     var cArrow = getArrowByAngle(ca);
     if (menuMode == false) {
-        rotHandle.visible = false;
-        rotHandle2.visible = false;
-        rotHandle3.visible = false;
-        rotHandle4.visible = false;
-        handle.visible = false;
+        fb.rotHandle.visible = false;
+        fb.rotHandle2.visible = false;
+        fb.rotHandle3.visible = false;
+        fb.rotHandle4.visible = false;
+        fb.handle.visible = false;
         if (arrowHere()) {
-            handle.visible = true;
+            fb.handle.visible = true;
         }
-        if (hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
+        if (fb.hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
             aLength = 0;
-        } else if (hyp > 90) {
-            arrowLength = 100;
+        } else if (fb.hyp > 90) {
+            gp.arrowLength = 100;
         } else {
-            arrowLength = 50;
+            gp.arrowLength = 50;
         }
 
-        if (hyp > 120) {
-            if (rotHandles.rotation == 0) {
+        if (fb.hyp > 120) {
+            if (rotHandlesGroup.rotation == 0) {
                 if (cArrow.dir == "N abs") {
-                    rotHandle.visible = true;
+                    fb.rotHandle.visible = true;
                 } else if (cArrow.dir == "E abs") {
-                    rotHandle2.visible = true;
+                    fb.rotHandle2.visible = true;
                 } else if (cArrow.dir == "S abs") {
-                    rotHandle3.visible = true;
+                    fb.rotHandle3.visible = true;
                 } else {
-                    rotHandle4.visible = true;
+                    fb.rotHandle4.visible = true;
                 }
             } else
-                if (cArrow.dir == "N rel" || (cArrow.dir == "E abs" && rotHandles.rotation == Math.PI / 2)) {
-                    rotHandle.visible = true;
-                } else if (cArrow.dir == "E rel" || (cArrow.dir == "S abs" && rotHandles.rotation == Math.PI / 2)) {
-                    rotHandle2.visible = true;
-                } else if (cArrow.dir == "S rel" || (cArrow.dir == "W abs" && rotHandles.rotation == Math.PI / 2)) {
-                    rotHandle3.visible = true;
-                } else if (cArrow.dir == "W rel" || (cArrow.dir == "N abs" && rotHandles.rotation == Math.PI / 2)) {
-                    rotHandle4.visible = true;
+                if (cArrow.dir == "N rel" || (cArrow.dir == "E abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
+                    fb.rotHandle.visible = true;
+                } else if (cArrow.dir == "E rel" || (cArrow.dir == "S abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
+                    fb.rotHandle2.visible = true;
+                } else if (cArrow.dir == "S rel" || (cArrow.dir == "W abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
+                    fb.rotHandle3.visible = true;
+                } else if (cArrow.dir == "W rel" || (cArrow.dir == "N abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
+                    fb.rotHandle4.visible = true;
                 } else { }
 
         }
 
     }
 
-    hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
-    handle.x = aLength * Math.sin(ca) + game.world.centerX;
-    handle.y = game.world.centerY - aLength * Math.cos(ca);
-    if (currentArrow != null) {
-        drawArrow(currentArrow, ca, hyp, 0xffffff);
+    fb.hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
+    fb.handle.x = aLength * Math.sin(ca) + game.world.centerX;
+    fb.handle.y = game.world.centerY - aLength * Math.cos(ca);
+    if (fb.currentArrow != null) {
+        drawArrow(fb.currentArrow, ca, fb.hyp, 0xffffff);
     }
 
-    if (rotHandles.handleSelected == true) {
+    if (rotHandlesGroup.handleSelected == true) {
         var newRot;
-        if (currentRotHandle.pos == 0) {
+        if (fb.currentRotHandle.pos == 0) {
             newRot = findAngle();
-        } else if (currentRotHandle.pos == Math.PI / 2) {
+        } else if (fb.currentRotHandle.pos == Math.PI / 2) {
             newRot = findAngle() - Math.PI / 2;
-        } else if (currentRotHandle.pos == Math.PI) {
+        } else if (fb.currentRotHandle.pos == Math.PI) {
             newRot = findAngle() - Math.PI;
-        } else if (currentRotHandle.pos == 3 * Math.PI / 2) {
+        } else if (fb.currentRotHandle.pos == 3 * Math.PI / 2) {
             newRot = findAngle() - 3 * Math.PI / 2;
         }
         if (newRot >= 0 && newRot <= Math.PI / 2) {
@@ -611,15 +562,15 @@ function findAngle() {
     var cAngle;
     if (game.input.mousePointer.y < game.world.centerY) {
         if (game.input.mousePointer.x > game.world.centerX) {
-            cAngle = (Math.atan((game.input.mousePointer.x - anchor.x) / (anchor.y - game.input.mousePointer.y)));
+            cAngle = (Math.atan((game.input.mousePointer.x - fb.forceCenter.x) / (fb.forceCenter.y - game.input.mousePointer.y)));
         } else {
-            cAngle = 2 * Math.PI - Math.abs(Math.atan((game.input.mousePointer.x - anchor.x) / (anchor.y - game.input.mousePointer.y)));
+            cAngle = 2 * Math.PI - Math.abs(Math.atan((game.input.mousePointer.x - fb.forceCenter.x) / (fb.forceCenter.y - game.input.mousePointer.y)));
         }
     } else {
         if (game.input.mousePointer.x > game.world.centerX) {
-            cAngle = Math.PI - Math.abs(Math.atan((game.input.mousePointer.x - anchor.x) / (anchor.y - game.input.mousePointer.y)));
+            cAngle = Math.PI - Math.abs(Math.atan((game.input.mousePointer.x - fb.forceCenter.x) / (fb.forceCenter.y - game.input.mousePointer.y)));
         } else {
-            cAngle = Math.PI + Math.abs(Math.atan((game.input.mousePointer.x - anchor.x) / (anchor.y - game.input.mousePointer.y)));
+            cAngle = Math.PI + Math.abs(Math.atan((game.input.mousePointer.x - fb.forceCenter.x) / (fb.forceCenter.y - game.input.mousePointer.y)));
         }
     }
     if (cAngle == 2 * Math.PI) {
@@ -648,8 +599,8 @@ function closestAngle(a) {
 }
 
 function rotate(rads) {
-    if (rAxis.rotation == 0) {
-        angleText.visible = false;
+    if (fb.rAxis.rotation == 0) {
+        fb.angleText.visible = false;
         fb.nArrow.visible = false;
         fb.sArrow.visible = false;
         fb.wArrow.visible = false;
@@ -666,15 +617,15 @@ function rotate(rads) {
         fb.sArrow.forces.frame = 0;
         fb.wArrow.forces.frame = 0;
         fb.eArrow.forces.frame = 0;
-        deg.visible = false;
+        fb.deg.visible = false;
     } else {
-        angleText.visible = true;
-        deg.visible = true;
+        fb.angleText.visible = true;
+        fb.deg.visible = true;
     }
 
-    rAxis.rotation = rads;
+    fb.rAxis.rotation = rads;
     graphicsGroup.rotation = rads;
-    rotHandles.rotation = rads;
+    rotHandlesGroup.rotation = rads;
     drawArc(rads);
 
     fb.nArrow.radAngle = rads;
@@ -684,23 +635,23 @@ function rotate(rads) {
     fb.eArrow.forces.rotation = -rads;
 
     if (fb.nArrow.force > 0) {
-        arrowLength = magLength * fb.nArrow.force;
-        drawArrow(fb.nArrow, fb.nArrow.radAngle, magLength * fb.nArrow.force, 0x000000);
+        gp.arrowLength = gp.magLength * fb.nArrow.force;
+        drawArrow(fb.nArrow, fb.nArrow.radAngle, gp.magLength * fb.nArrow.force, 0x000000);
     }
     fb.eArrow.radAngle = rads + Math.PI / 2;
     if (fb.eArrow.force > 0) {
-        arrowLength = magLength * fb.eArrow.force;
-        drawArrow(fb.eArrow, fb.eArrow.radAngle, magLength * fb.eArrow.force, 0x000000);
+        gp.arrowLength = gp.magLength * fb.eArrow.force;
+        drawArrow(fb.eArrow, fb.eArrow.radAngle, gp.magLength * fb.eArrow.force, 0x000000);
     }
     fb.sArrow.radAngle = rads + Math.PI;
     if (fb.sArrow.force > 0) {
-        arrowLength = magLength * fb.sArrow.force;
-        drawArrow(fb.sArrow, fb.sArrow.radAngle, magLength * fb.sArrow.force, 0x000000);
+        gp.arrowLength = gp.magLength * fb.sArrow.force;
+        drawArrow(fb.sArrow, fb.sArrow.radAngle, gp.magLength * fb.sArrow.force, 0x000000);
     }
     fb.wArrow.radAngle = rads + 3 * Math.PI / 2;
     if (fb.wArrow.force > 0) {
-        arrowLength = magLength * fb.wArrow.force;
-        drawArrow(fb.wArrow, fb.wArrow.radAngle, magLength * fb.wArrow.force, 0x000000);
+        gp.arrowLength = gp.magLength * fb.wArrow.force;
+        drawArrow(fb.wArrow, fb.wArrow.radAngle, gp.magLength * fb.wArrow.force, 0x000000);
     }
     angleArray2 = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
 
@@ -709,31 +660,31 @@ function rotate(rads) {
 function drawArc(rads) {
     arcGraphics.clear();
     arcGraphics.lineStyle(70, 0xFFFFFF, 0.70);
-    arcGraphics.arc(game.world.centerX, game.world.centerY, 30, game.math.degToRad(-90) + currentRotHandle.pos, rads - Math.PI / 2 + currentRotHandle.pos, false);
-    angleText.text = Math.round(Math.round(rads * 180 / Math.PI));
-    angleText.x = 1.6 * magLength * Math.sin((rads / 2) + currentRotHandle.pos) + game.world.centerX - 10;
-    angleText.y = game.world.centerY - 1.6 * magLength * Math.cos((rads / 2) + currentRotHandle.pos);
-    deg.x = angleText.x + 20;
-    deg.y = angleText.y - 10;
+    arcGraphics.arc(game.world.centerX, game.world.centerY, 30, game.math.degToRad(-90) + fb.currentRotHandle.pos, rads - Math.PI / 2 + fb.currentRotHandle.pos, false);
+    fb.angleText.text = Math.round(Math.round(rads * 180 / Math.PI));
+    fb.angleText.x = 1.6 * gp.magLength * Math.sin((rads / 2) + fb.currentRotHandle.pos) + game.world.centerX - 10;
+    fb.angleText.y = game.world.centerY - 1.6 * gp.magLength * Math.cos((rads / 2) + fb.currentRotHandle.pos);
+    fb.deg.x = fb.angleText.x + 20;
+    fb.deg.y = fb.angleText.y - 10;
     if (Math.round(Math.round(rads * 180 / Math.PI)) > 99) {
-        deg.x += 10;
+        fb.deg.x += 10;
     }
     if (Math.round(Math.round(rads * 180 / Math.PI)) < 10) {
-        deg.x -= 10;
+        fb.deg.x -= 10;
     }
 }
 
 function render() {
     //Debuggig displays
-    
-      /*
-       game.debug.text("fb.nArrow Abs: " + fb.nArrowAbs.fType + " // fb.nArrow Rel: " + fb.nArrow.fType, 10, 330);
-       game.debug.text("fb.eArrow Abs: " + fb.eArrowAbs.fType + " // fb.eArrow Rel: " + fb.eArrow.fType, 10, 350);
-       game.debug.text("fb.sArrow Abs: " + fb.sArrowAbs.fType + " // fb.sArrow Rel: " + fb.sArrow.fType, 10, 370);
-       game.debug.text("fb.wArrow Abs: " + fb.wArrowAbs.fType + " // fb.wArrow Rel: " + fb.wArrow.fType, 10, 390);
-       
-       game.debug.text("Move Arrow: " + moveArrow.fType, 10, 20);
-     */
+
+    /*
+     game.debug.text("fb.nArrow Abs: " + fb.nArrowAbs.fType + " // fb.nArrow Rel: " + fb.nArrow.fType, 10, 330);
+     game.debug.text("fb.eArrow Abs: " + fb.eArrowAbs.fType + " // fb.eArrow Rel: " + fb.eArrow.fType, 10, 350);
+     game.debug.text("fb.sArrow Abs: " + fb.sArrowAbs.fType + " // fb.sArrow Rel: " + fb.sArrow.fType, 10, 370);
+     game.debug.text("fb.wArrow Abs: " + fb.wArrowAbs.fType + " // fb.wArrow Rel: " + fb.wArrow.fType, 10, 390);
+     
+     game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
+   */
 }
 
 $(document).ready(function() {
@@ -741,7 +692,7 @@ $(document).ready(function() {
     var feedback = document.getElementById("feedback");
     var json;
     var span = document.getElementsByClassName("close")[0];
-        $.getJSON("json/freebody.json", function(data) {
+    $.getJSON("json/freebody.json", function(data) {
         json = data;
     });
 
@@ -823,7 +774,7 @@ function getMagError(a, fb, worth) {
             || (a[1].force - a[0].force != (fb[1].mag - fb[0].mag))
         ) { me += worth; }
     } else if (a[majorForce].force != 2) {
-            me += worth;
+        me += worth;
     }
     return me;
 }
@@ -831,25 +782,25 @@ function getMagError(a, fb, worth) {
 function resetFBD() {
     rotate(0);
     $("#ans").val('');
-    var arrayLength = arrowArray.length;
+    var arrayLength = fb.arrowArray.length;
     for (var i = 0; i < arrayLength; i++) {
-        arrowArray[i].fType = "";
-        arrowArray[i].force = 0;
-        arrowArray[i].visible = false;
-        arrowArray[i].forces.visible = false;
+        fb.arrowArray[i].fType = "";
+        fb.arrowArray[i].force = 0;
+        fb.arrowArray[i].visible = false;
+        fb.arrowArray[i].forces.visible = false;
     }
-    angleText.visible = false;
-    deg.visible = false;
+    fb.angleText.visible = false;
+    fb.deg.visible = false;
 }
 
 function arrowHere() {
-    if (hyp < 20) {
+    if (fb.hyp < 20) {
         return true;
     }
     if (getArrowByAngle(closestAngle(findAngle())) != null) {
 
-        if ((getArrowByAngle(closestAngle(findAngle())).force == 1 && hyp > 50 && hyp < 80)
-            || (getArrowByAngle(closestAngle(findAngle())).force == 2 && hyp > 99)) {
+        if ((getArrowByAngle(closestAngle(findAngle())).force == 1 && fb.hyp > 50 && fb.hyp < 80)
+            || (getArrowByAngle(closestAngle(findAngle())).force == 2 && fb.hyp > 99)) {
             return true;
         }
     }
