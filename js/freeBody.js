@@ -13,6 +13,8 @@ function preload() {
     game.load.image('capture1', 'instr/diagrams/capture1.gif');
     game.load.image('rotHandle', 'assets/freebody/rotateHandle.png');
 }
+
+var page = 1;
 var fDist = 100;
 var group;
 var box_width = 0;
@@ -28,15 +30,9 @@ var rotHandle2;
 var rotHandle3;
 var rotHandle4;
 var axis2;
-var gBtn;
-var nBtn;
-var pushBtn;
-var aBtn;
-var bBtn;
 var handle;
 var graphicsGroup;
-var hyp1;
-var hyp2;
+var hyp;
 var testArrow;
 var arrowArray;
 var arrowID = 0;
@@ -46,7 +42,6 @@ var deg;
 var rotHyp;
 var rotHandleOffset = 35;
 var currentRotHandle = "";
-var page = 1;
 var moveArrow = { "fType": "" };
 var menuMode = false;
 var forceBtns;
@@ -157,67 +152,6 @@ function create() {
         setUpExercise(json);
     });
 
-/*
-    var buttonBlock = game.add.graphics(0, 0);
-    buttonBlock.beginFill(0xeae6de);
-    buttonBlock.drawRect(game.world.centerX, game.world.centerY, 110, 160);
-    buttonBlock.pivot.set(buttonBlock.width / 2, buttonBlock.height / 2);
-
-    var buttonBG = game.add.graphics(0, 0);
-    buttonBG.beginFill(0x000000, 0.5);
-    buttonBG.drawRect(0, 0, game.width, game.height);
-
-    gBtn = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function() { forceSelect(gBtn) }, this, 1, 0, 0);
-    gBtn.pivot.set(gBtn.width / 2, gBtn.height / 2);
-    pushBtn = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function() { forceSelect(pushBtn) }, this, 1, 0, 0);
-    pushBtn.pivot.set(pushBtn.width / 2, pushBtn.height / 2);
-    nBtn = game.add.button(game.world.centerX, game.world.centerY, 'forceBtns', function() { forceSelect(nBtn) }, this, 1, 0, 0);
-    nBtn.pivot.set(nBtn.width / 2, nBtn.height / 2);
-    aBtn = game.add.button(game.world.centerX, game.world.centerY + 30, 'forceBtns', function() { forceSelect(aBtn) }, this, 1, 0, 0);
-    aBtn.pivot.set(aBtn.width / 2, aBtn.height / 2);
-    bBtn = game.add.button(game.world.centerX, game.world.centerY + 60, 'forceBtns', function() { forceSelect(bBtn) }, this, 1, 0, 0);
-    bBtn.pivot.set(bBtn.width / 2, bBtn.height / 2);
-
-    gBtn.forceOut = true;
-    pushBtn.forceOut = true;
-    nBtn.forceOut = true
-    aBtn.forceOut = true;
-    bBtn.forceOut = true;
-
-    gBtn.id = "g";
-    nBtn.id = "n";
-    pushBtn.id = "push";
-    aBtn.id = "AonB";
-    bBtn.id = "BonA";
-
-    addBtnText(gBtn, "Gravity");
-    addBtnText(pushBtn, "Push");
-    addBtnText(nBtn, "Normal");
-    addBtnText(aBtn, "A on B");
-    addBtnText(bBtn, "B on A");
-
-    window.rich = gBtn;
-    window.rich = pushBtn;
-    window.rich = nBtn;
-    window.rich = aBtn;
-    window.rich = bBtn;
-
-    group = game.add.group();
-    group.add(buttonBG);
-    group.add(buttonBlock);
-    group.add(gBtn);
-    group.add(pushBtn);
-    group.add(nBtn);
-    group.add(aBtn);
-    group.add(bBtn);
-    group.add(gBtn.text);
-    group.add(pushBtn.text);
-    group.add(nBtn.text);
-    group.add(aBtn.text);
-    group.add(bBtn.text);
-    group.visible = false;
-    //arrowArray = [fb.nArrowAbs, fb.sArrowAbs, fb.wArrowAbs, fb.eArrowAbs, fb.nArrow, fb.sArrow, fb.wArrow, fb.eArrow];
-*/
     window.graphics = graphics;
 }
 
@@ -294,7 +228,6 @@ function createAxis(axis) {
     axis2.x = game.world.centerX;
     axis2.y = game.world.centerY;
     axis2.inputEnabled = true;
-    axis2.events.onInputOver.add(over, this);
 }
 
 function angleConvert(angle) {
@@ -501,7 +434,6 @@ function createRotHandle() {
 
 function rotHandleDown(h) {
     console.log("Rotate axis: " + findAngle());
-    //handle.isDown = true;
     console.log("Rot handle btn DOWN");
     rotHandles.handleSelected = true;
     currentRotHandle = h;
@@ -509,7 +441,6 @@ function rotHandleDown(h) {
 }
 
 function rotHandleUp(h) {
-    //handle.isDown = false;
     rotHandles.handleSelected = false;
     currentRotHandle = "";
     console.log("Rot handle btn UP");
@@ -518,14 +449,6 @@ function rotHandleUp(h) {
 function up() {
     console.log('button up', arguments);
     out();
-}
-
-function over() {
-    console.log('button over');
-}
-
-function out() {
-    console.log('button out');
 }
 
 function down() {
@@ -620,15 +543,15 @@ function update() {
         if (arrowHere()) {
             handle.visible = true;
         }
-        if (hyp2 < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
+        if (hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
             aLength = 0;
-        } else if (hyp2 > 90) {
+        } else if (hyp > 90) {
             arrowLength = 100;
         } else {
             arrowLength = 50;
         }
 
-        if (hyp2 > 120) {
+        if (hyp > 120) {
             if (rotHandles.rotation == 0) {
                 if (cArrow.dir == "N abs") {
                     rotHandle.visible = true;
@@ -654,11 +577,11 @@ function update() {
 
     }
 
-    hyp2 = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
+    hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
     handle.x = aLength * Math.sin(ca) + game.world.centerX;
     handle.y = game.world.centerY - aLength * Math.cos(ca);
     if (currentArrow != null) {
-        drawArrow(currentArrow, ca, hyp2, 0xffffff);
+        drawArrow(currentArrow, ca, hyp, 0xffffff);
     }
 
     if (rotHandles.handleSelected == true) {
@@ -823,7 +746,7 @@ function render() {
       
       game.debug.text("move arrow: " + moveArrow.fType + " " + moveArrow.forces.frame, 10, 340);
       game.debug.text("selected arrow: " + selectedArrow.fType + " " + selectedArrow.forces.frame + " " + selectedArrow.forces.visible, 10, 355);
-      game.debug.text("hyp2: " + hyp2, 10, 370);
+      game.debug.text("hyp: " + hyp, 10, 370);
       
        var adjAngle;
        var currentDir;
@@ -840,7 +763,7 @@ function render() {
        else { adjAngle = testLine.angle };
        //  game.debug.text("adjusted angle: " + adjAngle, 10, 90);
        game.debug.text("current arrow: " + currentDir + " " + currentID, 10, 340);
-       game.debug.text("distance from center2: " + hyp2, 10, 355);
+       game.debug.text("distance from center2: " + hyp, 10, 355);
        game.debug.text("angle: " + findAngle(), 10, 370);
        game.debug.text("snap to: " + closestAngle(findAngle()), 10, 385);
      */
@@ -954,14 +877,14 @@ function resetFBD() {
 
 function arrowHere() {
 
-    if (hyp2 < 20) {
+    if (hyp < 20) {
         return true;
     }
 
     if (getArrowByAngle(closestAngle(findAngle())) != null) {
 
-        if ((getArrowByAngle(closestAngle(findAngle())).force == 1 && hyp2 > 50 && hyp2 < 80)
-            || (getArrowByAngle(closestAngle(findAngle())).force == 2 && hyp2 > 99)) {
+        if ((getArrowByAngle(closestAngle(findAngle())).force == 1 && hyp > 50 && hyp < 80)
+            || (getArrowByAngle(closestAngle(findAngle())).force == 2 && hyp > 99)) {
             return true;
         }
     }
