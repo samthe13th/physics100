@@ -148,6 +148,9 @@ function rotate(rads) {
     fb.eArrow.drawForce(rads, Math.PI / 2);
     fb.sArrow.drawForce(rads, Math.PI);
     fb.wArrow.drawForce(rads, 3 * Math.PI / 2);
+    
+    ///*******************************TODO********************************////
+    //Why is this array being reconstructed here? Does it need to be??
     angleArray2 = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
 }
 
