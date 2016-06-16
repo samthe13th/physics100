@@ -382,8 +382,7 @@ function handleUp() {
                 selectedArrow.visible = true;
                 setFrames(selectedArrow);
                 console.log("selectedArrow frame: " + selectedArrow.forces.frame);
-                selectedArrow.forces.visible;
-
+                selectedArrow.forces.visible = true;
             }
         }
         currentArrow.destroy();
@@ -797,14 +796,15 @@ function drawArc(rads) {
 
 function render() {
     //Debuggig displays
-    /*
-     
+    
+      /*
        game.debug.text("nArrow Abs: " + nArrowAbs.fType + " // nArrow Rel: " + nArrow.fType, 10, 330);
        game.debug.text("eArrow Abs: " + eArrowAbs.fType + " // eArrow Rel: " + eArrow.fType, 10, 350);
        game.debug.text("sArrow Abs: " + sArrowAbs.fType + " // sArrow Rel: " + sArrow.fType, 10, 370);
        game.debug.text("wArrow Abs: " + wArrowAbs.fType + " // wArrow Rel: " + wArrow.fType, 10, 390);
        
        game.debug.text("Move Arrow: " + moveArrow.fType, 10, 20);
+      
        // game.debug.text("Selected Arrow: " + selectedArrow.fType, 10, 350);
        // game.debug.text("Current Arrow: " + currentArrow.fType, 10, 330);
        // game.debug.text("Handle: " + "(" + handle.x + "," + handle.y + ")", 10, 330);
