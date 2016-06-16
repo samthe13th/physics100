@@ -86,8 +86,7 @@ function create() {
     graphicsGroup.pivot.y = game.world.centerY;
     graphicsGroup.x = game.world.centerX;
     graphicsGroup.y = game.world.centerY;
-
-    setUpInteractives();
+    
     fb.angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
     fb.angleText.pivot.set(fb.angleText.width / 2, fb.angleText.height / 2);
 
@@ -286,11 +285,6 @@ function setUpForceBtns(btnArray) {
         arrowGroup.add(forceBtns[i].text);
     }
     arrowGroup.visible = false;
-}
-
-function setUpInteractives() {
-    var aa = ansArray();
-    console.log(aa[0].fType);
 }
 
 //GETTERS
