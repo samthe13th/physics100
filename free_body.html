@@ -4,16 +4,28 @@
     <meta charset="UTF-8" />
     <link type="text/css" rel="stylesheet" href="css/physics.css">
     <title>Free Body Diagrams</title>
-    <script type="text/javascript" src="js/phaser.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-    <script src="js/freeBody.js"></script>
+    <link rel="stylesheet" href="css/modal.css">
 </head>
 
-<body>
+<body>   
+    <button class="modal-header-btn modal-trigger btn-fixed">Help</button>
+    <div class="modal">
+        <header class="modal-header">
+            <h1 class="modal-header-title left"><strong>Help</strong></h1>
+            <button class="modal-header-btn right modal-close" title="Close Modal">Got it!</button>
+        </header>
+        <div class="modal-body">
+            <section class="modal-content">
+                <img id="helpgif"></img>
+            </section>
+        </div>
+    </div>
+
+<!-- OLD MODULES -->
+<!-- 
     <div id="feedback" class="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content" id="feedback-content">
+            <div id="feedback-header">
                 <span class="close">×</span>
                 <h2 id="percent"></h2>
             </div>
@@ -21,8 +33,20 @@
                 <p id="feedbackTxt">ff</p>
             </div>
         </div>
-
     </div>
+
+    <div id="help" class="modal">
+        <div class="modal-content" id="help-content">
+            <div id="help-header">
+                <span class="close">×</span>
+                <h3><strong>Help</strong> | Add arrow</h3>
+            </div>
+            <div class="modal-body">
+                <img id="helpgif"></img>
+            </div>
+        </div>
+    </div>
+-->
     <div id="bugReport">
         <a href="https://docs.google.com/forms/d/1u_eBh_dIReZnWgmI4Ys52pM7ayHHaIVvRywo18x-Ktk/viewform" target="_blank">
             <strong>Report Bug</strong>
@@ -54,6 +78,18 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="js/freeBody.js"></script>
+    <script src="js/draggabilly.pkgd.js"></script>
+    <script src="js/modal.js"></script>
+    <!--
+    <script>
+        window.onload = function(e){ 	    
+			Modal.init();
+		};
+    </script>
+    -->
 </body>
 
 </html>

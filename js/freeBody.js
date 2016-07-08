@@ -251,7 +251,7 @@ function setUpExercise(json) {
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
     $('#instr').load(json.exercises[page - 1].inst);
-    $('#pGif').attr('src', pGif);
+   // $('#pGif').attr('src', pGif);
     $('#unknown').html(json.exercises[page - 1].unk);
     $('#units').text(json.exercises[page - 1].units);
     setUpForceBtns(forceArray);
@@ -622,14 +622,21 @@ function angleConvert(angle) {
 //JQUERY 
 $(document).ready(function() {
     var feedback = document.getElementById("feedback");
+    var help = document.getElementById("help");
     var json;
-    var span = document.getElementsByClassName("close")[0];
+    var span = document.getElementsByClassName("close")[0];  
+    
+    Modal.init();
     $.getJSON("json/freebody.json", function(data) {
         json = data;
     });
+    //help.style.display = "block";
+    $('#helpgif').attr('src', 'assets/freebody/fb1.2.gif');
+    /*
     span.onclick = function() {
         feedback.style.display = "none";
     }
+    */
     $("#prev").click(function(event) {
         if (page > 1) {
             page--;
