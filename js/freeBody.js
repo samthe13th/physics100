@@ -627,6 +627,8 @@ $(document).ready(function() {
     var span = document.getElementsByClassName("close")[0];  
     
     Modal.init();
+    Modal.open();
+    
     $.getJSON("json/freebody.json", function(data) {
         json = data;
     });
@@ -664,7 +666,7 @@ $(document).ready(function() {
         var aLength = a.length;
         var aWorth = 100 / 6;
         var fbTxt = "Feedback goes here";
-        var fbHeader = document.getElementById("modal-header");
+        var fbHeader = document.getElement("help-modal.header");
         for (var i = 0; i < aLength; i++) {
             console.log("Ans " + i + " = " + a[i].fType + " " + a[i].force + " Soln " + i + " = " + fb[i].type + " " + fb[i].mag);
             if (a[i].fType != fb[i].type) {

@@ -4,13 +4,18 @@
     <meta charset="UTF-8" />
     <link type="text/css" rel="stylesheet" href="/stylesheets/less/physics.less">
     <title>Free Body Diagrams</title>
-   <link rel="stylesheet" type="text/css" href="/stylesheets/less/modal.less"> 
-    
+    <link rel="stylesheet" type="text/css" href="/stylesheets/less/modal.less">
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>
+    <script src="js/freeBody.js"></script>
+
 </head>
 
-<body>   
+<body>
     <button class="modal-header-btn modal-trigger btn-fixed">Help</button>
-    <div class="modal">
+    
+    <div class="modal" id="help-modal">
         <header class="modal-header">
             <h1 class="modal-header-title left"><strong>Help</strong></h1>
             <button class="modal-header-btn right modal-close" title="Close Modal">Got it!</button>
@@ -22,8 +27,8 @@
         </div>
     </div>
 
-<!-- OLD MODULES -->
-<!-- 
+    <!-- OLD MODULES -->
+    <!-- 
     <div id="feedback" class="modal">
         <div class="modal-content" id="feedback-content">
             <div id="feedback-header">
@@ -79,10 +84,6 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="js/phaser.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>
-    <script src="js/freeBody.js"></script>
     <script src="js/draggabilly.pkgd.js"></script>
     <script src="js/modal.js"></script>
     <!--
