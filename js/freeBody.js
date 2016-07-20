@@ -194,7 +194,7 @@ function setUpArrow(arrow, dir, radAngle) {
         }
     }
     arrow.setFrames = function() {
-        if (this.fType == "Gravity") {
+        if (this.fType == "Weight") {
             this.forces.frame = 1;
         } else if (this.fType == "Normal") {
             this.forces.frame = 2;

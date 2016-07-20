@@ -1,7 +1,7 @@
 {
     "exercises": [
         {
-         "forces": ["Gravity", "Push", "Normal", "Tension", "Friction"],
+         "forces": ["Weight", "Push", "Normal", "Tension", "Friction"],
          "title": "Block",
          "inst": "instr/block.html",
          "img": "instr/diagrams/block.png",
@@ -12,7 +12,7 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 1, "type":"Normal"},
-                {"mag": 1, "type":"Gravity"},
+                {"mag": 1, "type":"Weight"},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""}
          ],
@@ -23,7 +23,7 @@
          "ans": "98"       
         },
         {
-            "forces": ["Normal", "Gravity", "A on B", "B on A", "Push"],
+            "forces": ["Normal", "Weight", "A on B", "B on A", "Push"],
             "title": "Two Blocks",
             "inst": "instr/2blocks1.html",
             "img": "instr/diagrams/boxdiagram.png",
@@ -33,7 +33,7 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 1, "type":"Normal"},
-                {"mag": 1, "type":"Gravity"},
+                {"mag": 1, "type":"Weight"},
                 {"mag": 1, "type":"B on A"},
                 {"mag": 2, "type":"Push"}
             ],
@@ -44,7 +44,7 @@
             "ans": "2"
         },
         {
-            "forces": ["Normal", "Gravity", "Friction", "Push", "Tension"],
+            "forces": ["Normal", "Weight", "Friction", "Push", "Tension"],
             "title": "Curling",
             "inst": "instr/fb2.html",
             "img": "instr/diagrams/curlingRock.png",
@@ -54,7 +54,7 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 1,"type":"Normal"},
-                {"mag": 1, "type":"Gravity"},
+                {"mag": 1, "type":"Weight"},
                 {"mag": 1, "type":"Friction"},
                 {"mag": 0, "type":""}
             ],
@@ -65,7 +65,7 @@
             "ans": 0
         },
         {
-            "forces": ["Normal", "Gravity", "Friction", "Push", "Air"],
+            "forces": ["Normal", "Weight", "Friction", "Push", "Air"],
             "title": "Football in air",
             "inst": "instr/football.html",
             "img": "instr/diagrams/football.png",
@@ -75,7 +75,7 @@
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""},
                 {"mag": 0,"type":""},
-                {"mag": 1, "type":"Gravity"},
+                {"mag": 1, "type":"Weight"},
                 {"mag": 0, "type":""},
                 {"mag": 0, "type":""}
             ],

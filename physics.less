@@ -1,4 +1,4 @@
-@gap: 200px;
+@red: red;
 
 h1 {
     text-align: center;
@@ -42,22 +42,27 @@ sub {
 }
 button {
     border-style: solid;
-    border-color: black;
-    border-width: 3px;
+    border-color: white;
+    border-width: 2px;
     background-color: white;
     border-radius: 5px;
     font-size: 20px;
     font-family: Arial, sans-serif;
     color: black;
-    padding: 10px;
-    margin:5px;
+    padding: 8px;
     font-weight: bold;
     cursor: pointer;
-    &:hover {
+}
+
+button:hover {
     border-style: solid;
-    border-color: darkred;
+    border-color: #66afe9;
     color: black;
     }
+
+#menu-btn {
+    padding: 2px;
+    display: absolute;
 }
 
 #help-btn {
@@ -76,8 +81,6 @@ button {
 
 #appTitle{
     display: inline-block;
-    padding:4px;
-    margin-top:4px;
 }
 .nav {
     display: inline-block;
@@ -115,9 +118,6 @@ p {
 .appWrap{
     width: 720px;
     height: 550px;
-    border-style: solid;
-    border-color: grey;
-    border-width: 2px;
     padding: 15px;
 }
 .answer {
