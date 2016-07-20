@@ -628,6 +628,8 @@ $(document).ready(function() {
     
     Modal.init();
     Modal.open();
+    var mainMenu = new Menu("Main");
+    mainMenu.init();
     
     $.getJSON("json/freebody.json", function(data) {
         json = data;
