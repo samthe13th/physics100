@@ -86,7 +86,7 @@ function create() {
     graphicsGroup.pivot.y = game.world.centerY;
     graphicsGroup.x = game.world.centerX;
     graphicsGroup.y = game.world.centerY;
-    
+
     fb.angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
     fb.angleText.pivot.set(fb.angleText.width / 2, fb.angleText.height / 2);
 
@@ -147,7 +147,7 @@ function rotate(rads) {
     fb.eArrow.drawForce(rads, Math.PI / 2);
     fb.sArrow.drawForce(rads, Math.PI);
     fb.wArrow.drawForce(rads, 3 * Math.PI / 2);
-    
+
     ///*******************************TODO********************************////
     //Why is this array being reconstructed here? Does it need to be??
     angleArray2 = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
@@ -248,10 +248,13 @@ function setUpExercise(json) {
     var pGif = json.exercises[page - 1].gif;
     var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
     var forceArray = json.exercises[page - 1].forces;
+    var mainMenu;
+    mainMenu = new Menu("Main", json.menus.main);
+    mainMenu.init();
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
     $('#instr').load(json.exercises[page - 1].inst);
-   // $('#pGif').attr('src', pGif);
+    // $('#pGif').attr('src', pGif);
     $('#unknown').html(json.exercises[page - 1].unk);
     $('#units').text(json.exercises[page - 1].units);
     setUpForceBtns(forceArray);
@@ -624,23 +627,15 @@ $(document).ready(function() {
     var feedback = document.getElementById("feedback");
     var help = document.getElementById("help");
     var json;
-    var span = document.getElementsByClassName("close")[0];  
-    
+    var span = document.getElementsByClassName("close")[0];
+
     Modal.init();
     Modal.open();
-    var mainMenu = new Menu("Main");
-    mainMenu.init();
-    
+
     $.getJSON("json/freebody.json", function(data) {
         json = data;
     });
-    //help.style.display = "block";
-    $('#helpgif').attr('src', 'assets/freebody/fb1.2.gif');
-    /*
-    span.onclick = function() {
-        feedback.style.display = "none";
-    }
-    */
+   
     $("#prev").click(function(event) {
         if (page > 1) {
             page--;

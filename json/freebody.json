@@ -1,41 +1,104 @@
 {
+    "menus": {
+        "main": "<a href='#contact'>ONE</a>"
+    },
     "exercises": [
         {
-         "forces": ["Weight", "Push", "Normal", "Tension", "Friction"],
-         "title": "Block",
-         "inst": "instr/block.html",
-         "img": "instr/diagrams/block.png",
-         "gif": "instr/diagrams/capture1.gif",
-         "fb": [
-                {"mag": 0,"type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 1, "type":"Normal"},
-                {"mag": 1, "type":"Weight"},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""}
-         ],
-         "majorForce": null,
-         "rot": 0,
-         "unk": "F<sub>N</sub>",
-         "units": "N",
-         "ans": "98"       
+            "forces": [
+                "Weight",
+                "Push",
+                "Normal",
+                "Tension",
+                "Friction"
+            ],
+            "title": "Block",
+            "inst": "instr/block.html",
+            "img": "instr/diagrams/block.png",
+            "gif": "instr/diagrams/capture1.gif",
+            "fb": [
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 1,
+                    "type": "Normal"
+                },
+                {
+                    "mag": 1,
+                    "type": "Weight"
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                }
+            ],
+            "majorForce": null,
+            "rot": 0,
+            "unk": "F<sub>N</sub>",
+            "units": "N",
+            "ans": "98"
         },
         {
-            "forces": ["Normal", "Weight", "A on B", "B on A", "Push"],
+            "forces": [
+                "Normal",
+                "Weight",
+                "A on B",
+                "B on A",
+                "Push"
+            ],
             "title": "Two Blocks",
             "inst": "instr/2blocks1.html",
             "img": "instr/diagrams/boxdiagram.png",
             "fb": [
-                {"mag": 0,"type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 1, "type":"Normal"},
-                {"mag": 1, "type":"Weight"},
-                {"mag": 1, "type":"B on A"},
-                {"mag": 2, "type":"Push"}
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 1,
+                    "type": "Normal"
+                },
+                {
+                    "mag": 1,
+                    "type": "Weight"
+                },
+                {
+                    "mag": 1,
+                    "type": "B on A"
+                },
+                {
+                    "mag": 2,
+                    "type": "Push"
+                }
             ],
             "majorForce": 7,
             "rot": 0,
@@ -44,19 +107,49 @@
             "ans": "2"
         },
         {
-            "forces": ["Normal", "Weight", "Friction", "Push", "Tension"],
+            "forces": [
+                "Normal",
+                "Weight",
+                "Friction",
+                "Push",
+                "Tension"
+            ],
             "title": "Curling",
             "inst": "instr/fb2.html",
             "img": "instr/diagrams/curlingRock.png",
             "fb": [
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 1,"type":"Normal"},
-                {"mag": 1, "type":"Weight"},
-                {"mag": 1, "type":"Friction"},
-                {"mag": 0, "type":""}
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 1,
+                    "type": "Normal"
+                },
+                {
+                    "mag": 1,
+                    "type": "Weight"
+                },
+                {
+                    "mag": 1,
+                    "type": "Friction"
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                }
             ],
             "majorForce": null,
             "rot": 0,
@@ -65,19 +158,49 @@
             "ans": 0
         },
         {
-            "forces": ["Normal", "Weight", "Friction", "Push", "Air"],
+            "forces": [
+                "Normal",
+                "Weight",
+                "Friction",
+                "Push",
+                "Air"
+            ],
             "title": "Football in air",
             "inst": "instr/football.html",
             "img": "instr/diagrams/football.png",
             "fb": [
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""},
-                {"mag": 0,"type":""},
-                {"mag": 1, "type":"Weight"},
-                {"mag": 0, "type":""},
-                {"mag": 0, "type":""}
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 1,
+                    "type": "Weight"
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                },
+                {
+                    "mag": 0,
+                    "type": ""
+                }
             ],
             "majorForce": null,
             "rot": 0,
