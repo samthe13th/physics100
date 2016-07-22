@@ -62,7 +62,7 @@
     <div class="appWrap">
         <div style="text-align: center">
             <div class="dropdown" id="mainMenu">
-                <button onclick="openMenu('Main')" class="dropbtn">
+                <button onclick="toggleMenu('Main')" class="dropbtn">
                     <img src="assets/freebody/menuBtn.png" id="menu-btn"></img>
                 </button>
                 <div id="dropdownMain" class="dropdown-content">
@@ -98,9 +98,7 @@
     <script>
         /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
-function openMenu(id) {
-    document.getElementById("dropdown" + id).classList.toggle("show");
-}
+
     </script>
     <!--
     <script>

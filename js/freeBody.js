@@ -7,6 +7,7 @@ var arrowGroup;
 var rotHandlesGroup;
 var arcGraphics;
 var forceBtns;
+var json;
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
 var angleArray1 = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var angleArray2 = [0];
@@ -91,9 +92,11 @@ function create() {
     fb.angleText.pivot.set(fb.angleText.width / 2, fb.angleText.height / 2);
 
     $.getJSON("json/freebody.json", function(data) {
-        var json = data;
-        setUpExercise(json);
+        json = data;
+        setUpExercise();
+        setUpMenus();
     });
+    
     window.graphics = graphics;
 }
 
@@ -243,21 +246,11 @@ function setUpArrow(arrow, dir, radAngle) {
     }
 }
 
-function setUpExercise(json) {
+function setUpExercise() {
     var pImg = json.exercises[page - 1].img;
     var pGif = json.exercises[page - 1].gif;
     var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
     var forceArray = json.exercises[page - 1].forces;
-    var mainMenu;
-    var titles = [];
-    
-    for (var i = 0; i < json.exercises.length; i++){
-        titles.push(json.exercises[i].title);
-    }
-    
-    console.log("titles: " + titles);
-    mainMenu = new Menu("Main", titles);
-    mainMenu.init();
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
     $('#instr').load(json.exercises[page - 1].inst);
@@ -629,12 +622,42 @@ function angleConvert(angle) {
     return rtnAngle;
 }
 
+function Menu(id, mitems) {
+    this.init = function() {
+        $('#dropdown' + id).html();
+        for (var i = 0; i < mitems.length; i++) {
+            $('#dropdown' + id).append("<button onclick=goto(" + i + ")>" + (i + 1) + ". " + mitems[i] + "</button>");
+        }
+    }
+}
+
+var goto = function(i) {
+    page = i + 1;
+    setUpExercise();
+    toggleMenu("Main");
+    resetFBD();
+}
+
+function setUpMenus() {
+    var mainMenu;
+    var titles = [];
+    for (var i = 0; i < json.exercises.length; i++) {
+        titles.push(json.exercises[i].title);
+    }
+    mainMenu = new Menu("Main", titles);
+    mainMenu.init();
+}
+
+function toggleMenu(id) {
+    document.getElementById("dropdown" + id).classList.toggle("show");
+}
+
 //JQUERY 
 $(document).ready(function() {
     var feedback = document.getElementById("feedback");
     var help = document.getElementById("help");
-    var json;
     var span = document.getElementsByClassName("close")[0];
+    var json;
 
     Modal.init();
     Modal.open();
@@ -642,19 +665,19 @@ $(document).ready(function() {
     $.getJSON("json/freebody.json", function(data) {
         json = data;
     });
-   
+    
     $("#prev").click(function(event) {
         if (page > 1) {
             page--;
         }
-        setUpExercise(json);
+        setUpExercise();
         resetFBD();
     })
     $("#next").click(function(event) {
         if (page < json.exercises.length) {
             page++;
         }
-        setUpExercise(json);
+        setUpExercise();
         resetFBD();
     })
     $("#submit").click(function(event) {
