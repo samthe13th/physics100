@@ -249,7 +249,14 @@ function setUpExercise(json) {
     var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
     var forceArray = json.exercises[page - 1].forces;
     var mainMenu;
-    mainMenu = new Menu("Main", json.menus.main);
+    var titles = [];
+    
+    for (var i = 0; i < json.exercises.length; i++){
+        titles.push(json.exercises[i].title);
+    }
+    
+    console.log("titles: " + titles);
+    mainMenu = new Menu("Main", titles);
     mainMenu.init();
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
