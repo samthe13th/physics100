@@ -15,42 +15,39 @@
             "fb": [
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 1,
-                    "type": "Normal"
+                    "fType": "Normal"
                 },
                 {
                     "mag": 1,
-                    "type": "Weight"
+                    "fType": "Weight"
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 }
             ],
             "majorForce": null,
-            "rot": 0,
-            "unk": "F<sub>N</sub>",
-            "units": "N",
-            "ans": "98"
+            "rot": 0
         },
         {
             "forces": [
@@ -66,42 +63,39 @@
             "fb": [
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 1,
-                    "type": "Normal"
+                    "fType": "Normal"
                 },
                 {
                     "mag": 1,
-                    "type": "Weight"
+                    "fType": "Weight"
                 },
                 {
                     "mag": 1,
-                    "type": "B on A"
+                    "fType": "B on A"
                 },
                 {
                     "mag": 2,
-                    "type": "Push"
+                    "fType": "Push"
                 }
             ],
             "majorForce": 7,
-            "rot": 0,
-            "unk": "F<sub>(B on A)</sub>",
-            "units": "N",
-            "ans": "2"
+            "rot": 0
         },
         {
             "forces": [
@@ -117,42 +111,39 @@
             "fb": [
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 1,
-                    "type": "Normal"
+                    "fType": "Normal"
                 },
                 {
                     "mag": 1,
-                    "type": "Weight"
+                    "fType": "Weight"
                 },
                 {
                     "mag": 1,
-                    "type": "Friction"
+                    "fType": "Friction"
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 }
             ],
             "majorForce": null,
-            "rot": 0,
-            "unk": "F<sub>right</sub>",
-            "units": "N",
-            "ans": 0
+            "rot": 0
         },
         {
             "forces": [
@@ -168,42 +159,39 @@
             "fb": [
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 1,
-                    "type": "Weight"
+                    "fType": "Weight"
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 },
                 {
                     "mag": 0,
-                    "type": ""
+                    "fType": ""
                 }
             ],
             "majorForce": null,
-            "rot": 0,
-            "unk": "F<sub>N</sub>",
-            "units": "N",
-            "ans": 0
+            "rot": 0
         }
     ]
 }

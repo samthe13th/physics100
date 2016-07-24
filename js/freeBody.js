@@ -13,7 +13,7 @@ var cArrow;
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
 var angleArray1 = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var angleArray2 = [0];
-var fb = (function() {
+var fb = (function () {
     var nArrow, sArrow, wArrow, eArrow, nArrowAbs, sArrowAbs, wArrowAbs, eArrowAbs, currentArrow, selectedArrow;
     var arrowArray = [];
     var rotHandle, rotHandle2, rotHandle3, rotHandle4, currentRotHandle;
@@ -93,7 +93,7 @@ function create() {
     fb.angleText = game.add.text(0, 0, "", { font: "16px Arial", weight: "bold", fill: "white", align: "center" });
     fb.angleText.pivot.set(fb.angleText.width / 2, fb.angleText.height / 2);
 
-    $.getJSON("json/freebody.json", function(data) {
+    $.getJSON("json/freebody.json", function (data) {
         json = data;
         setUpExercise();
         setUpMenus();
@@ -187,18 +187,18 @@ function setUpArrow(arrow, dir, radAngle) {
     arrow.radAngle = radAngle;
     fb.arrowArray.push(arrow);
     arrow.fType = "";
-    arrow.force = 0;
-    arrow.setForce = function() {
+    arrow.mag = 0;
+    arrow.setForce = function () {
         this.fType = fb.moveArrow.fType;
         if (gp.arrowLength == 100) {
-            this.force = 2;
+            this.mag = 2;
         } else if (gp.arrowLength == 50) {
-            this.force = 1;
+            this.mag = 1;
         } else {
-            this.force = 0;
+            this.mag = 0;
         }
     }
-    arrow.setFrames = function() {
+    arrow.setFrames = function () {
         if (this.fType == "Weight") {
             this.forces.frame = 1;
         } else if (this.fType == "Normal") {
@@ -217,7 +217,7 @@ function setUpArrow(arrow, dir, radAngle) {
             this.forces.frame = 8;
         }
     }
-    arrow.setForces = function() {
+    arrow.setForces = function () {
         if (this == fb.nArrow || this == fb.nArrowAbs) {
             this.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y - gp.fDist, 'forces', 0);
         } else if (this == fb.sArrow || this == fb.sArrowAbs) {
@@ -230,20 +230,20 @@ function setUpArrow(arrow, dir, radAngle) {
         this.forces.pivot.set(this.forces.width / 2, this.forces.height / 2);
     }
     arrow.setForces();
-    arrow.hide = function(zero) {
+    arrow.hide = function (zero) {
         this.visible = false;
-        this.force = 0;
+        this.mag = 0;
         this.forces.frame = 0;
         if (zero) {
             this.fType = "";
         }
     }
-    arrow.drawForce = function(r, a) {
+    arrow.drawForce = function (r, a) {
         this.forces.rotation = -r;
         this.radAngle = r + a;
-        if (this.force > 0) {
-            gp.arrowLength = gp.magLength * this.force;
-            drawArrow(this, this.radAngle, gp.magLength * this.force, 0x000000);
+        if (this.mag > 0) {
+            gp.arrowLength = gp.magLength * this.mag;
+            drawArrow(this, this.radAngle, gp.magLength * this.mag, 0x000000);
         }
     }
 }
@@ -274,11 +274,11 @@ function setUpForceBtns(btnArray) {
     arrowGroup = game.add.group();
     arrowGroup.add(buttonBG);
     arrowGroup.add(buttonBlock);
-    forceBtns[0] = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function() { forceSelect(forceBtns[0]) }, this, 1, 0, 0);
-    forceBtns[1] = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function() { forceSelect(forceBtns[1]) }, this, 1, 0, 0);
-    forceBtns[2] = game.add.button(game.world.centerX, game.world.centerY, 'forceBtns', function() { forceSelect(forceBtns[2]) }, this, 1, 0, 0);
-    forceBtns[3] = game.add.button(game.world.centerX, game.world.centerY + 30, 'forceBtns', function() { forceSelect(forceBtns[3]) }, this, 1, 0, 0);
-    forceBtns[4] = game.add.button(game.world.centerX, game.world.centerY + 60, 'forceBtns', function() { forceSelect(forceBtns[4]) }, this, 1, 0, 0);
+    forceBtns[0] = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function () { forceSelect(forceBtns[0]) }, this, 1, 0, 0);
+    forceBtns[1] = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function () { forceSelect(forceBtns[1]) }, this, 1, 0, 0);
+    forceBtns[2] = game.add.button(game.world.centerX, game.world.centerY, 'forceBtns', function () { forceSelect(forceBtns[2]) }, this, 1, 0, 0);
+    forceBtns[3] = game.add.button(game.world.centerX, game.world.centerY + 30, 'forceBtns', function () { forceSelect(forceBtns[3]) }, this, 1, 0, 0);
+    forceBtns[4] = game.add.button(game.world.centerX, game.world.centerY + 60, 'forceBtns', function () { forceSelect(forceBtns[4]) }, this, 1, 0, 0);
 
     for (var i = 0; i < 5; i++) {
         forceBtns[i].pivot.set(forceBtns[i].width / 2, forceBtns[i].height / 2);
@@ -315,12 +315,12 @@ function getMagError(a, fb, worth) {
     var me = 0;
     var aLength = a.length;
     if (fb.majorForce == null) {
-        if ((a[7].force - a[6].force) != (fb[7].mag - fb[6].mag)
-            || (a[5].force - a[4].force) != (fb[5].mag - fb[4].mag)
-            || (a[3].force - a[2].force) != (fb[3].mag - fb[2].mag)
-            || (a[1].force - a[0].force != (fb[1].mag - fb[0].mag))
+        if ((a[7].mag - a[6].mag) != (fb[7].mag - fb[6].mag)
+            || (a[5].mag - a[4].mag) != (fb[5].mag - fb[4].mag)
+            || (a[3].mag - a[2].mag) != (fb[3].mag - fb[2].mag)
+            || (a[1].mag - a[0].mag != (fb[1].mag - fb[0].mag))
         ) { me += worth; }
-    } else if (a[majorForce].force != 2) {
+    } else if (a[majorForce].mag != 2) {
         me += worth;
     }
     return me;
@@ -367,8 +367,8 @@ function setUpRotHandle(rotH, angle) {
     rotH.pivot.set(rotH.width / 2, rotH.height / 2);
     rotH.inputEnabled = true;
     rotH.visible = false;
-    rotH.events.onInputDown.add(function() { rotHandleDown(rotH) }, this);
-    rotH.events.onInputUp.add(function() { rotHandleUp(rotH) }, this);
+    rotH.events.onInputDown.add(function () { rotHandleDown(rotH) }, this);
+    rotH.events.onInputUp.add(function () { rotHandleUp(rotH) }, this);
     rotH.pos = angle;
     rotHandlesGroup.add(rotH);
 }
@@ -379,7 +379,7 @@ function resetFBD() {
     var arrayLength = fb.arrowArray.length;
     for (var i = 0; i < arrayLength; i++) {
         fb.arrowArray[i].fType = "";
-        fb.arrowArray[i].force = 0;
+        fb.arrowArray[i].mag = 0;
         fb.arrowArray[i].visible = false;
         fb.arrowArray[i].forces.visible = false;
     }
@@ -435,8 +435,8 @@ function arrowHere() {
     }
     if (getArrowByAngle(closestAngle(findAngle())) != null) {
 
-        if ((getArrowByAngle(closestAngle(findAngle())).force == 1 && fb.hyp > 50 && fb.hyp < 80)
-            || (getArrowByAngle(closestAngle(findAngle())).force == 2 && fb.hyp > 99)) {
+        if ((getArrowByAngle(closestAngle(findAngle())).mag == 1 && fb.hyp > 50 && fb.hyp < 80)
+            || (getArrowByAngle(closestAngle(findAngle())).mag == 2 && fb.hyp > 99)) {
             return true;
         }
     }
@@ -537,7 +537,7 @@ function handleDown() {
     if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
         fb.moveArrow.fType = "";
         createArrow();
-    } else if (cArrow.force != 0) {
+    } else if (cArrow.mag != 0) {
         fb.moveArrow = cArrow;
         cArrow.hide(false);
         fb.currentArrow = game.add.graphics(0, 0);
@@ -556,7 +556,7 @@ function handleUp() {
     var fDiff = 38;
     if (fb.currentArrow != null) {
         if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
-            fb.currentArrow.force = 0;
+            fb.currentArrow.mag = 0;
             drawArrow(fb.currentArrow, 0, 0);
         } else {
             cArrow.setForce();
@@ -632,7 +632,7 @@ function angleConvert(angle) {
 }
 
 function Menu(id, mitems) {
-    this.init = function() {
+    this.init = function () {
         $('#dropdown' + id).html();
         for (var i = 0; i < mitems.length; i++) {
             $('#dropdown' + id).append("<button onclick=goto(" + i + ")>" + (i + 1) + ". " + mitems[i] + "</button>");
@@ -640,7 +640,7 @@ function Menu(id, mitems) {
     }
 }
 
-var goto = function(i) {
+var goto = function (i) {
     page = i + 1;
     setUpExercise();
     toggleMenu("Main");
@@ -662,7 +662,7 @@ function toggleMenu(id) {
 }
 
 //JQUERY 
-$(document).ready(function() {
+$(document).ready(function () {
     var feedback = document.getElementById("feedback");
     var help = document.getElementById("help");
     var span = document.getElementsByClassName("close")[0];
@@ -671,25 +671,25 @@ $(document).ready(function() {
     Modal.init();
     Modal.open();
 
-    $.getJSON("json/freebody.json", function(data) {
+    $.getJSON("json/freebody.json", function (data) {
         json = data;
     });
 
-    $("#prev").click(function(event) {
+    $("#prev").click(function (event) {
         if (page > 1) {
             page--;
         }
         setUpExercise();
         resetFBD();
     })
-    $("#next").click(function(event) {
+    $("#next").click(function (event) {
         if (page < json.exercises.length) {
             page++;
         }
         setUpExercise();
         resetFBD();
     })
-    $("#submit").click(function(event) {
+    $("#submit").click(function (event) {
         var percent = 100;
         var ans = $("#ans").val();
         var fbAns = true;
@@ -702,19 +702,17 @@ $(document).ready(function() {
         var aLength = a.length;
         var aWorth = 100 / 6;
         var fbTxt = "Feedback goes here";
+        var parms = ["fType", "mag"];
         //var fbHeader = document.getElement("help-modal.header");
+        console.log("a[0].type: " + a[0].fType);
         for (var i = 0; i < aLength; i++) {
-            console.log("Ans " + i + " = " + a[i].fType + " " + a[i].force + " Soln " + i + " = " + fb[i].type + " " + fb[i].mag);
-            if (a[i].fType != fb[i].type) {
+            console.log("Ans " + i + " = " + a[i].fType + " " + a[i].mag + " Soln " + i + " = " + fb[i].type + " " + fb[i].mag);
+            if (a[i].fType != fb[i].fType) {
                 fbAns = false;
                 percent -= aWorth;
             };
         };
-        Marker.mark_array(a, fb);
-        if (json.exercises[page - 1].ans != ans) {
-            var numAns = false;
-            percent -= aWorth;
-        };
+        Marker.mark_array(a, fb, parms);
         percent -= getMagError(a, fb, aWorth);
         if (fbAns && numAns == false) {
             fbTxt = "Not quite! Your freebody diagram is correct, but your final answer is not.";
@@ -734,29 +732,34 @@ $(document).ready(function() {
         $("#percent").text(Math.round(percent) + "%");
         //feedback.style.display = "block";
         $("#feedbackTxt").text(fbTxt);
+        console.log("Percent2: " + percent);
     });
 });
 
-var Marker = function() {
+var Marker = function () {
     var Marker = {
-        mark_array: function(ans, soln) {
+        mark_array: function (ans, soln, params) {
             var allCorrect;
             var percent = 100;
-            var worth = 100 / ans.length;
+            var numQs = ans.length * params.length;
+            var worth = 100 / numQs;
             var feedback = {};
-            console.log("ans 5 type: " + soln[0].fType);
             for (var i = 0; i < ans.length; i++) {
-                if (ans[i]["type"] != soln[i]["type"]) {
-                    allCorrect = false;
-                    percent -= worth;
-                };
+                for (var j = 0; j < params.length; j++) {
+                    if (ans[i][params[j]] != soln[i][params[j]]) {
+                        allCorrect = false;
+                        percent -= worth;
+                        feedback[params[j]] = params[j] + " feedback!!";
+                    };
+                }
             };
             feedback.percent = percent;
-            console.log("Return percent: " + percent);
+            console.log("Return fType feedback: " + feedback.fType);
+            console.log("Return mag feedback: " + feedback.mag);
+            console.log("Return percent: " + feedback.percent);
             return feedback;
         }
     }
-    console.log("return Marker");
     return Marker;
 } ();
 
