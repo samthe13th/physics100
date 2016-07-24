@@ -15,7 +15,7 @@ var angleArray1 = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var angleArray2 = [0];
 var dirArray = ["N", "S", "W", "E"];
 var fb = (function () {
-    var N_rel_arrow, S_rel_arrow, W_rel_arrow, E_rel_arrow, N_abs_arrow, S_abs_arrow, W_abs_arrow, E_abs_arrow, currentArrow, selectedArrow;
+    var currentArrow, selectedArrow;
     var arrowArray = [];
     var rotHandle, rotHandle2, rotHandle3, rotHandle4, currentRotHandle;
     var angleText, deg, rAxis, forceCenter, handle, hyp, rotHyp;
@@ -176,11 +176,17 @@ function addBtnText(btn, txt) {
     btn.text.y += btn.height - btn.text.height;
     btn.text.visible = false;
 }
-function setUpArrow(d, axis, radAngle) {
-    var dir = d + "_" + axis;
+
+function setUpArrow(comp, axis, radAngle) {
+    var dir = comp + "_" + axis;
     var arrowId = dir + "_arrow";
+    var arrow;
+
     fb[arrowId] = game.add.graphics(0, 0);
-    var arrow = fb[arrowId];
+    arrow = fb[arrowId];
+    arrow.compass = comp;
+    arrow.axis = axis;
+
     arrow.dir = dir;
     arrow.radAngle = radAngle;
     fb.arrowArray.push(arrow);
@@ -427,17 +433,11 @@ function draW_rel_arrow(arrow, rot, hyp, color) {
 
 //BOOLEANS
 function arrowHere() {
-    if (fb.hyp < 20) {
-        return true;
-    }
+    if (fb.hyp < 20) { return true }
     if (getArrowByAngle(closestAngle(findAngle())) != null) {
-
         if ((getArrowByAngle(closestAngle(findAngle())).mag == 1 && fb.hyp > 50 && fb.hyp < 80)
-            || (getArrowByAngle(closestAngle(findAngle())).mag == 2 && fb.hyp > 99)) {
-            return true;
-        }
-    }
-    return false;
+            || (getArrowByAngle(closestAngle(findAngle())).mag == 2 && fb.hyp > 99)) { return true }
+    } return false;
 }
 
 function yCheck(p, m) {
@@ -474,29 +474,16 @@ function update() {
         }
 
         if (fb.hyp > 120) {
-            if (rotHandlesGroup.rotation == 0) {
-                if (cArrow.dir == "N_abs") {
-                    fb.rotHandle.visible = true;
-                } else if (cArrow.dir == "E_abs") {
-                    fb.rotHandle2.visible = true;
-                } else if (cArrow.dir == "S_abs") {
-                    fb.rotHandle3.visible = true;
-                } else {
-                    fb.rotHandle4.visible = true;
-                }
-            } else
-                if (cArrow.dir == "N_rel" || (cArrow.dir == "E_abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
-                    fb.rotHandle.visible = true;
-                } else if (cArrow.dir == "E_rel" || (cArrow.dir == "S_abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
-                    fb.rotHandle2.visible = true;
-                } else if (cArrow.dir == "S_rel" || (cArrow.dir == "W_abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
-                    fb.rotHandle3.visible = true;
-                } else if (cArrow.dir == "W_rel" || (cArrow.dir == "N_abs" && rotHandlesGroup.rotation == Math.PI / 2)) {
-                    fb.rotHandle4.visible = true;
-                } else { }
-
+            if (cArrow.compass == "N") {
+                fb.rotHandle.visible = true;
+            } else if (cArrow.compass == "E") {
+                fb.rotHandle2.visible = true;
+            } else if (cArrow.compass == "S") {
+                fb.rotHandle3.visible = true;
+            } else {
+                fb.rotHandle4.visible = true;
+            }
         }
-
     }
 
     fb.hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
@@ -560,7 +547,7 @@ function handleUp() {
             cArrow.visible = true;
             draW_rel_arrow(cArrow, cAngle, gp.arrowLength, 0x000000);
             fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
-            if (fb.selectedArrow.dir == "N_abs" || fb.selectedArrow.dir == "S_abs" || fb.selectedArrow.dir == "W_abs" || fb.selectedArrow.dir == "E_abs") {
+            if (fb.selectedArrow.axis == "abs") {
                 fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cAngle) + game.world.centerX;
                 fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cAngle);
             } else {
@@ -741,7 +728,6 @@ $(document).ready(function () {
             percent = 0;
         }
         $("#percent").text(Math.round(percent) + "%");
-        //feedback.style.display = "block";
         $("#feedbackTxt").text(fbTxt);
         console.log("Percent2: " + percent);
     });
