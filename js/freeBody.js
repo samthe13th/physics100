@@ -712,7 +712,21 @@ $(document).ready(function () {
                 percent -= aWorth;
             };
         };
-        Marker.mark_array_of_objs(a, fb, parms);
+        var marked = Marker.mark_array_of_objs(a, fb, parms);
+        var feedback;
+        if (marked.percent.total == 100) {
+            feedback = marked.verbal.perfect;
+        }
+        if (marked.percent.total < 100) {
+            feedback = marked.verbal.good;
+        }
+        if (marked.percent.total < 90) {
+            feedback = marked.verbal.poor;
+        }
+        alert(feedback + "\n" + "Force type percent = " + marked.percent.fType
+            + "\n" + "Magnitude percent = " + marked.percent.mag
+            + "\n" + "Total percent = " + marked.percent.total);
+
         percent -= getMagError(a, fb, aWorth);
         if (fbAns && numAns == false) {
             fbTxt = "Not quite! Your freebody diagram is correct, but your final answer is not.";
@@ -737,32 +751,45 @@ $(document).ready(function () {
 });
 
 var Marker = function () {
+    var allCorrect;
+    var percents = [];
+    var avgPercent = function (percent_array) {
+        var total = 0;
+        for (var n = 0; n < percent_array.length; n++) {
+            total += percent_array[n];
+        }
+        return (total / percent_array.length);
+    }
+    var feedback = {
+        "percent": {},
+        "verbal": {
+            "perfect": "Perfect! Great work.",
+            "good": "Nice job! Almost perfect.",
+            "poor": "Not quite! Try again"
+        }
+    };
     var Marker = {
         mark_array_of_objs: function (ans, soln, params) {
-            var allCorrect;
-            var percent = 100;
-            var numQs = ans.length * params.length;
-            var worth = 100 / numQs;
-            var feedback = { "percent": {} };
-            for (var p = 0; p < params.length; p++){
-                  feedback.percent[params[p]] = 100;
+            //Takes an array of objects. For each object, checks if value of each parameter is correct. 
+            percents = [];
+            for (var p = 0; p < params.length; p++) {
+                feedback.percent[params[p]] = 100;
             }
             for (var i = 0; i < ans.length; i++) {
                 for (var j = 0; j < params.length; j++) {
                     if (ans[i][params[j]] != soln[i][params[j]]) {
                         var jWorth = ans.length;
                         allCorrect = false;
-                        percent -= worth;
                         feedback.percent[params[j]] -= jWorth;
                     };
+                    if (j == (params.length - 1)) {
+                        percents.push(feedback.percent[params[j]]);
+                    }
                 }
             };
-            feedback.percent.total = percent;
-            console.log("Return fType percent: " + feedback.percent.fType);
-            console.log("Return mag percent: " + feedback.percent.mag);
-            console.log("Return total percent: " + feedback.percent.total);
+            feedback.percent.total = avgPercent(percents);
             return feedback;
-        }
+        },
     }
     return Marker;
 } ();
