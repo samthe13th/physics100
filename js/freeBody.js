@@ -712,7 +712,7 @@ $(document).ready(function () {
                 percent -= aWorth;
             };
         };
-        Marker.mark_array(a, fb, parms);
+        Marker.mark_array_of_objs(a, fb, parms);
         percent -= getMagError(a, fb, aWorth);
         if (fbAns && numAns == false) {
             fbTxt = "Not quite! Your freebody diagram is correct, but your final answer is not.";
@@ -738,25 +738,29 @@ $(document).ready(function () {
 
 var Marker = function () {
     var Marker = {
-        mark_array: function (ans, soln, params) {
+        mark_array_of_objs: function (ans, soln, params) {
             var allCorrect;
             var percent = 100;
             var numQs = ans.length * params.length;
             var worth = 100 / numQs;
-            var feedback = {};
+            var feedback = { "percent": {} };
+            for (var p = 0; p < params.length; p++){
+                  feedback.percent[params[p]] = 100;
+            }
             for (var i = 0; i < ans.length; i++) {
                 for (var j = 0; j < params.length; j++) {
                     if (ans[i][params[j]] != soln[i][params[j]]) {
+                        var jWorth = ans.length;
                         allCorrect = false;
                         percent -= worth;
-                        feedback[params[j]] = params[j] + " feedback!!";
+                        feedback.percent[params[j]] -= jWorth;
                     };
                 }
             };
-            feedback.percent = percent;
-            console.log("Return fType feedback: " + feedback.fType);
-            console.log("Return mag feedback: " + feedback.mag);
-            console.log("Return percent: " + feedback.percent);
+            feedback.percent.total = percent;
+            console.log("Return fType percent: " + feedback.percent.fType);
+            console.log("Return mag percent: " + feedback.percent.mag);
+            console.log("Return total percent: " + feedback.percent.total);
             return feedback;
         }
     }
