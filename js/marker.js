@@ -10,22 +10,22 @@ var Marker = function () {
         }
     };
     var Marker = {
-        mark_array_of_objs: function (ans, soln, params) {
+        mark_array_of_objs: function (ans, soln, properties) {
             //Takes an array of objects. For each object, checks if value of each parameter is correct. 
             percents = [];
             feedback.percent = {};
-            for (var p = 0; p < params.length; p++) {
-                feedback.percent[params[p]] = 100;
+            for (var p = 0; p < properties.length; p++) {
+                feedback.percent[properties[p]] = 100;
             }
             for (var i = 0; i < ans.length; i++) {
-                for (var j = 0; j < params.length; j++) {
-                    if (ans[i][params[j]] != soln[i][params[j]]) {
+                for (var j = 0; j < properties.length; j++) {
+                    if (ans[i][properties[j]] != soln[i][properties[j]]) {
                         var jWorth = ans.length;
                         allCorrect = false;
-                        feedback.percent[params[j]] -= jWorth;
+                        feedback.percent[properties[j]] -= jWorth;
                     };
-                    if (j == (params.length - 1)) {
-                        percents.push(feedback.percent[params[j]]);
+                    if (j == (properties.length - 1)) {
+                        percents.push(feedback.percent[properties[j]]);
                     }
                 }
             };

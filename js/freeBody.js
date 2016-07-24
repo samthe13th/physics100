@@ -11,8 +11,8 @@ var json;
 var cAngle;
 var cArrow;
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
-var angleArray1 = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
-var angleArray2 = [0];
+var fixedAngleArray = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
+var rotAngleArray = [0];
 var dirArray = ["N", "S", "W", "E"];
 var fb = (function () {
     var currentArrow, selectedArrow;
@@ -106,8 +106,8 @@ function createAxis(axis) {
 function setUpGraphics() {
     var graphics = game.add.graphics(game.world.centerX, game.world.centerY);
     for (var i = 0; i < dirArray.length; i++) {
-        setUpArrow(dirArray[i], "abs", angleArray1[i]);
-        setUpArrow(dirArray[i], "rel", angleArray1[i]);
+        setUpArrow(dirArray[i], "abs", fixedAngleArray[i]);
+        setUpArrow(dirArray[i], "rel", fixedAngleArray[i]);
     }
     groupRelAxisGraphics(graphics);
     window.graphics = graphics;
@@ -148,9 +148,11 @@ function rotate(rads) {
     fb.S_rel_arrow.drawForce(rads, Math.PI);
     fb.W_rel_arrow.drawForce(rads, 3 * Math.PI / 2);
 
-    ///*******************************TODO********************************////
-    //Why is this array being reconstructed here? Does it need to be??
-    angleArray2 = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
+    updateRotAngleArray(rads);
+}
+
+function updateRotAngleArray(rads){
+    rotAngleArray = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
 }
 
 function drawArc(rads) {
@@ -330,15 +332,15 @@ function getMagError(a, fb, worth) {
 }
 
 function closestAngle(a) {
-    var closest = angleArray1[0];
-    for (var i = 1; i < angleArray1.length; i++) {
-        if (Math.abs(a - angleArray1[i]) < Math.abs(a - closest)) {
-            closest = angleArray1[i];
+    var closest = fixedAngleArray[0];
+    for (var i = 1; i < fixedAngleArray.length; i++) {
+        if (Math.abs(a - fixedAngleArray[i]) < Math.abs(a - closest)) {
+            closest = fixedAngleArray[i];
         }
     }
-    for (var i = 0; i < angleArray2.length; i++) {
-        if (Math.abs(a - angleArray2[i]) < Math.abs(a - closest)) {
-            closest = angleArray2[i];
+    for (var i = 0; i < rotAngleArray.length; i++) {
+        if (Math.abs(a - rotAngleArray[i]) < Math.abs(a - closest)) {
+            closest = rotAngleArray[i];
         }
     }
     return closest;
