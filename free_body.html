@@ -15,12 +15,16 @@
 <body>
     <div class="modal" id="help-modal">
         <header class="modal-header">
+            <button onclick="toggleMenu('Help')" class="dropbtn">
+                <img src="assets/freebody/menuBtn.png" id="help-menu-btn"></img>
+            </button>
+            <div id="dropdownHelp" class="dropdown-content"></div>
             <h1 class="modal-header-title left"><strong>Help</strong></h1>
             <button class="modal-header-btn right modal-close" title="Close Modal">Got it!</button>
         </header>
         <div class="modal-body">
             <section class="modal-content">
-                <img id="helpgif"></img>
+                <img id="helpgif" src="assets/freebody/fb1.2.gif"></img>
             </section>
         </div>
     </div>
@@ -65,8 +69,7 @@
                 <button onclick="toggleMenu('Main')" class="dropbtn">
                     <img src="assets/freebody/menuBtn.png" id="menu-btn"></img>
                 </button>
-                <div id="dropdownMain" class="dropdown-content">
-                </div>
+                <div id="dropdownMain" class="dropdown-content"></div>
             </div>
             <button class="nav" id="prev">PREV</button>
             <h1 id="appTitle">Free Body Problems</h1>
@@ -98,7 +101,6 @@
     <script>
         /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
-
     </script>
     <!--
     <script>

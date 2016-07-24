@@ -8,6 +8,8 @@ var rotHandlesGroup;
 var arcGraphics;
 var forceBtns;
 var json;
+var cAngle;
+var cArrow;
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
 var angleArray1 = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var angleArray2 = [0];
@@ -96,7 +98,7 @@ function create() {
         setUpExercise();
         setUpMenus();
     });
-    
+
     window.graphics = graphics;
 }
 
@@ -340,7 +342,6 @@ function closestAngle(a) {
 }
 
 function findAngle() {
-    var cAngle;
     if (game.input.mousePointer.y < game.world.centerY) {
         if (game.input.mousePointer.x > game.world.centerX) {
             cAngle = (Math.atan((game.input.mousePointer.x - fb.forceCenter.x) / (fb.forceCenter.y - game.input.mousePointer.y)));
@@ -449,11 +450,15 @@ function yCheck(p, m) {
     return false;
 }
 
+function set_cArrow(a) {
+    cArrow = getArrowByAngle(a);
+}
+
 //EVENT HANDLING
 function update() {
     var aLength = gp.arrowLength + 8;
     var ca = closestAngle(findAngle());
-    var cArrow = getArrowByAngle(ca);
+    set_cArrow(ca);
     if (menuMode == false) {
         fb.rotHandle.visible = false;
         fb.rotHandle2.visible = false;
@@ -541,8 +546,12 @@ function handleDown() {
     }
 }
 
+function set_cAngle() {
+    cAngle = closestAngle(findAngle());
+}
+
 function handleUp() {
-    var cAngle = closestAngle(findAngle());
+    set_cAngle();
     var cArrow = getArrowByAngle(cAngle);
     var fDiff = 38;
     if (fb.currentArrow != null) {
@@ -665,7 +674,7 @@ $(document).ready(function() {
     $.getJSON("json/freebody.json", function(data) {
         json = data;
     });
-    
+
     $("#prev").click(function(event) {
         if (page > 1) {
             page--;
@@ -693,7 +702,7 @@ $(document).ready(function() {
         var aLength = a.length;
         var aWorth = 100 / 6;
         var fbTxt = "Feedback goes here";
-        var fbHeader = document.getElement("help-modal.header");
+        //var fbHeader = document.getElement("help-modal.header");
         for (var i = 0; i < aLength; i++) {
             console.log("Ans " + i + " = " + a[i].fType + " " + a[i].force + " Soln " + i + " = " + fb[i].type + " " + fb[i].mag);
             if (a[i].fType != fb[i].type) {
@@ -701,6 +710,7 @@ $(document).ready(function() {
                 percent -= aWorth;
             };
         };
+        Marker.mark_array(a, fb);
         if (json.exercises[page - 1].ans != ans) {
             var numAns = false;
             percent -= aWorth;
@@ -722,10 +732,33 @@ $(document).ready(function() {
             percent = 0;
         }
         $("#percent").text(Math.round(percent) + "%");
-        feedback.style.display = "block";
+        //feedback.style.display = "block";
         $("#feedbackTxt").text(fbTxt);
     });
 });
+
+var Marker = function() {
+    var Marker = {
+        mark_array: function(ans, soln) {
+            var allCorrect;
+            var percent = 100;
+            var worth = 100 / ans.length;
+            var feedback = {};
+            console.log("ans 5 type: " + soln[0].fType);
+            for (var i = 0; i < ans.length; i++) {
+                if (ans[i]["type"] != soln[i]["type"]) {
+                    allCorrect = false;
+                    percent -= worth;
+                };
+            };
+            feedback.percent = percent;
+            console.log("Return percent: " + percent);
+            return feedback;
+        }
+    }
+    console.log("return Marker");
+    return Marker;
+} ();
 
 //DEBUGGING
 function render() {
