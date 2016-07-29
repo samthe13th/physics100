@@ -14,13 +14,13 @@
 
 <body>
     <div class="modal" id="help-modal">
-        <header class="modal-header">
-            <button onclick="toggleMenu('Help')" class="dropbtn">
+        <button onclick="toggleMenu('Help')" class="dropbtn">
                 <img src="assets/freebody/menuBtn.png" id="help-menu-btn"></img>
             </button>
+        <button class="modal-header-btn right modal-close" title="Close Modal">Got it!</button>
+        <header class="modal-header">
             <div id="dropdownHelp" class="dropdown-content"></div>
-            <h1 class="modal-header-title left"><strong>Help</strong></h1>
-            <button class="modal-header-btn right modal-close" title="Close Modal">Got it!</button>
+            <h1 class="modal-header-title center"><strong>Help</strong></h1>
         </header>
         <div class="modal-body">
             <section class="modal-content">
@@ -28,8 +28,6 @@
             </section>
         </div>
     </div>
-
-
 
     <!-- OLD MODULES -->
     <!-- 
@@ -65,16 +63,16 @@
 
     <div class="appWrap">
         <div style="text-align: center">
-            <div class="dropdown" id="mainMenu">
-                <button onclick="toggleMenu('Main')" class="dropbtn">
+            <button onclick="toggleMenu('Main')" class="dropbtn">
                     <img src="assets/freebody/menuBtn.png" id="menu-btn"></img>
                 </button>
+            <div class="dropdown" id="mainMenu">
                 <div id="dropdownMain" class="dropdown-content"></div>
+                <button class="nav" id="prev">PREV</button>
+                <h1 id="appTitle">Free Body Problems</h1>
+                <button class="nav" id="next">NEXT</button>
             </div>
-            <button class="nav" id="prev">PREV</button>
-            <h1 id="appTitle">Free Body Problems</h1>
-            <button class="nav" id="next">NEXT</button>
-            <button id="help-btn" class="modal-header-btn modal-trigger btn-fixed">Help</button>
+            <button id="help-btn" class="modal-header-btn modal-trigger nav">Help</button>
         </div>
         <hr>
         <div class="instructions">
@@ -86,7 +84,7 @@
         <div id="interactive">
             <div id="container"></div>
             <hr>
-            <div id="buttonBlock"> 
+            <div id="buttonBlock">
                 <button id="submit">Submit</button>
             </div>
         </div>
