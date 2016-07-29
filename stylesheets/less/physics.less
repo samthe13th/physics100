@@ -3,7 +3,9 @@
 h1 {
     text-align: center;
     font-family: Arial, sans-serif;
-    font-size: 30px;
+    font-size: 28px;
+    height: 35px;
+    margin-top: auto;
 }
 h2 {
     text-align: center;
@@ -40,30 +42,36 @@ sub {
     border-style:solid;
     padding-bottom:20px;
 }
+.topPanel{
+    margin-top: auto;
+    margin-bottom: auto;
+    padding: 10px;
+    display: inline-block;
+   // border-style: solid;
+   // border-color: red;
+}
 button {
+    color: grey; 
+    margin: auto;
     border-style: solid;
-    border-color: white;
-    border-width: 2px;
     background-color: white;
-    border-radius: 5px;
-    font-size: 20px;
+    font-size: 16px;
     font-family: Arial, sans-serif;
     color: black;
     padding: 8px;
-    font-weight: bold;
     cursor: pointer;
 }
+button:visited{
+    border-color: none;
+    padding: 5px;
+}
+
 .dropdown-content{
     display: inline;
 }
-button:hover {
-    border-style: solid;
-    border-color: #66afe9;
-    color: black;
-    }
 
 #menu-btn {
-    padding: 2px;
+    border-style: none;
     display: absolute;
 }
 
@@ -80,24 +88,26 @@ button:hover {
     cursor: pointer;
 }
 .dropbtn {
+    border-style: none;
     float: left;
-}
-#appTitle{
-    display: inline-block;
 }
 .nav {
     display: inline-block;
     margin-left: 10px;
     margin-right: 10px;
     font-size:18px;
+    margin-top: 5px;
+}
+#topBtns {
+    border-style: none;
 }
 #submit {
-    float: right;
+    text-align: center;
     margin-top: 0px;
 }
-#submit:hover{
-    color: #009900;
-    border-color: #009900;
+#appTitle{
+    margin-right: 20px;
+    margin-left: 20px;
 }
 p {
     margin-right: 10px;
@@ -153,7 +163,7 @@ p {
     overflow-y: scroll;
     overflow-x: auto;
     width: 350px;
-    height: 460px;
+    height: 400px;
 }
 #buttonBlock{
     border-style: none;
@@ -163,7 +173,8 @@ p {
 hr {
     border-style: solid;
     border-color: darkgrey;
-    margin-left: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
     border-width: 1.5px;
 }
 iframe {

@@ -70,6 +70,8 @@ button:hover{
 #submit {
     float: right;
     margin-top: 0px;
+    color: grey; 
+    border-color: grey;
 }
 #submit:hover{
     color: #009900;
