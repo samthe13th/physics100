@@ -17,6 +17,10 @@ var Marker = function () {
             for (var p = 0; p < properties.length; p++) {
                 feedback.percent[properties[p]] = 100;
             }
+            for (var key in soln){
+                
+            }
+            /*
             for (var i = 0; i < ans.length; i++) {
                 for (var j = 0; j < properties.length; j++) {
                     if (ans[i][properties[j]] != soln[i][properties[j]]) {
@@ -29,6 +33,7 @@ var Marker = function () {
                     }
                 }
             };
+            */
             feedback.percent.total = avgPercent(percents);
             return feedback;
         },

@@ -75,7 +75,7 @@ function createHandle() {
 function createArrow() {
     fb.currentArrow = game.add.graphics(0, 0);
     fb.currentArrow.visible = true;
-    draW_rel_arrow(fb.currentArrow, findAngle(), 0, 0xFFFFFF);
+    draw_rel_arrow(fb.currentArrow, findAngle(), 0, 0xFFFFFF);
 }
 
 function createAxis(axis) {
@@ -191,6 +191,7 @@ function setUpArrow(comp, axis, radAngle) {
 
     arrow.dir = dir;
     arrow.radAngle = radAngle;
+    arrow.degAngle = Math.round(radAngle * 180 / Math.PI);
     fb.arrowArray.push(arrow);
     arrow.fType = "";
     arrow.mag = 0;
@@ -249,7 +250,7 @@ function setUpArrow(comp, axis, radAngle) {
         this.radAngle = r + a;
         if (this.mag > 0) {
             gp.arrowLength = gp.magLength * this.mag;
-            draW_rel_arrow(this, this.radAngle, gp.magLength * this.mag, 0x000000);
+            draw_rel_arrow(this, this.radAngle, gp.magLength * this.mag, 0x000000);
         }
     }
 }
@@ -298,10 +299,18 @@ function setUpForceBtns(btnArray) {
 }
 
 //GETTERS
+
+function ansArray(){
+    var ans;
+
+    return ans;
+}
+/*
 function ansArray() {
     var ans = [fb.N_rel_arrow, fb.S_rel_arrow, fb.W_rel_arrow, fb.E_rel_arrow, fb.N_abs_arrow, fb.S_abs_arrow, fb.W_abs_arrow, fb.E_abs_arrow];
     return ans;
 }
+*/
 
 function getArrowByAngle(a) {
     var a2 = a;
@@ -408,7 +417,7 @@ function createRotHandles() {
     rotHandlesGroup.y = game.world.centerY;
 }
 
-function draW_rel_arrow(arrow, rot, hyp, color) {
+function draw_rel_arrow(arrow, rot, hyp, color) {
     var aLength = gp.arrowLength;
     arrow.clear();
     if (hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
@@ -492,7 +501,7 @@ function update() {
     fb.handle.x = aLength * Math.sin(ca) + game.world.centerX;
     fb.handle.y = game.world.centerY - aLength * Math.cos(ca);
     if (fb.currentArrow != null) {
-        draW_rel_arrow(fb.currentArrow, ca, fb.hyp, 0xffffff);
+        draw_rel_arrow(fb.currentArrow, ca, fb.hyp, 0xffffff);
     }
 
     if (rotHandlesGroup.handleSelected == true) {
@@ -528,7 +537,7 @@ function handleDown() {
         cArrow.hide(false);
         fb.currentArrow = game.add.graphics(0, 0);
         fb.currentArrow.visible = true;
-        draW_rel_arrow(fb.currentArrow, closestAngle(findAngle()), gp.arrowLength, 0xffffff);
+        draw_rel_arrow(fb.currentArrow, closestAngle(findAngle()), gp.arrowLength, 0xffffff);
     }
 }
 
@@ -543,11 +552,11 @@ function handleUp() {
     if (fb.currentArrow != null) {
         if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
             fb.currentArrow.mag = 0;
-            draW_rel_arrow(fb.currentArrow, 0, 0);
+            draw_rel_arrow(fb.currentArrow, 0, 0);
         } else {
             cArrow.setForce();
             cArrow.visible = true;
-            draW_rel_arrow(cArrow, cAngle, gp.arrowLength, 0x000000);
+            draw_rel_arrow(cArrow, cAngle, gp.arrowLength, 0x000000);
             fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
             if (fb.selectedArrow.axis == "abs") {
                 fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cAngle) + game.world.centerX;
@@ -660,7 +669,14 @@ $(document).ready(function () {
     $.getJSON("json/freebody.json", function (data) {
         json = data;
     });
-
+    $("#testFeedback").click(function(event){
+        var aa = fb.arrowArray;
+        var aaStr = "";
+        for (var i = 0; i < aa.length; i++){
+            aaStr += aa[i].degAngle + " ";
+        }
+        alert(aaStr);
+    })
     $("#prev").click(function (event) {
         if (page > 1) {
             page--;
@@ -738,6 +754,7 @@ $(document).ready(function () {
 //DEBUGGING
 function render() {
     //Debugging displays
+    //game.debug.text("arrowArray[0]: " + arrowArray[0].degAngle, 10, 330);
     /*
      game.debug.text("fb.N_rel_arrow_abs: " + fb.N_abs_arrow.fType + " // fb.N_rel_arrow_rel: " + fb.N_rel_arrow.fType, 10, 330);
      game.debug.text("fb.E_rel_arrow_abs: " + fb.E_abs_arrow.fType + " // fb.E_rel_arrow_rel: " + fb.E_rel_arrow.fType, 10, 350);
