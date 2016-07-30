@@ -35,7 +35,7 @@ function preload() {
     game.load.image('forceCenter', 'assets/freebody/anchor.png', 15, 15);
     game.load.image('deg', 'assets/freebody/deg.png', 10, 10);
     game.load.image('capture1', 'instr/diagrams/capture1.gif');
-    game.load.image('rotHandle', 'assets/freebody/rotateHandle3.png');
+    game.load.image('rotHandle', 'assets/freebody/rotHandleRight.png');
 }
 
 function create() {
