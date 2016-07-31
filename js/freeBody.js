@@ -129,6 +129,8 @@ function groupRelAxisGraphics(graphics) {
 }
 
 function rotate(rads) {
+    var degs = Math.round(rads * 180 / Math.PI);
+
     if (fb.rAxis.rotation == 0) {
         fb.angleText.visible = false;
         for (var i = 0; i < 4; i++) {
@@ -143,15 +145,18 @@ function rotate(rads) {
     graphicsGroup.rotation = rads;
     rotHandlesGroup.rotation = rads;
     drawArc(rads);
+    fb.N_rel_arrow.degAngle = (Math.round(fb.N_rel_arrow.radAngle * 180 / Math.PI));
     fb.N_rel_arrow.drawForce(rads, 0);
+    fb.E_rel_arrow.degAngle = (Math.round(fb.E_rel_arrow.radAngle * 180 / Math.PI));
     fb.E_rel_arrow.drawForce(rads, Math.PI / 2);
+    fb.S_rel_arrow.degAngle = (Math.round(fb.S_rel_arrow.radAngle * 180 / Math.PI));
     fb.S_rel_arrow.drawForce(rads, Math.PI);
+    fb.W_rel_arrow.degAngle = (Math.round(fb.W_rel_arrow.radAngle * 180 / Math.PI));
     fb.W_rel_arrow.drawForce(rads, 3 * Math.PI / 2);
-
     updateRotAngleArray(rads);
 }
 
-function updateRotAngleArray(rads){
+function updateRotAngleArray(rads) {
     rotAngleArray = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
 }
 
@@ -300,17 +305,24 @@ function setUpForceBtns(btnArray) {
 
 //GETTERS
 
-function ansArray(){
-    var ans;
-
-    return ans;
-}
-/*
 function ansArray() {
     var ans = [fb.N_rel_arrow, fb.S_rel_arrow, fb.W_rel_arrow, fb.E_rel_arrow, fb.N_abs_arrow, fb.S_abs_arrow, fb.W_abs_arrow, fb.E_abs_arrow];
     return ans;
 }
-*/
+
+function ansObj() {
+    var ans = {};
+    var arrows = fb.arrowArray;
+    for (var i = 0; i < arrows.length; i++) {
+        if (arrows[i].mag > 0) {
+            ans[arrows[i].degAngle] = {
+                "fType": arrows[i].fType,
+                "mag": arrows[i].mag
+            }
+        }
+    }
+    return ans;
+}
 
 function getArrowByAngle(a) {
     var a2 = a;
@@ -669,11 +681,16 @@ $(document).ready(function () {
     $.getJSON("json/freebody.json", function (data) {
         json = data;
     });
-    $("#testFeedback").click(function(event){
+    $("#testFeedback").click(function (event) {
         var aa = fb.arrowArray;
+        var ans = ansObj();
         var aaStr = "";
-        for (var i = 0; i < aa.length; i++){
-            aaStr += aa[i].degAngle + " ";
+        var op = "";
+        for (var i = 0; i < aa.length; i++) {
+            aaStr += aa[i].degAngle + ": " + aa[i].fType + "\n";
+        }
+        for (var k in ans) {
+            op += ans.k + " ";
         }
         alert(aaStr);
     })
@@ -699,13 +716,14 @@ $(document).ready(function () {
         var fbTypes = true;
         var numAns = true;
         var a = ansArray();
+        var ao = ansObj()
         var title = json.exercises[page - 1].title;
         var fb = json.exercises[page - 1].fb;
         var aLength = a.length;
         var aWorth = 100 / 6;
         var fbTxt = "Feedback goes here";
-        var parms = ["fType", "mag"];
-        //var fbHeader = document.getElement("help-modal.header");
+        var params = ["fType", "mag"];
+        /*
         console.log("a[0].type: " + a[0].fType);
         for (var i = 0; i < aLength; i++) {
             console.log("Ans " + i + " = " + a[i].fType + " " + a[i].mag + " Soln " + i + " = " + fb[i].type + " " + fb[i].mag);
@@ -714,40 +732,45 @@ $(document).ready(function () {
                 percent -= aWorth;
             };
         };
-        var marked = Marker.mark_array_of_objs(a, fb, parms);
-        var feedback;
-        if (marked.percent.total == 100) {
-            feedback = marked.verbal.perfect;
-        }
-        if (marked.percent.total < 100) {
-            feedback = marked.verbal.good;
-        }
-        if (marked.percent.total < 90) {
-            feedback = marked.verbal.poor;
-        }
-        alert(feedback + "\n" + "Force type percent = " + marked.percent.fType
-            + "\n" + "Magnitude percent = " + marked.percent.mag
-            + "\n" + "Total percent = " + marked.percent.total);
-
-        percent -= getMagError(a, fb, aWorth);
-        if (fbAns && numAns == false) {
-            fbTxt = "Not quite! Your freebody diagram is correct, but your final answer is not.";
-        } else if (numAns && fbAns == false) {
-            fbTxt = "Not quite! You got the final answer correct, but the free body diagram incorrect.";
-        } else if (numAns == false && fbAns == false) {
-            fbTxt = "Not quite.  Try again!";
-        } else if (getMagError(a, fb, aWorth) > 0) {
-            fbTxt = "Close! But check that your force magnitudes are correct (represented by thE_relative LENGTHS of your arrows)"
-        }
-        else {
-            fbTxt = "Correct! Great job.";
-        }
-        if (percent < 0) {
-            percent = 0;
-        }
-        $("#percent").text(Math.round(percent) + "%");
-        $("#feedbackTxt").text(fbTxt);
-        console.log("Percent2: " + percent);
+        */
+        var marked2 = Marker.mark_2d_obj(ao, fb, params);
+        alert("MARKED");
+        /*
+         var marked = Marker.mark_array_of_objs(a, fb, parms);
+         var feedback;
+         if (marked.percent.total == 100) {
+             feedback = marked.verbal.perfect;
+         }
+         if (marked.percent.total < 100) {
+             feedback = marked.verbal.good;
+         }
+         if (marked.percent.total < 90) {
+             feedback = marked.verbal.poor;
+         }
+         alert(feedback + "\n" + "Force type percent = " + marked.percent.fType
+             + "\n" + "Magnitude percent = " + marked.percent.mag
+             + "\n" + "Total percent = " + marked.percent.total);
+ 
+         percent -= getMagError(a, fb, aWorth);
+         if (fbAns && numAns == false) {
+             fbTxt = "Not quite! Your freebody diagram is correct, but your final answer is not.";
+         } else if (numAns && fbAns == false) {
+             fbTxt = "Not quite! You got the final answer correct, but the free body diagram incorrect.";
+         } else if (numAns == false && fbAns == false) {
+             fbTxt = "Not quite.  Try again!";
+         } else if (getMagError(a, fb, aWorth) > 0) {
+             fbTxt = "Close! But check that your force magnitudes are correct (represented by thE_relative LENGTHS of your arrows)"
+         }
+         else {
+             fbTxt = "Correct! Great job.";
+         }
+         if (percent < 0) {
+             percent = 0;
+         }
+         $("#percent").text(Math.round(percent) + "%");
+         $("#feedbackTxt").text(fbTxt);
+         console.log("Percent2: " + percent);
+         */
     });
 });
 

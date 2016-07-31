@@ -10,6 +10,27 @@ var Marker = function () {
         }
     };
     var Marker = {
+        mark_2d_obj: function (ans, soln, properties) {
+            //Takes an array of objects. For each object, checks if value of each parameter is correct. 
+            percents = [];
+            feedback.percent = {};
+            for (var p = 0; p < properties.length; p++) {
+                feedback.percent[properties[p]] = 100;
+            }
+            //iterate through answer array
+            for (var k in soln) {
+                for (var p = 0; p < properties.length; p++) {
+                    if (ans.hasOwnProperty(k)) {
+                        if (ans[k][properties[p]] == soln[k][properties[p]]) {
+                            console.log(ans[k][properties[p]] + " == " + soln[k][properties[p]]);
+                        } else {
+                            console.log(ans[k][properties[p]] + " != " + soln[k][properties[p]]);
+                        }
+                    }
+                }
+            }
+            // return feedback;
+        },
         mark_array_of_objs: function (ans, soln, properties) {
             //Takes an array of objects. For each object, checks if value of each parameter is correct. 
             percents = [];
@@ -17,10 +38,8 @@ var Marker = function () {
             for (var p = 0; p < properties.length; p++) {
                 feedback.percent[properties[p]] = 100;
             }
-            for (var key in soln){
-                
-            }
-            /*
+            //iterate through answer array
+
             for (var i = 0; i < ans.length; i++) {
                 for (var j = 0; j < properties.length; j++) {
                     if (ans[i][properties[j]] != soln[i][properties[j]]) {
@@ -33,7 +52,6 @@ var Marker = function () {
                     }
                 }
             };
-            */
             feedback.percent.total = avgPercent(percents);
             return feedback;
         },
