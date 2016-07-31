@@ -55,6 +55,7 @@ function create() {
         setUpExercise();
         setUpMenus();
     });
+    rotate(0);
 }
 
 function createForceCenter() {
@@ -197,7 +198,6 @@ function setUpArrow(comp, axis, radAngle) {
     arrow.dir = dir;
     arrow.radAngle = radAngle;
     arrow.degAngle = Math.round(radAngle * 180 / Math.PI);
-    fb.arrowArray.push(arrow);
     arrow.fType = "";
     arrow.mag = 0;
     arrow.setForce = function () {
@@ -258,6 +258,7 @@ function setUpArrow(comp, axis, radAngle) {
             draw_rel_arrow(this, this.radAngle, gp.magLength * this.mag, 0x000000);
         }
     }
+    fb.arrowArray.push(arrow);
 }
 
 function setUpExercise() {
@@ -687,7 +688,7 @@ $(document).ready(function () {
         var aaStr = "";
         var op = "";
         for (var i = 0; i < aa.length; i++) {
-            aaStr += aa[i].degAngle + ": " + aa[i].fType + "\n";
+            aaStr += aa[i].degAngle + " " + aa[i].axis + ": " + aa[i].fType + "\n";
         }
         for (var k in ans) {
             op += ans.k + " ";
@@ -734,7 +735,6 @@ $(document).ready(function () {
         };
         */
         var marked2 = Marker.mark_2d_obj(ao, fb, params);
-        alert("MARKED");
         /*
          var marked = Marker.mark_array_of_objs(a, fb, parms);
          var feedback;

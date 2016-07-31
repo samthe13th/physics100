@@ -22,152 +22,88 @@
                     "mag": 1
                 }
             },
-        "majorForce": null,
-        "rot": 0
-    },
-    {
-        "forces": [
-            "Normal",
-            "Weight",
-            "A on B",
-            "B on A",
-            "Push"
-        ],
-        "title": "Two Blocks",
-        "inst": "instr/2blocks1.html",
-        "img": "instr/diagrams/boxdiagram2.jpg",
-        "fb": [
-            {
-                "mag": 0,
-                "fType": ""
+            "majorForce": null,
+            "rot": 0
+        },
+        {
+            "forces": [
+                "Normal",
+                "Weight",
+                "A on B",
+                "B on A",
+                "Push"
+            ],
+            "title": "Two Blocks",
+            "inst": "instr/2blocks1.html",
+            "img": "instr/diagrams/boxdiagram2.jpg",
+            "fb": {
+                "0": {
+                    "fType": "Normal",
+                    "mag": 1
+                },
+                "90": {
+                    "fType": "Push",
+                    "mag": 1
+                },
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                },
+                "270": {
+                    "fType": "B on A",
+                    "mag": 1
+                }
             },
-            {
-                "mag": 0,
-                "fType": ""
+            "majorForce": 7,
+            "rot": 0
+        },
+        {
+            "forces": [
+                "Normal",
+                "Weight",
+                "Friction",
+                "Push",
+                "Tension"
+            ],
+            "title": "Curling",
+            "inst": "instr/fb2.html",
+            "img": "instr/diagrams/curlingRock2.png",
+            "fb": {
+                "0": {
+                    "fType": "Normal",
+                    "mag": 1
+                },
+                "270": {
+                    "fType": "Friction",
+                    "mag": 1
+                },
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                }
             },
-            {
-                "mag": 0,
-                "fType": ""
+            "majorForce": null,
+            "rot": 0
+        },
+        {
+            "forces": [
+                "Normal",
+                "Weight",
+                "Friction",
+                "Push",
+                "Air"
+            ],
+            "title": "Football in air",
+            "inst": "instr/football.html",
+            "img": "instr/diagrams/football.png",
+            "fb": {
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                }
             },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 1,
-                "fType": "Normal"
-            },
-            {
-                "mag": 1,
-                "fType": "Weight"
-            },
-            {
-                "mag": 1,
-                "fType": "B on A"
-            },
-            {
-                "mag": 2,
-                "fType": "Push"
-            }
-        ],
-        "majorForce": 7,
-        "rot": 0
-    },
-    {
-        "forces": [
-            "Normal",
-            "Weight",
-            "Friction",
-            "Push",
-            "Tension"
-        ],
-        "title": "Curling",
-        "inst": "instr/fb2.html",
-        "img": "instr/diagrams/curlingRock2.png",
-        "fb": [
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 1,
-                "fType": "Normal"
-            },
-            {
-                "mag": 1,
-                "fType": "Weight"
-            },
-            {
-                "mag": 1,
-                "fType": "Friction"
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            }
-        ],
-        "majorForce": null,
-        "rot": 0
-    },
-    {
-        "forces": [
-            "Normal",
-            "Weight",
-            "Friction",
-            "Push",
-            "Air"
-        ],
-        "title": "Football in air",
-        "inst": "instr/football.html",
-        "img": "instr/diagrams/football.png",
-        "fb": [
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 1,
-                "fType": "Weight"
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            },
-            {
-                "mag": 0,
-                "fType": ""
-            }
-        ],
-        "majorForce": null,
-        "rot": 0
-    }
-]
+            "majorForce": null,
+            "rot": 0
+        }
+    ]
 }
