@@ -55,7 +55,6 @@ function create() {
         setUpExercise();
         setUpMenus();
     });
-    rotate(0);
 }
 
 function createForceCenter() {
@@ -272,6 +271,7 @@ function setUpExercise() {
     $('#unknown').html(json.exercises[page - 1].unk);
     $('#units').text(json.exercises[page - 1].units);
     setUpForceBtns(forceArray);
+    rotate(0);
 }
 
 function setUpForceBtns(btnArray) {
@@ -709,6 +709,9 @@ $(document).ready(function () {
         setUpExercise();
         resetFBD();
     })
+    $("#fb-close").click(function (event) {
+        feedback.style.display = "none";
+    })
     $("#submit").click(function (event) {
         var percent = 100;
         var ans = $("#ans").val();
@@ -735,6 +738,20 @@ $(document).ready(function () {
         };
         */
         var marked2 = Marker.mark_2d_obj(ao, fb, params);
+        console.log("properties length: " + marked2.properties.length);
+        feedback.style.display = "block";
+        $("#percent").text("Total: " + Math.round(marked2.percent.total) + "%");
+        for (var i = 0; i < marked2.properties.length; i++) {
+            console.log("Property # " + i);
+            var txt = "";
+            if (marked2.properties[i] === "fType") {
+                txt = "forces: ";
+            } else {
+                txt = "magnitude: "
+            }
+            $("#feedback-body").append("<p class='sub-percent'> Correct " + txt + marked2.percent.fType + "%</p>");
+        }
+
         /*
          var marked = Marker.mark_array_of_objs(a, fb, parms);
          var feedback;

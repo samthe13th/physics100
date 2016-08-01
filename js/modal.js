@@ -10,6 +10,7 @@ var Modal = function(){
 		 modalOverlayColor: 'rgba(255,255,255,0.5)',
 		$modalClose: document.querySelector('.modal-close'),
 		$modalTrigger: document.querySelector('.modal-trigger'),
+		$helpTrigger: document.querySelector('#help-btn'),
 		$draggie: new Draggabilly( document.querySelector('.modal'), {
 	  		handle: '.modal-header',
 	  		containment: 'html'
@@ -30,9 +31,11 @@ var Modal = function(){
 		    }
 
 		},
-		open: function(){
+		open: function(id){
 
-			config.$modal.style.visibility = "visible";
+			var m = config.$modal;
+
+			m.style.visibility = "visible";
 			config.$modal.classList.add('opening');
 			config.$modal.classList.remove('closing');
 
@@ -75,9 +78,9 @@ var Modal = function(){
 
 			}, false); 
 
-			config.$modalTrigger.addEventListener("click", function(){
+			config.$helpTrigger.addEventListener("click", function(){
 
-				Modal.open();
+				Modal.open('help');
 
 			}, false); 
 

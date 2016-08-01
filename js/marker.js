@@ -14,12 +14,14 @@ var Marker = function () {
             //Marks an object containing objects eg { key1: { keyA: paramA, keyB: paramB}, {...}, ... }
             percents = [];
             feedback.percent = {};
+            feedback.properties = [];
             feedback.worth = (1 / (Object.keys(soln).length * properties.length)) * 100;
             console.log("Each sub part worth: " + feedback.worth + "%");
             for (var p = 0; p < properties.length; p++) {
                 feedback.percent[properties[p]] = 0;
             }
             for (var p = 0; p < properties.length; p++) {
+                feedback.properties.push(properties[p]);
                 if ($.isEmptyObject(ans)) {
                     feedback.percent.total = 0;
                 } else {
