@@ -163,22 +163,6 @@ function rotate(rads) {
     updateRotAngleArray(rads);
 }
 
-function migrate() {
-    console.log("migrate");
-    if (fb.arrowArray[4].radAngle === 0) {
-        for (var i = 0; i < fb.arrowArray.length; i++) {
-            var a = fb.arrowArray[i];
-            if (a.axis === "rel") {
-                console.log("Migrating " + a.fType);
-                fb.arrowArray[i - 4].fType = a.fType;
-                fb.arrowArray[i - 4].mag = a.mag;
-                a.fType = "";
-                a.mag = 0;
-            }
-        }
-    }
-}
-
 function updateRotAngleArray(rads) {
     rotAngleArray = [rads, rads + Math.PI / 2, rads + Math.PI, rads + 3 * Math.PI / 2];
 }
@@ -722,7 +706,6 @@ $(document).ready(function () {
         var aaStr = "";
         var op = "";
         setDegs();
-        migrate();
         for (var k in ans) {
             op += ans.k + " ";
         }
