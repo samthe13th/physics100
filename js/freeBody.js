@@ -10,6 +10,7 @@ var forceBtns;
 var json;
 var cAngle;
 var cArrow;
+var aId;
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
 var fixedAngleArray = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var rotAngleArray = [0];
@@ -39,6 +40,7 @@ function preload() {
 }
 
 function create() {
+    aId = 1;
     fb.selectedArrow.forces = game.add.sprite(0, 0, 'forces', 0);
     fb.moveArrow.forces = game.add.sprite(0, 0, 'forces', 0);
     fb.moveArrow.dir = "";
@@ -55,6 +57,7 @@ function create() {
         setUpExercise();
         setUpMenus();
     });
+    setDegs();
 }
 
 function createForceCenter() {
@@ -106,8 +109,10 @@ function createAxis(axis) {
 function setUpGraphics() {
     var graphics = game.add.graphics(game.world.centerX, game.world.centerY);
     for (var i = 0; i < dirArray.length; i++) {
-        setUpArrow(dirArray[i], "abs", fixedAngleArray[i]);
         setUpArrow(dirArray[i], "rel", fixedAngleArray[i]);
+    }
+    for (var i = 0; i < dirArray.length; i++) {
+        setUpArrow(dirArray[i], "abs", fixedAngleArray[i]);
     }
     groupRelAxisGraphics(graphics);
     window.graphics = graphics;
@@ -131,10 +136,12 @@ function groupRelAxisGraphics(graphics) {
 function rotate(rads) {
     var degs = Math.round(rads * 180 / Math.PI);
 
-    if (fb.rAxis.rotation == 0) {
+    if (fb.rAxis.rotation === 0) {
         fb.angleText.visible = false;
         for (var i = 0; i < 4; i++) {
-            fb.arrowArray[i].hide(true)
+            if (fb.arrowArray[i].mag > 0) {
+                fb.arrowArray[i + 4].hide(true)
+            }
         }
         fb.deg.visible = false;
     } else {
@@ -154,6 +161,22 @@ function rotate(rads) {
     fb.W_rel_arrow.degAngle = (Math.round(fb.W_rel_arrow.radAngle * 180 / Math.PI));
     fb.W_rel_arrow.drawForce(rads, 3 * Math.PI / 2);
     updateRotAngleArray(rads);
+}
+
+function migrate() {
+    console.log("migrate");
+    if (fb.arrowArray[4].radAngle === 0) {
+        for (var i = 0; i < fb.arrowArray.length; i++) {
+            var a = fb.arrowArray[i];
+            if (a.axis === "rel") {
+                console.log("Migrating " + a.fType);
+                fb.arrowArray[i - 4].fType = a.fType;
+                fb.arrowArray[i - 4].mag = a.mag;
+                a.fType = "";
+                a.mag = 0;
+            }
+        }
+    }
 }
 
 function updateRotAngleArray(rads) {
@@ -193,71 +216,73 @@ function setUpArrow(comp, axis, radAngle) {
     arrow = fb[arrowId];
     arrow.compass = comp;
     arrow.axis = axis;
-
     arrow.dir = dir;
     arrow.radAngle = radAngle;
+    arrow.aId = aId;
+    aId++;
     arrow.degAngle = Math.round(radAngle * 180 / Math.PI);
     arrow.fType = "";
     arrow.mag = 0;
     arrow.setForce = function () {
-        this.fType = fb.moveArrow.fType;
+        arrow.fType = fb.moveArrow.fType;
         if (gp.arrowLength == 100) {
-            this.mag = 2;
+            arrow.mag = 2;
         } else if (gp.arrowLength == 50) {
-            this.mag = 1;
+            arrow.mag = 1;
         } else {
-            this.mag = 0;
+            arrow.mag = 0;
         }
     }
     arrow.setFrames = function () {
-        if (this.fType == "Weight") {
-            this.forces.frame = 1;
-        } else if (this.fType == "Normal") {
-            this.forces.frame = 2;
-        } else if (this.fType == "Push") {
-            this.forces.frame = 3;
-        } else if (this.fType == "A on B") {
-            this.forces.frame = 4;
-        } else if (this.fType == "B on A") {
-            this.forces.frame = 5;
-        } else if (this.fType == "Tension") {
-            this.forces.frame = 6;
-        } else if (this.fType == "Air") {
-            this.forces.frame = 7;
-        } else if (this.fType == "Friction") {
-            this.forces.frame = 8;
+        if (arrow.fType == "Weight") {
+            arrow.forces.frame = 1;
+        } else if (arrow.fType == "Normal") {
+            arrow.forces.frame = 2;
+        } else if (arrow.fType == "Push") {
+            arrow.forces.frame = 3;
+        } else if (arrow.fType == "A on B") {
+            arrow.forces.frame = 4;
+        } else if (arrow.fType == "B on A") {
+            arrow.forces.frame = 5;
+        } else if (arrow.fType == "Tension") {
+            arrow.forces.frame = 6;
+        } else if (arrow.fType == "Air") {
+            arrow.forces.frame = 7;
+        } else if (arrow.fType == "Friction") {
+            arrow.forces.frame = 8;
         }
     }
     arrow.setForces = function () {
-        if (this == fb.N_rel_arrow || this == fb.N_abs_arrow) {
-            this.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y - gp.fDist, 'forces', 0);
-        } else if (this == fb.S_rel_arrow || this == fb.S_abs_arrow) {
-            this.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y + gp.fDist, 'forces', 0);
-        } else if (this == fb.W_rel_arrow || this == fb.W_abs_arrow) {
-            this.forces = game.add.sprite(fb.forceCenter.x - gp.fDist, fb.forceCenter.y, 'forces', 0);
-        } else if (this == fb.E_rel_arrow || this == fb.E_abs_arrow) {
-            this.forces = game.add.sprite(fb.forceCenter.x + gp.fDist, fb.forceCenter.y, 'forces', 0);
+        if (arrow == fb.N_rel_arrow || arrow == fb.N_abs_arrow) {
+            arrow.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y - gp.fDist, 'forces', 0);
+        } else if (arrow == fb.S_rel_arrow || arrow == fb.S_abs_arrow) {
+            arrow.forces = game.add.sprite(fb.forceCenter.x, fb.forceCenter.y + gp.fDist, 'forces', 0);
+        } else if (arrow == fb.W_rel_arrow || arrow == fb.W_abs_arrow) {
+            arrow.forces = game.add.sprite(fb.forceCenter.x - gp.fDist, fb.forceCenter.y, 'forces', 0);
+        } else if (arrow == fb.E_rel_arrow || arrow == fb.E_abs_arrow) {
+            arrow.forces = game.add.sprite(fb.forceCenter.x + gp.fDist, fb.forceCenter.y, 'forces', 0);
         }
-        this.forces.pivot.set(this.forces.width / 2, this.forces.height / 2);
+        arrow.forces.pivot.set(arrow.forces.width / 2, arrow.forces.height / 2);
     }
     arrow.setForces();
     arrow.hide = function (zero) {
-        this.visible = false;
-        this.mag = 0;
-        this.forces.frame = 0;
+        arrow.visible = false;
+        arrow.mag = 0;
+        arrow.forces.frame = 0;
         if (zero) {
-            this.fType = "";
+            arrow.fType = "";
         }
     }
     arrow.drawForce = function (r, a) {
-        this.forces.rotation = -r;
-        this.radAngle = r + a;
-        if (this.mag > 0) {
-            gp.arrowLength = gp.magLength * this.mag;
-            draw_rel_arrow(this, this.radAngle, gp.magLength * this.mag, 0x000000);
+        arrow.forces.rotation = -r;
+        arrow.radAngle = r + a;
+        if (arrow.mag > 0) {
+            gp.arrowLength = gp.magLength * arrow.mag;
+            draw_rel_arrow(arrow, arrow.radAngle, gp.magLength * arrow.mag, 0x000000);
         }
     }
     fb.arrowArray.push(arrow);
+    console.log("Rad: " + arrow.radAngle + " Deg: " + arrow.degAngle);
 }
 
 function setUpExercise() {
@@ -271,7 +296,6 @@ function setUpExercise() {
     $('#unknown').html(json.exercises[page - 1].unk);
     $('#units').text(json.exercises[page - 1].units);
     setUpForceBtns(forceArray);
-    rotate(0);
 }
 
 function setUpForceBtns(btnArray) {
@@ -327,15 +351,16 @@ function ansObj() {
 
 function getArrowByAngle(a) {
     var a2 = a;
+    var returnArrow = fb.arrowArray[0];
     if (a2 == 2 * Math.PI) {
         a2 = 0;
     }
     for (var i = 0; i < fb.arrowArray.length; i++) {
-        if (a2 == fb.arrowArray[i].radAngle) {
-            return fb.arrowArray[i];
+        if (a2 == fb.arrowArray[i].radAngle && fb.hyp >= 20) {
+            returnArrow = fb.arrowArray[i];
         }
     }
-    return null;
+    return returnArrow;
 }
 
 function getMagError(a, fb, worth) {
@@ -538,6 +563,14 @@ function update() {
             rotate((Math.PI / 2) - Math.PI / 180);
         }
     }
+    setDegs();
+}
+
+function setDegs() {
+    var aa = fb.arrowArray;
+    for (var i = 0; i < aa.length; i++) {
+        aa[i].degAngle = Math.round(aa[i].radAngle * 180 / Math.PI);
+    }
 }
 
 function handleDown() {
@@ -561,6 +594,7 @@ function set_cAngle() {
 function handleUp() {
     set_cAngle();
     var cArrow = getArrowByAngle(cAngle);
+    console.log("cAngle: " + cArrow.radAngle + " / " + cArrow.degAngle);
     var fDiff = 38;
     if (fb.currentArrow != null) {
         if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
@@ -687,13 +721,12 @@ $(document).ready(function () {
         var ans = ansObj();
         var aaStr = "";
         var op = "";
-        for (var i = 0; i < aa.length; i++) {
-            aaStr += aa[i].degAngle + " " + aa[i].axis + ": " + aa[i].fType + "\n";
-        }
+        setDegs();
+        migrate();
         for (var k in ans) {
             op += ans.k + " ";
         }
-        alert(aaStr);
+        // alert(aaStr);
     })
     $("#prev").click(function (event) {
         if (page > 1) {
@@ -793,8 +826,25 @@ $(document).ready(function () {
 
 //DEBUGGING
 function render() {
+    var aa = fb.arrowArray;
+    var aaStr1 = "";
+    var aaStr2 = "";
+    var aaStr3 = "";
+    var aaStr4 = "";
+    for (var i = 0; i < aa.length; i += 4) {
+        aaStr1 += aa[i].aId + " " + aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + " (" + aa[i].mag + ")";
+        aaStr2 += aa[i + 1].aId + " " + aa[i + 1].axis + " " + aa[i + 1].degAngle + ": " + aa[i + 1].fType + " (" + aa[i + 1].mag + ")";
+        aaStr3 += aa[i + 2].aId + " " + aa[i + 2].axis + " " + aa[i + 2].degAngle + ": " + aa[i + 2].fType + " (" + aa[i + 2].mag + ")";
+        aaStr4 += aa[i + 3].aId + " " + aa[i + 3].axis + " " + aa[i + 3].degAngle + ": " + aa[i + 3].fType + " (" + aa[i + 3].mag + ")";
+    }
+    game.debug.text("Arrow here? " + arrowHere(), 0, 290);
+    game.debug.text(cArrow.aId + ": " + cArrow.fType + ", mag = " + cArrow.mag, 0, 310);
+    game.debug.text(aaStr1, 0, 330);
+    game.debug.text(aaStr2, 0, 350);
+    game.debug.text(aaStr3, 0, 370);
+    game.debug.text(aaStr4, 0, 390);
+
     //Debugging displays
-    //game.debug.text("arrowArray[0]: " + arrowArray[0].degAngle, 10, 330);
     /*
      game.debug.text("fb.N_rel_arrow_abs: " + fb.N_abs_arrow.fType + " // fb.N_rel_arrow_rel: " + fb.N_rel_arrow.fType, 10, 330);
      game.debug.text("fb.E_rel_arrow_abs: " + fb.E_abs_arrow.fType + " // fb.E_rel_arrow_rel: " + fb.E_rel_arrow.fType, 10, 350);
