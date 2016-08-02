@@ -661,7 +661,7 @@ function Menu(id, mitems) {
     this.init = function () {
         $('#dropdown' + id).html();
         for (var i = 0; i < mitems.length; i++) {
-            $('#dropdown' + id).append("<button onclick=goto(" + i + ")>" + (i + 1) + ". " + mitems[i] + "</button>");
+            $('#dropdown' + id).append("<button onclick=goto(" + i + ")><img src=" + mitems[i] + " style='width:70px'></img></button>");
         }
     }
 }
@@ -676,10 +676,14 @@ var goto = function (i) {
 function setUpMenus() {
     var mainMenu;
     var titles = [];
+    var thumbnails = [];
     for (var i = 0; i < json.exercises.length; i++) {
         titles.push(json.exercises[i].title);
     }
-    mainMenu = new Menu("Main", titles);
+    for (var i = 0; i < json.exercises.length; i++){
+        thumbnails.push(json.exercises[i].img)
+    }
+    mainMenu = new Menu("Main", thumbnails);
     mainMenu.init();
 }
 
