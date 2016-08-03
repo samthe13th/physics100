@@ -544,7 +544,7 @@ function set_cAngle() {
 function handleUp() {
     set_cAngle();
     var cArrow = getArrowByAngle(cAngle);
-    console.log("cAngle: " + cArrow.radAngle + " / " + cArrow.degAngle);
+    console.log("cAngle: " + cAngle + ", cArrow.radAngle: " + cArrow.radAngle);
     var fDiff = 38;
     if (fb.currentArrow != null) {
         if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
@@ -556,11 +556,14 @@ function handleUp() {
             draw_rel_arrow(cArrow, cAngle, gp.arrowLength, 0x000000);
             fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
             if (fb.selectedArrow.axis == "abs") {
-                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cAngle) + game.world.centerX;
-                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cAngle);
+                 console.log("cAngle 2: " + cAngle + ", cArrow.radAngle: " + cArrow.radAngle);
+                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle) + game.world.centerX;
+                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle);
+                console.log("x: " + fb.selectedArrow.forces.x + ", y: " + fb.selectedArrow.forces.y);
             } else {
-                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cAngle - fb.rAxis.rotation) + game.world.centerX;
-                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cAngle - fb.rAxis.rotation);
+                console.log("set rel angle");
+                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle - fb.rAxis.rotation) + game.world.centerX;
+                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle - fb.rAxis.rotation);
             }
             if (fb.selectedArrow.fType == "") {
                 showForceMenu();
