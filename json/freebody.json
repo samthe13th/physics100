@@ -43,7 +43,7 @@
                 },
                 "90": {
                     "fType": "Push",
-                    "mag": 1
+                    "mag": 2
                 },
                 "180": {
                     "fType": "Weight",
@@ -54,7 +54,7 @@
                     "mag": 1
                 }
             },
-            "majorForce": 7,
+            "majorForce": "90",
             "rot": 0
         },
         {
@@ -82,7 +82,7 @@
                     "mag": 1
                 }
             },
-            "majorForce": null,
+            "majorForce": "270",
             "rot": 0
         },
         {
@@ -102,7 +102,7 @@
                     "mag": 1
                 }
             },
-            "majorForce": null,
+            "majorForce": "180",
             "rot": 0
         }
     ]

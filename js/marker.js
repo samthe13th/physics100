@@ -17,6 +17,7 @@ var Marker = function () {
             feedback.properties = [];
             feedback.keys = [];
             feedback.worth = (1 / (Object.keys(soln).length * properties.length)) * 100;
+            console.log("feedback.worth: " + feedback.worth);
             for (var p = 0; p < properties.length; p++) {
                 feedback.percent[properties[p]] = 0;
             }

@@ -354,7 +354,6 @@ function getArrowByAngle(a) {
     var a2 = a;
     var returnArrow = fb.arrowArray[0];
     if (fb.rAxis.rotation !== 0) {
-        console.log("relative position")
         return getArrowByAngle2(a2);
     } else {
         var i = 0;
@@ -727,13 +726,13 @@ $(document).ready(function () {
         json = data;
     });
 
-    var pTitles = ["Forces", "Magnitudes"];
-
+    var pTitles = ["Forces", "Magnitudes"]
     for (var i = 0; i < pTitles.length; i++) {
         var txt = "";
         txt = pTitles[i];
         $("#feedback-body").append("<div class='sub-percent'>" + txt + " correct: </div><div id='feedback" + i + "'>test</div>");
     }
+
 
     $("#testFeedback").click(function (event) {
         var aa = fb.arrowArray;
@@ -773,43 +772,75 @@ $(document).ready(function () {
         var a = ansArray();
         var ao = ansObj()
         var title = json.exercises[page - 1].title;
-        var fb = json.exercises[page - 1].fb;
+        var so = json.exercises[page - 1].fb;
+        var mForce = json.exercises[page - 1].majorForce;
         var aLength = a.length;
         var aWorth = 100 / 6;
         var fbTxt = "Feedback goes here";
         var params = ["fType", "mag"];
-        var marked2 = Marker.mark_2d_obj(ao, fb, params);
-        //console.log("properties length: " + marked2.properties.length);
+        var marked2 = Marker.mark_2d_obj(ao, so, params);
+        var totalScore = 0;
+        var magScore = 100;
+        var forceScore = 0;
+        var hint = "hint";
+        var rotation = json.exercises[page - 1].rot;
         feedback.style.display = "block";
-        $("#percent").text("Total: " + Math.round(marked2.percent.total) + "%");
         for (var i = 0; i < marked2.properties.length; i++) {
             var txt = "";
-            var mark = marked2.percent[params[i]] * params.length;
+            forceScore = marked2.percent[params[0]] * params.length;
             var cAns = marked2.keys[i].toString();
             var opAngle;
             var opMag;
+            var subPercent = 100 / params.length;
+            var test = "test";
             if (marked2.keys[i] < 180) {
                 opAngle = (Number(marked2.keys[i]) + 180).toString();
             } else {
                 opAngle = (marked2.keys[i] - 180).toString();
             }
-            console.log("ao[opMag]: " + ao[opMag]);
-            if (ao[opAngle] !== undefined){
-                console.log("Op angle found");
-                if (ao[cAns].mag === ao[opAngle].mag){
-                    console.log("Mags equal");
-                } else {
-                    console.log("Mags not equal");
-                }
+            console.log("major force = " + mForce);
+            console.log("mag worth = " + marked2.worth);
+            if (ao[cAns] === undefined) {
+                magScore = 0;
+                hint = "Incorrect. Try again!";
             } else {
-                console.log("Opp arrow not found");
+                if (ao[opAngle] === undefined) {
+                    ao[opAngle] = 0;
+                    console.log("Op angle not found");
+                };
+                alert(mForce);
+                if (mForce !== cAns && mForce !== opAngle) {
+                    if (ao[cAns].mag === ao[opAngle].mag) {
+                        console.log("Mags equal");
+                    } else {
+                        console.log("Mags not equal");
+                        magScore -= marked2.worth;
+                    }
+                };
+                if (forceScore < 100) {
+                    hint = "Not quite! Try again.";
+                    if (fb.rAxis.rotation !== rotation) {
+                        hint = "HINT: Make sure you are using the right axis. See HELP to learn how to rotate axis.";
+                    }
+                } else if (magScore < 100) {
+                    hint = "HINT: Play close attention to the size (magnitude of your force arrows)";
+                } else {
+                    hint = "Great job!";
+                }
             }
             if (marked2.properties[i] === "fType") {
                 txt = "forces: ";
             } else {
                 txt = "magnitude: ";
             }
-            $("#feedback" + i).html(mark + "%");
+            if (forceScore < 0) { forceScore = 0 };
+            if (magScore < 0) { magScore = 0 };
+
+            totalScore = (magScore + forceScore) / params.length;
+            $("#percent").text("Total: " + Math.round(totalScore) + "%");
+            $("#feedback0").html(forceScore + "%");
+            $("#feedback1").html(magScore + "%");
+            $("#hint").html(hint);
         }
         /*
          var marked = Marker.mark_array_of_objs(a, fb, parms);
