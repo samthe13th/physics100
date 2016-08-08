@@ -308,9 +308,13 @@ function ansArray() {
 function ansObj() {
     var ans = {};
     var arrows = fb.arrowArray;
+    var key;
+    console.log(arrows);
     for (var i = 0; i < arrows.length; i++) {
+        key = arrows[i].degAngle.toString();
+        console.log("ansObj --> key: " + key);
         if (arrows[i].mag > 0) {
-            ans[arrows[i].degAngle] = {
+            ans[key] = {
                 "fType": arrows[i].fType,
                 "mag": arrows[i].mag
             }
@@ -722,6 +726,15 @@ $(document).ready(function () {
     $.getJSON("json/freebody.json", function (data) {
         json = data;
     });
+
+    var pTitles = ["Forces", "Magnitudes"];
+
+    for (var i = 0; i < pTitles.length; i++) {
+        var txt = "";
+        txt = pTitles[i];
+        $("#feedback-body").append("<div class='sub-percent'>" + txt + " correct: </div><div id='feedback" + i + "'>test</div>");
+    }
+
     $("#testFeedback").click(function (event) {
         var aa = fb.arrowArray;
         var ans = ansObj();
@@ -766,20 +779,38 @@ $(document).ready(function () {
         var fbTxt = "Feedback goes here";
         var params = ["fType", "mag"];
         var marked2 = Marker.mark_2d_obj(ao, fb, params);
-        console.log("properties length: " + marked2.properties.length);
+        //console.log("properties length: " + marked2.properties.length);
         feedback.style.display = "block";
         $("#percent").text("Total: " + Math.round(marked2.percent.total) + "%");
         for (var i = 0; i < marked2.properties.length; i++) {
-            console.log("Property # " + i);
             var txt = "";
+            var mark = marked2.percent[params[i]] * params.length;
+            var cAns = marked2.keys[i].toString();
+            var opAngle;
+            var opMag;
+            if (marked2.keys[i] < 180) {
+                opAngle = (Number(marked2.keys[i]) + 180).toString();
+            } else {
+                opAngle = (marked2.keys[i] - 180).toString();
+            }
+            console.log("ao[opMag]: " + ao[opMag]);
+            if (ao[opAngle] !== undefined){
+                console.log("Op angle found");
+                if (ao[cAns].mag === ao[opAngle].mag){
+                    console.log("Mags equal");
+                } else {
+                    console.log("Mags not equal");
+                }
+            } else {
+                console.log("Opp arrow not found");
+            }
             if (marked2.properties[i] === "fType") {
                 txt = "forces: ";
             } else {
-                txt = "magnitude: "
+                txt = "magnitude: ";
             }
-            $("#feedback-body").append("<p class='sub-percent'> Correct " + txt + marked2.percent.fType + "%</p>");
+            $("#feedback" + i).html(mark + "%");
         }
-
         /*
          var marked = Marker.mark_array_of_objs(a, fb, parms);
          var feedback;

@@ -15,28 +15,32 @@ var Marker = function () {
             percents = [];
             feedback.percent = {};
             feedback.properties = [];
+            feedback.keys = [];
             feedback.worth = (1 / (Object.keys(soln).length * properties.length)) * 100;
-            console.log("Each sub part worth: " + feedback.worth + "%");
             for (var p = 0; p < properties.length; p++) {
                 feedback.percent[properties[p]] = 0;
+            }
+            for (var k in soln) {
+                feedback.keys.push(k);
+                console.log("Marker => Key: " + k);
             }
             for (var p = 0; p < properties.length; p++) {
                 feedback.properties.push(properties[p]);
                 if ($.isEmptyObject(ans)) {
                     feedback.percent.total = 0;
-                } else {
-                    for (var k in soln) {
-                        if (ans.hasOwnProperty(k)) {
-                            if (ans[k][properties[p]] == soln[k][properties[p]]) {
-                                console.log(ans[k][properties[p]] + " == " + soln[k][properties[p]]);
-                                feedback.percent[properties[p]] += feedback.worth;
-                                console.log(ans[k] + " => " + properties[p] + ": " + feedback.percent[properties[p]]);
-                            } else {
-                                console.log(ans[k][properties[p]] + " != " + soln[k][properties[p]]);
-                            }
+                }
+                for (var k in soln) {
+                    if (ans.hasOwnProperty(k)) {
+                        if (ans[k][properties[p]] == soln[k][properties[p]]) {
+                            console.log(ans[k][properties[p]] + " == " + soln[k][properties[p]]);
+                            feedback.percent[properties[p]] += feedback.worth;
+                            console.log(ans[k] + " => " + properties[p] + ": " + feedback.percent[properties[p]]);
+                        } else {
+                            console.log(ans[k][properties[p]] + " != " + soln[k][properties[p]]);
                         }
                     }
                 }
+
             };
             var total = 0;
             for (var x = 0; x < properties.length; x++) {
