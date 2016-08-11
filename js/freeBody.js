@@ -733,7 +733,6 @@ $(document).ready(function () {
         $("#feedback-body").append("<div class='sub-percent'>" + txt + " correct: </div><div id='feedback" + i + "'>test</div>");
     }
 
-
     $("#testFeedback").click(function (event) {
         var aa = fb.arrowArray;
         var ans = ansObj();
@@ -784,7 +783,12 @@ $(document).ready(function () {
         var forceScore = 0;
         var hint = "hint";
         var rotation = json.exercises[page - 1].rot;
+        var debugTxt = "";
         feedback.style.display = "block";
+        $("#debug-output").html(
+            '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
+            '<strong> Solution: </strong>' + JSON.stringify(so)
+        );
         for (var i = 0; i < marked2.properties.length; i++) {
             var txt = "";
             forceScore = marked2.percent[params[0]] * params.length;
@@ -793,6 +797,7 @@ $(document).ready(function () {
             var opMag;
             var subPercent = 100 / params.length;
             var test = "test";
+            var netDir = null;
             if (marked2.keys[i] < 180) {
                 opAngle = (Number(marked2.keys[i]) + 180).toString();
             } else {
@@ -801,22 +806,19 @@ $(document).ready(function () {
             console.log("major force = " + mForce);
             console.log("mag worth = " + marked2.worth);
             if (ao[cAns] === undefined) {
-                magScore = 0;
                 hint = "Incorrect. Try again!";
             } else {
                 if (ao[opAngle] === undefined) {
                     ao[opAngle] = 0;
                     console.log("Op angle not found");
                 };
-                alert(mForce);
-                if (mForce !== cAns && mForce !== opAngle) {
-                    if (ao[cAns].mag === ao[opAngle].mag) {
-                        console.log("Mags equal");
-                    } else {
-                        console.log("Mags not equal");
-                        magScore -= marked2.worth;
-                    }
-                };
+                if (ao[cAns].mag > ao[opAngle].mag){
+                    netDir = cAns;
+                }
+                if (ao[cAns].mag < ao[opAngle].mag){
+                    netDir = opAngle;
+                } 
+                console.log("net dir: " + netDir);
                 if (forceScore < 100) {
                     hint = "Not quite! Try again.";
                     if (fb.rAxis.rotation !== rotation) {
@@ -842,42 +844,6 @@ $(document).ready(function () {
             $("#feedback1").html(magScore + "%");
             $("#hint").html(hint);
         }
-        /*
-         var marked = Marker.mark_array_of_objs(a, fb, parms);
-         var feedback;
-         if (marked.percent.total == 100) {
-             feedback = marked.verbal.perfect;
-         }
-         if (marked.percent.total < 100) {
-             feedback = marked.verbal.good;
-         }
-         if (marked.percent.total < 90) {
-             feedback = marked.verbal.poor;
-         }
-         alert(feedback + "\n" + "Force type percent = " + marked.percent.fType
-             + "\n" + "Magnitude percent = " + marked.percent.mag
-             + "\n" + "Total percent = " + marked.percent.total);
- 
-         percent -= getMagError(a, fb, aWorth);
-         if (fbAns && numAns == false) {
-             fbTxt = "Not quite! Your freebody diagram is correct, but your final answer is not.";
-         } else if (numAns && fbAns == false) {
-             fbTxt = "Not quite! You got the final answer correct, but the free body diagram incorrect.";
-         } else if (numAns == false && fbAns == false) {
-             fbTxt = "Not quite.  Try again!";
-         } else if (getMagError(a, fb, aWorth) > 0) {
-             fbTxt = "Close! But check that your force magnitudes are correct (represented by thE_relative LENGTHS of your arrows)"
-         }
-         else {
-             fbTxt = "Correct! Great job.";
-         }
-         if (percent < 0) {
-             percent = 0;
-         }
-         $("#percent").text(Math.round(percent) + "%");
-         $("#feedbackTxt").text(fbTxt);
-         console.log("Percent2: " + percent);
-         */
     });
 });
 //DEBUGGING
@@ -887,17 +853,17 @@ function render() {
     var aaStr2 = "";
     var aaStr3 = "";
     var aaStr4 = "";
-    /*
+    
     for (var i = 0; i < aa.length; i += 4) {
         aaStr1 += aa[i].aId + " " + aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + " (" + aa[i].mag + ")";
         aaStr2 += aa[i + 1].aId + " " + aa[i + 1].axis + " " + aa[i + 1].degAngle + ": " + aa[i + 1].fType + " (" + aa[i + 1].mag + ")";
         aaStr3 += aa[i + 2].aId + " " + aa[i + 2].axis + " " + aa[i + 2].degAngle + ": " + aa[i + 2].fType + " (" + aa[i + 2].mag + ")";
         aaStr4 += aa[i + 3].aId + " " + aa[i + 3].axis + " " + aa[i + 3].degAngle + ": " + aa[i + 3].fType + " (" + aa[i + 3].mag + ")";
     }
-    */
+    
     //game.debug.text("rAxis.rotation = " + fb.rAxis.rotation, 0, 310);
     // game.debug.text(cArrow.aId + ": " + cArrow.fType + ", mag = " + cArrow.mag, 0, 310);
-    /*
+    
      game.debug.text(aaStr1, 0, 330);
      game.debug.text(aaStr2, 0, 350);
      game.debug.text(aaStr3, 0, 370);
