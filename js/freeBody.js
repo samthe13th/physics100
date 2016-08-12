@@ -592,7 +592,6 @@ function setDegs() {
 function handleDown() {
     var cArrow = getArrowByAngle(closestAngle(findAngle()));
     if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
-        fb.moveArrow.fType = "";
         createArrow();
     } else if (cArrow.mag != 0) {
         fb.moveArrow = cArrow;
@@ -642,9 +641,9 @@ function handleUp() {
     }
     if (fb.moveArrow.dir == fb.selectedArrow.dir) {
         fb.moveArrow.fType = fb.selectedArrow.fType
-    } else {
+    } 
         fb.moveArrow.fType = "";
-    }
+    
 }
 function showForceMenu() {
     menuMode = true;
@@ -874,6 +873,6 @@ function render() {
       game.debug.text("fb.E_rel_arrow_abs: " + fb.E_abs_arrow.fType + " // fb.E_rel_arrow_rel: " + fb.E_rel_arrow.fType, 10, 350);
       game.debug.text("fb.S_rel_arrow_abs: " + fb.S_abs_arrow.fType + " // fb.S_rel_arrow_rel: " + fb.S_rel_arrow.fType, 10, 370);
       game.debug.text("fb.W_rel_arrow_abs: " + fb.W_abs_arrow.fType + " // fb.W_rel_arrow_rel: " + fb.W_rel_arrow.fType, 10, 390);   
-      game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
-    */
+     */ game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
+    
 }
