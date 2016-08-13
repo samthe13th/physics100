@@ -10,7 +10,7 @@
             ],
             "title": "Block",
             "inst": "instr/block.html",
-            "img": "instr/diagrams/block.png",
+            "img": "instr/diagrams/block2.png",
             "gif": "instr/diagrams/capture1.gif",
             "fb": {
                 "0": {
@@ -35,7 +35,7 @@
             ],
             "title": "Two Blocks",
             "inst": "instr/2blocks1.html",
-            "img": "instr/diagrams/boxdiagram2.jpg",
+            "img": "instr/diagrams/AonB.png",
             "fb": {
                 "0": {
                     "fType": "Normal",
@@ -104,6 +104,192 @@
             },
             "majorForce": "180",
             "rot": 0
+        },
+        {
+            "forces": [
+                "Weight",
+                "Push",
+                "Normal",
+                "Tension",
+                "Friction"
+            ],
+            "title": "Pulling a block",
+            "inst": "instr/block.html",
+            "img": "instr/diagrams/DragBox.png",
+            "gif": "instr/diagrams/capture1.gif",
+            "fb": {
+                "0": {
+                    "fType": "Normal",
+                    "mag": 1
+                },
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                },
+                "32": {
+                    "fType": "Tension",
+                    "mag": 1
+                }
+            },
+            "majorForce": "32",
+            "rot": 32
+        },
+        {
+            "forces": [
+                "Weight",
+                "Push",
+                "Normal",
+                "Tension",
+                "Friction"
+            ],
+            "title": "A hard push!",
+            "inst": "instr/block.html",
+            "img": "instr/diagrams/friction1.png",
+            "gif": "instr/diagrams/capture1.gif",
+            "fb": {
+                "0": {
+                    "fType": "Friction",
+                    "mag": 1
+                },
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                },
+                "90": {
+                    "fType": "Push",
+                    "mag": 1
+                }
+            },
+            "majorForce": "90",
+            "rot": 0
+        },
+        {
+            "forces": [
+                "Weight",
+                "Push",
+                "Normal",
+                "Tension",
+                "Friction"
+            ],
+            "title": "Pulleys 1",
+            "inst": "instr/block.html",
+            "img": "instr/diagrams/pulley1.png",
+            "gif": "instr/diagrams/capture1.gif",
+            "fb": {
+                "0": {
+                    "fType": "Normal",
+                    "mag": 1
+                },
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                },
+                "90": {
+                    "fType": "Tension",
+                    "mag": 1
+                },
+                "270": {
+                    "fType": "Friction",
+                    "mag": 2
+                }
+            },
+            "majorForce": "90",
+            "rot": 0
+        },
+        {
+            "forces": [
+                "Weight",
+                "Push",
+                "Normal",
+                "Tension",
+                "Friction"
+            ],
+            "title": "Pulleys 2",
+            "inst": "instr/block.html",
+            "img": "instr/diagrams/pulley2.png",
+            "gif": "instr/diagrams/capture1.gif",
+            "fb": {
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                },
+                "36": {
+                    "fType": "Normal",
+                    "mag": 1
+                },
+                "126": {
+                    "fType": "Friction",
+                    "mag": 1
+                },
+                "306": {
+                    "fType": "Tension",
+                    "mag": 2
+                }
+            },
+            "majorForce": "306",
+            "rot": 36
+        },
+        {
+            "forces": [
+                "Weight",
+                "B on A",
+                "A on B",
+                "Normal",
+                "Friction"
+            ],
+            "title": "Pulleys 3 (A)",
+            "inst": "instr/block.html",
+            "img": "instr/diagrams/pulley3.png",
+            "gif": "instr/diagrams/capture1.gif",
+            "fb": {
+                "40": {
+                    "fType": "B on A",
+                    "mag": 2
+                },
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                },
+                "310": {
+                    "fType": "Normal",
+                    "mag": 1
+                }
+            },
+            "majorForce": null,
+            "rot": 40
+        },
+        {
+            "forces": [
+                "Weight",
+                "B on A",
+                "A on B",
+                "Normal",
+                "Friction"
+            ],
+            "title": "Pulleys 3 (B)",
+            "inst": "instr/block.html",
+            "img": "instr/diagrams/pulley3.png",
+            "gif": "instr/diagrams/capture1.gif",
+            "fb": {
+                "18": {
+                    "fType": "Normal",
+                    "mag": 1
+                },
+                "108": {
+                    "fType": "C on B",
+                    "mag": 1
+                },
+                "180": {
+                    "fType": "Weight",
+                    "mag": 1
+                },
+                "288": {
+                    "fType": "A on B",
+                    "mag": 1
+                }
+            },
+            "majorForce": null,
+            "rot": 18
         }
     ]
 }
