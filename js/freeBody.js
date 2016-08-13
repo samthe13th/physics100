@@ -509,7 +509,7 @@ function arrowHere() {
     if (cArrow != null) {
         if ((cArrow.mag == 1 && fb.hyp > 50 && fb.hyp < 80)
             || (cArrow.mag == 2 && fb.hyp > 99)) { return true }
-    } 
+    }
     return false;
 }
 function yCheck(p, m) {
@@ -592,9 +592,11 @@ function setDegs() {
 function handleDown() {
     var cArrow = getArrowByAngle(closestAngle(findAngle()));
     if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
+        fb.moveArrow = null;
         createArrow();
     } else if (cArrow.mag != 0) {
         fb.moveArrow = cArrow;
+        console.log("MAKE MOVE ARROW INTO CARROW (" + cArrow.fType);
         cArrow.hide(false);
         fb.ghostArrow = game.add.graphics(0, 0);
         fb.ghostArrow.visible = true;
@@ -609,75 +611,39 @@ function handleUp() {
     set_cAngle();
     cArrow = getArrowByAngle(cAngle);
 
+
     if (fb.ghostArrow != null) {
         if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
             fb.ghostArrow.mag = 0;
             draw_rel_arrow(fb.ghostArrow, 0, 0);
         } else {
             cArrow.setForce();
+            cArrow.visible = true;
             draw_rel_arrow(cArrow, cAngle, gp.arrowLength, 0x000000);
-            if (cArrow.axis == "abs") {
-                cArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle) + game.world.centerX;
-                cArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle);
+            fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
+            if (fb.selectedArrow.axis == "abs") {
+                console.log("cAngle 2: " + cAngle + ", cArrow.radAngle: " + cArrow.radAngle);
+                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle) + game.world.centerX;
+                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle);
+                console.log("x: " + fb.selectedArrow.forces.x + ", y: " + fb.selectedArrow.forces.y);
             } else {
-                cArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle - fb.rAxis.rotation) + game.world.centerX;
-                cArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle - fb.rAxis.rotation);
+                console.log("set rel angle");
+                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle - fb.rAxis.rotation) + game.world.centerX;
+                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle - fb.rAxis.rotation);
             }
-            if (fb.moveArrow == null) {
+            if (fb.selectedArrow.fType == "") {
                 showForceMenu();
             } else {
-                cArrow.fType = fb.moveArrow.fType;
-                cArrow.visible = true;
-                cArrow.setFrames();
-                cArrow.forces.visible = true;
+                fb.selectedArrow.fType = fb.moveArrow.fType;
+                fb.selectedArrow.visible = true;
+                fb.selectedArrow.setFrames();
+                fb.selectedArrow.forces.visible = true;
             }
         }
         fb.ghostArrow.destroy();
+        fb.moveArrow = null;
     }
-    /*
-    if (fb.moveArrow.dir == cArrow.dir) {
-        fb.moveArrow.fType = cArrow.fType
-    }
-    */
-    fb.moveArrow = null;
 }
-/*
-if (fb.ghostArrow != null) {
-    if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
-        fb.ghostArrow.mag = 0;
-        draw_rel_arrow(fb.ghostArrow, 0, 0);
-    } else {
-        cArrow.setForce();
-        cArrow.visible = true;
-        draw_rel_arrow(cArrow, cAngle, gp.arrowLength, 0x000000);
-        fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
-        if (fb.selectedArrow.axis == "abs") {
-            console.log("cAngle 2: " + cAngle + ", cArrow.radAngle: " + cArrow.radAngle);
-            fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle) + game.world.centerX;
-            fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle);
-            console.log("x: " + fb.selectedArrow.forces.x + ", y: " + fb.selectedArrow.forces.y);
-        } else {
-            console.log("set rel angle");
-            fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle - fb.rAxis.rotation) + game.world.centerX;
-            fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle - fb.rAxis.rotation);
-        }
-        if (fb.selectedArrow.fType == "") {
-            showForceMenu();
-        } else {
-            fb.selectedArrow.fType = fb.moveArrow.fType;
-            fb.selectedArrow.visible = true;
-            fb.selectedArrow.setFrames();
-            fb.selectedArrow.forces.visible = true;
-        }
-    }
-    fb.ghostArrow.destroy();
-}
-if (fb.moveArrow.dir == fb.selectedArrow.dir) {
-    fb.moveArrow.fType = fb.selectedArrow.fType
-}
-fb.moveArrow.fType = "";
-
-}*/
 function showForceMenu() {
     menuMode = true;
     arrowGroup.visible = true;
@@ -867,15 +833,20 @@ $(document).ready(function () {
             } else {
                 txt = "magnitude: ";
             }
-            if (forceScore < 0) { forceScore = 0 };
-            if (magScore < 0) { magScore = 0 };
-
-            totalScore = (magScore + forceScore) / params.length;
-            $("#percent").text("Total: " + Math.round(totalScore) + "%");
-            $("#feedback0").html(forceScore + "%");
-            $("#feedback1").html(magScore + "%");
-            $("#hint").html(hint);
         }
+        if (forceScore < 0) { forceScore = 0 };
+        if (magScore < 0) {
+            magScore = 0;
+        };
+        if (netDir != mForce) {
+            magScore -= aWorth;
+        }
+        totalScore = (magScore + forceScore) / params.length;
+        console.log("total score: " + totalScore);
+        $("#percent").text("Total: " + Math.round(totalScore) + "%");
+        $("#feedback0").html(forceScore + "%");
+        $("#feedback1").html(magScore + "%");
+        $("#hint").html(hint);
     });
 });
 //DEBUGGING
