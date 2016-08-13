@@ -860,6 +860,7 @@ function render() {
     var aaStr2 = "";
     var aaStr3 = "";
     var aaStr4 = "";
+    /*
 
     for (var i = 0; i < aa.length; i += 4) {
         aaStr1 += aa[i].aId + " " + aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + " (" + aa[i].mag + ")";
@@ -882,6 +883,7 @@ function render() {
          game.debug.text("fb.S_rel_arrow_abs: " + fb.S_abs_arrow.fType + " // fb.S_rel_arrow_rel: " + fb.S_rel_arrow.fType, 10, 370);
          game.debug.text("fb.W_rel_arrow_abs: " + fb.W_abs_arrow.fType + " // fb.W_rel_arrow_rel: " + fb.W_rel_arrow.fType, 10, 390);   
         */
+        /*
     if (fb.moveArrow != null) {
         game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
     }
@@ -891,5 +893,6 @@ function render() {
     if (cArrow != null) {
         game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "]", 10, 60);
     }
+    */
 
 }
