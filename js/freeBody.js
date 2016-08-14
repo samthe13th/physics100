@@ -791,7 +791,8 @@ $(document).ready(function () {
         var params = ["fType", "mag"];
         var marked2 = Marker.mark_2d_obj(ao, so, params);
         var totalScore = 0;
-        var magScore = 100;
+        var magScore = 0;
+        var magError = 0;
         var forceScore = 0;
         var hint = "hint";
         var rotation = json.exercises[page - 1].rot;
@@ -804,6 +805,7 @@ $(document).ready(function () {
         for (var i = 0; i < marked2.properties.length; i++) {
             var txt = "";
             forceScore = marked2.percent[params[0]] * params.length;
+            magScore = forceScore;
             var cAns = marked2.keys[i].toString();
             var opAngle;
             var opMag;
@@ -815,8 +817,6 @@ $(document).ready(function () {
             } else {
                 opAngle = (marked2.keys[i] - 180).toString();
             }
-            console.log("major force = " + mForce);
-            console.log("mag worth = " + marked2.worth);
             if (ao[cAns] === undefined) {
                 hint = "Incorrect. Try again!";
             } else {
@@ -830,7 +830,6 @@ $(document).ready(function () {
                 if (ao[cAns].mag < ao[opAngle].mag) {
                     netDir = opAngle;
                 }
-                console.log("net dir: " + netDir);
                 if (forceScore < 100) {
                     hint = "Not quite! Try again.";
                     if (fb.rAxis.rotation !== rotation) {
@@ -853,9 +852,9 @@ $(document).ready(function () {
             magScore = 0;
         };
         if (netDir != mForce) {
-            magScore -= aWorth;
+            magScore -= (marked2.worth * 2);
         }
-        totalScore = (magScore + forceScore) / params.length;
+        totalScore = (forceScore + magScore) / 2;
         console.log("total score: " + totalScore);
         $("#percent").text("Total: " + Math.round(totalScore) + "%");
         $("#feedback0").html(forceScore + "%");

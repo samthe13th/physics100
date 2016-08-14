@@ -30,6 +30,7 @@ var Marker = function () {
                 if ($.isEmptyObject(ans)) {
                     feedback.percent.total = 0;
                 }
+                //check for right answers
                 for (var k in soln) {
                     if (ans.hasOwnProperty(k)) {
                         if (ans[k][properties[p]] == soln[k][properties[p]]) {
@@ -39,6 +40,14 @@ var Marker = function () {
                         } else {
                             console.log(ans[k][properties[p]] + " != " + soln[k][properties[p]]);
                         }
+                    }
+                }
+                for (var a in ans) {
+                    if (soln.hasOwnProperty(a)) {
+                        console.log("noice");
+                    } else {
+                        console.log("no mataching solution found");
+                        feedback.percent[properties[p]] -= feedback.worth;
                     }
                 }
 
