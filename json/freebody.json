@@ -97,6 +97,10 @@
             "inst": "instr/football.html",
             "img": "instr/diagrams/football.png",
             "fb": {
+                "0": {
+                    "fType": "Normal",
+                    "mag": 1
+                },
                 "180": {
                     "fType": "Weight",
                     "mag": 1

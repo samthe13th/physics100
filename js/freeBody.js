@@ -15,6 +15,7 @@ var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 1
 var fixedAngleArray = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var rotAngleArray = [0];
 var dirArray = ["N", "S", "W", "E"];
+var percents = [];
 var fb = (function () {
     var currentArrow, selectedArrow;
     var arrowArray = [];
@@ -56,8 +57,14 @@ function create() {
         json = data;
         setUpExercise();
         setUpMenus();
+        setPercents();
     });
     setDegs();
+}
+function setPercents() {
+    for (var i = 0; i < json.exercises.length; i++) {
+        percents.push("");
+    }
 }
 function createForceCenter() {
     fb.forceCenter = game.add.button(0, 0, 'forceCenter', createArrow, this, 0, 0, 0);
@@ -264,11 +271,13 @@ function setUpExercise() {
     var pGif = json.exercises[page - 1].gif;
     var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
     var forceArray = json.exercises[page - 1].forces;
+    var percentDisplay = percents[page - 1];
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
     $('#instr').load(json.exercises[page - 1].inst);
     $('#unknown').html(json.exercises[page - 1].unk);
     $('#units').text(json.exercises[page - 1].units);
+    $('#testFeedback').text(percentDisplay);
     setUpForceBtns(forceArray);
 }
 function setUpForceBtns(btnArray) {
@@ -688,7 +697,7 @@ function Menu(id, mitems) {
     this.init = function () {
         $('#dropdown' + id).html();
         for (var i = 0; i < mitems.length; i++) {
-            $('#dropdown' + id).append("<button onclick=goto(" + i + ")><img src=" + mitems[i] + " style='width:70px'></img></button>");
+            $('#dropdown' + id).append("<button onclick=goto(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px'></img><span class='percentBtn' id='percent" + i + "'></span></button>");
         }
     }
 }
@@ -744,6 +753,7 @@ $(document).ready(function () {
         for (var k in ans) {
             op += ans.k + " ";
         }
+        alert("percents: " + JSON.stringify(percents));
         // alert(aaStr);
     })
     $("#prev").click(function (event) {
@@ -851,6 +861,12 @@ $(document).ready(function () {
         $("#feedback0").html(forceScore + "%");
         $("#feedback1").html(magScore + "%");
         $("#hint").html(hint);
+        percents[page - 1] = Math.round(totalScore) + "%";
+        var pId = page - 1;
+        var percentId = "#percent" + pId;
+        $(percentId).text(percents[page - 1]);
+        $(percentId).prop("background-color", "#000000");
+        $("#testFeedback").text(percents[page - 1]);
     });
 });
 //DEBUGGING
@@ -883,16 +899,16 @@ function render() {
          game.debug.text("fb.S_rel_arrow_abs: " + fb.S_abs_arrow.fType + " // fb.S_rel_arrow_rel: " + fb.S_rel_arrow.fType, 10, 370);
          game.debug.text("fb.W_rel_arrow_abs: " + fb.W_abs_arrow.fType + " // fb.W_rel_arrow_rel: " + fb.W_rel_arrow.fType, 10, 390);   
         */
-        /*
-    if (fb.moveArrow != null) {
-        game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
-    }
-    if (fb.selectedArrow != null) {
-        game.debug.text("Selected Arrow: " + fb.selectedArrow.fType + " [" + fb.selectedArrow.mag + "]", 10, 40);
-    }
-    if (cArrow != null) {
-        game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "]", 10, 60);
-    }
-    */
+    /*
+if (fb.moveArrow != null) {
+    game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
+}
+if (fb.selectedArrow != null) {
+    game.debug.text("Selected Arrow: " + fb.selectedArrow.fType + " [" + fb.selectedArrow.mag + "]", 10, 40);
+}
+if (cArrow != null) {
+    game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "]", 10, 60);
+}
+*/
 
 }
