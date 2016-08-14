@@ -17,7 +17,7 @@ h3 {
     font-family: sans-serif;
     font-size: 20px;
     font-style: unset;
-}
+}  
 body {
     border: 2px, solid, black;
 }
@@ -52,7 +52,6 @@ sub {
 }
 button {
     color: grey; 
-    margin: auto;
     border-style: solid;
     background-color: white;
     font-size: 16px;
@@ -66,24 +65,28 @@ button:visited{
     padding: 5px;
 }
 
-.dropdown-content{
-    display: inline-block;
-    width: 200px;
-}
-
 #dropdownMain {
-    height: 380px;
-    width: 100px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    height: 150px;
+    width: 720px;
+    white-space: nowrap;
 }
 
 .percentBtn {
     padding: 4px;
     font-size: 16px;
-    margin: 3px;
 }
 
 .menuBtn {
     width: 130px;
+    height: 120px;
+    display: inline-block;
+    position: static;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 #menu-btn {
@@ -93,7 +96,9 @@ button:visited{
 
 .dropbtn {
     border-style: none;
-    float: left;
+    position: fixed;
+    top: 18px;
+    left: 20px;
 }
 .nav {
     display: inline-block;
@@ -139,11 +144,7 @@ p {
     font-size:20px;
 }
 .appWrap{
-    border-style:solid;
-    border-width: 1px;
-    border-color: lightgrey;
     width: 720px;
-    height: 490px;
     padding: 15px;
 }
 .answer {
@@ -183,8 +184,6 @@ p {
 .instructions{
     border-style: none;
     float: left;
-    overflow-y: scroll;
-    overflow-x: auto;
     width: 350px;
     height: 400px;
 }

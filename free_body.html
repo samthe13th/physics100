@@ -18,9 +18,6 @@
 
 <body>
     <div class="modal" id="help-modal">
-        <button onclick="toggleMenu('Help')" class="dropbtn">
-                <img src="assets/freebody/menuBtn.png" id="help-menu-btn"></img>
-            </button>
         <button class="modal-header-btn right modal-close" title="Close Modal">Got it!</button>
         <header class="modal-header">
             <div id="dropdownHelp" class="dropdown-content"></div>
@@ -81,10 +78,10 @@
         
         -->
         <div class="topPanel" id="testFeedback"></div>
+        <button onclick="toggleMenu('Main')" class="dropbtn">
+                    <img src="assets/freebody/menuBtn.png" id="menu-btn"></img>
+                </button>
         <div style="text-align: center">
-            <!--
-            <h1 class="topPanel" id="appTitle">Free Body Problems</h1>
-            -->
             <div id="topBtns">
                 <button class="topPanel modal-trigger" id="help-btn">HELP</button>
                 <button class="topPanel" id="prev">PREV</button>
@@ -92,18 +89,19 @@
                 <button class="topPanel" id="submit">SUBMIT</button>
             </div>
         </div>
+        <div id="dropdownMain" class="dropdown-content"></div>
         <hr>
         <div class="instructions">
-            <button onclick="toggleMenu('Main')" class="dropbtn">
-                    <img src="assets/freebody/menuBtn.png" id="menu-btn"></img>
-                </button>
-            <div class="dropdown" id="mainMenu">
-                <div id="dropdownMain" class="dropdown-content"></div>
-            </div>
             <h3 id="pTitle">Problem</h3>
             <img id="pImg"></img>
             <div id="instr"></div>
             <img id="pGif"></img>
+            <div id="bugReport">
+                <a style="text-align: center" href="https://docs.google.com/forms/d/1u_eBh_dIReZnWgmI4Ys52pM7ayHHaIVvRywo18x-Ktk/viewform"
+                    target="_blank">
+                    <strong>Report Bug</strong>
+                </a>
+            </div>
         </div>
         <div id="interactive">
             <div id="container"></div>
@@ -124,11 +122,6 @@ toggle between hiding and showing the dropdown content */
     </script>
     -->
 </body>
-<div id="bugReport">
-    <a style="text-align: center" href="https://docs.google.com/forms/d/1u_eBh_dIReZnWgmI4Ys52pM7ayHHaIVvRywo18x-Ktk/viewform"
-        target="_blank">
-        <strong>Report Bug</strong>
-    </a>
-</div>
+
 
 </html>
