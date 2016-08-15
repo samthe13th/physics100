@@ -190,11 +190,11 @@
                 },
                 "90": {
                     "fType": "Tension",
-                    "mag": 1
+                    "mag": 2
                 },
                 "270": {
                     "fType": "Friction",
-                    "mag": 2
+                    "mag": 1
                 }
             },
             "majorForce": "90",

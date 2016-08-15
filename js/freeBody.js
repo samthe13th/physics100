@@ -693,11 +693,11 @@ function angleConvert(angle) {
     } else { rtnAngle = game.math.degToRad(angle) }
     return rtnAngle;
 }
-function Menu(id, mitems) {
+function Menu(id, mitems, titles) {
     this.init = function () {
         $('#dropdown' + id).html();
         for (var i = 0; i < mitems.length; i++) {
-            $('#dropdown' + id).append("<button onclick=goto(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px'></img><br><span class='percentBtn' id='percent" + i + "'></span></button>");
+            $('#dropdown' + id).append("<button onclick=goto(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px' title='" + titles[i] + "'></img><br><span class='percentBtn' id='percent" + i + "'></span></button>");
         }
     }
 }
@@ -717,7 +717,7 @@ function setUpMenus() {
     for (var i = 0; i < json.exercises.length; i++) {
         thumbnails.push(json.exercises[i].img)
     }
-    mainMenu = new Menu("Main", thumbnails);
+    mainMenu = new Menu("Main", thumbnails, titles);
     mainMenu.init();
 }
 function toggleMenu(id) {

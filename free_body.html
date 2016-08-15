@@ -14,16 +14,20 @@
 
 <body>
     <div class="modal" id="help-modal">
-        <button class="modal-header-btn right modal-close" title="Close Modal">Got it!</button>
+        <button class="modal-header-btn modal-close" title="Close Modal">X</button>
         <header class="modal-header">
-            <div id="dropdownHelp" class="dropdown-content"></div>
-            <h1 class="modal-header-title center"><strong>Help</strong></h1>
+            <h1 class="modal-header-title center">HELP</h1>
         </header>
-        <div class="modal-body">
-            <section class="modal-content">
-                <img id="helpgif" src="assets/freebody/fb1.2.gif"></img>
-            </section>
-        </div>
+        <section class="modal-content" id="help-content">
+            <p>Add force arrow:</p>
+            <img id="helpgif" src="assets/freebody/help/phys100add.gif" class="helpGif"></img><br>
+            <p>Remove force arrow:</p>
+            <img id="helpgif" src="assets/freebody/help/phys100remove.gif" class="helpGif"></img><br>
+            <p>Rotate force arrow:</p>
+            <img id="helpgif" src="assets/freebody/help/phys100rotate.gif" class="helpGif"></img><br>
+            <p>Change magnitude:</p>
+            <img id="helpgif" src="assets/freebody/help/phys100mag.gif" class="helpGif"></img><br>
+        </section>
     </div>
 
     <div id="feedback" class="modal2">
@@ -39,7 +43,6 @@
     </div>
 
     <div class="appWrap">
-
         <div class="topPanel" id="testFeedback"></div>
         <button onclick="toggleMenu('Main')" class="dropbtn">
                     <img src="assets/freebody/menuBtn.png" id="menu-btn"></img>
@@ -60,12 +63,10 @@
             <div id="instr"></div>
             <img id="pGif"></img>
             <br>
-
             <a style="text-align: center; font-family: arial; color: red" href="https://docs.google.com/forms/d/1u_eBh_dIReZnWgmI4Ys52pM7ayHHaIVvRywo18x-Ktk/viewform"
                 target="_blank">
                 <strong>REPORT BUG</strong>
             </a>
-
         </div>
         <div id="interactive">
             <div id="container"></div>
