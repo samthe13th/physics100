@@ -1,5 +1,5 @@
 'use strict'
-var game = new Phaser.Game(350, 400, Phaser.CANVAS, 'container', { preload: preload, create: create, update: update, render: render }, true);
+var game = new Phaser.Game(350, 350, Phaser.CANVAS, 'container', { preload: preload, create: create, update: update, render: render }, true);
 var page = 1;
 var menuMode = false;
 var graphicsGroup;
