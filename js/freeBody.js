@@ -14,7 +14,7 @@ var aId;
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
 var fixedAngleArray = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var rotAngleArray = [0];
-var dirArray = ["N", "S", "W", "E"];
+var dirArray = ["N", "E", "S", "W"];
 var percents = [];
 var fb = (function () {
     var currentArrow, selectedArrow;
