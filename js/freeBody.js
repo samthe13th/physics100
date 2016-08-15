@@ -697,14 +697,14 @@ function Menu(id, mitems) {
     this.init = function () {
         $('#dropdown' + id).html();
         for (var i = 0; i < mitems.length; i++) {
-            $('#dropdown' + id).append("<button onclick=goto(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px'></img><span class='percentBtn' id='percent" + i + "'></span></button>");
+            $('#dropdown' + id).append("<button onclick=goto(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px'></img><br><span class='percentBtn' id='percent" + i + "'></span></button>");
         }
     }
 }
 var goto = function (i) {
     page = i + 1;
     setUpExercise();
-    toggleMenu("Main");
+    //toggleMenu("Main");
     resetFBD();
 }
 function setUpMenus() {
@@ -842,7 +842,6 @@ $(document).ready(function () {
                 }
             }
         }
-
         if (forceScore < 0) { forceScore = 0 };
         if (magScore < 0) {
             magScore = 0;
