@@ -97,10 +97,6 @@
             "inst": "instr/football.html",
             "img": "instr/diagrams/football.png",
             "fb": {
-                "0": {
-                    "fType": "Normal",
-                    "mag": 1
-                },
                 "180": {
                     "fType": "Weight",
                     "mag": 1
@@ -132,6 +128,10 @@
                 },
                 "32": {
                     "fType": "Tension",
+                    "mag": 1
+                },
+                "270": {
+                    "fType": "Friction",
                     "mag": 1
                 }
             },

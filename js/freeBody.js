@@ -318,10 +318,10 @@ function ansObj() {
     var ans = {};
     var arrows = fb.arrowArray;
     var key;
-    console.log(arrows);
+    //console.log(arrows);
     for (var i = 0; i < arrows.length; i++) {
         key = arrows[i].degAngle.toString();
-        console.log("ansObj --> key: " + key);
+        //console.log("ansObj --> key: " + key);
         if (arrows[i].mag > 0) {
             ans[key] = {
                 "fType": arrows[i].fType,
@@ -741,7 +741,7 @@ $(document).ready(function () {
     for (var i = 0; i < pTitles.length; i++) {
         var txt = "";
         txt = pTitles[i];
-        $("#feedback-body").append("<div class='sub-percent'>" + txt + " correct: </div><div id='feedback" + i + "'>test</div>");
+        //$("#feedback-body").append("<div class='sub-percent'>" + txt + " correct: </div><div id='feedback" + i + "'>test</div>");
     }
 
     $("#testFeedback").click(function (event) {
@@ -802,61 +802,70 @@ $(document).ready(function () {
             '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
             '<strong> Solution: </strong>' + JSON.stringify(so)
         );
-        for (var i = 0; i < marked2.properties.length; i++) {
-            var txt = "";
-            forceScore = marked2.percent[params[0]] * params.length;
-            magScore = forceScore;
-            var cAns = marked2.keys[i].toString();
+        var txt = "";
+        forceScore = marked2.percent[params[0]] * params.length;
+        magScore = forceScore;
+        for (var x = 0; x < marked2.keys.length; x++) {
+            var cAns = marked2.keys[x].toString();
             var opAngle;
             var opMag;
             var subPercent = 100 / params.length;
             var test = "test";
             var netDir = null;
-            if (marked2.keys[i] < 180) {
-                opAngle = (Number(marked2.keys[i]) + 180).toString();
+            console.log("SO: " + JSON.stringify(so));
+            if (marked2.keys[x] < 180) {
+                opAngle = (Number(marked2.keys[x]) + 180).toString();
             } else {
-                opAngle = (marked2.keys[i] - 180).toString();
+                opAngle = (marked2.keys[x] - 180).toString();
             }
-            if (ao[cAns] === undefined) {
-                hint = "Incorrect. Try again!";
-            } else {
+            if (ao[cAns] !== undefined) {
                 if (ao[opAngle] === undefined) {
-                    ao[opAngle] = 0;
-                    console.log("Op angle not found");
-                };
-                if (ao[cAns].mag > ao[opAngle].mag) {
-                    netDir = cAns;
-                }
-                if (ao[cAns].mag < ao[opAngle].mag) {
-                    netDir = opAngle;
-                }
-                if (forceScore < 100) {
-                    hint = "Not quite! Try again.";
-                    if (fb.rAxis.rotation !== rotation) {
-                        hint = "HINT: Make sure you are using the right axis. See HELP to learn how to rotate axis.";
+                    ao[opAngle] = {
+                        "fType": "",
+                        "mag": 0
                     }
-                } else if (magScore < 100) {
-                    hint = "HINT: Play close attention to the size (magnitude of your force arrows)";
-                } else {
-                    hint = "Great job!";
+                };
+                if (needsOpAngle(marked2.keys[x], opAngle, so)) {
+                    console.log("so[" + cAns + "].mag: " + so[cAns].mag);
+                    if ((so[cAns].mag > so[opAngle].mag
+                    && ao[cAns].mag > ao[opAngle].mag) ||
+                    (so[cAns].mag < so[opAngle].mag
+                    && ao[cAns].mag < ao[opAngle].mag) ||
+                    (so[cAns].mag === so[opAngle].mag
+                    && ao[cAns].mag === ao[opAngle].mag))
+                    {
+                        console.log("Magnitude pair correct for " + cAns + " and " + opAngle);
+                    } else {
+                        magScore -= marked2.worth;
+                        console.log("Magnitude pair NOT correct for " + cAns + " and " + opAngle);
+                    }
                 }
-            }
-            if (marked2.properties[i] === "fType") {
-                txt = "forces: ";
-            } else {
-                txt = "magnitude: ";
             }
         }
+
         if (forceScore < 0) { forceScore = 0 };
         if (magScore < 0) {
             magScore = 0;
         };
-        if (netDir != mForce) {
-            magScore -= (marked2.worth * 2);
+        totalScore = Math.round((forceScore + magScore) / 2);
+        if (totalScore < 0){ totalScore = 0 };
+        console.log("ansObj length: " + Object.keys(ansObj()).length);
+        console.log("so length: " + Object.keys(so).length);
+        //HINTS
+        if (totalScore == 100) {
+            hint = "Great job!";
+        } else if (forceScore === 100) {
+            hint = "Check the magnitudes of your force arrows!";
+        } else if (Object.keys(ansObj()).length > Object.keys(so).length) {
+            hint = "You may be adding a force you don't need...";
+        } else if (Object.keys(ansObj()).length < Object.keys(so).length) {
+            hint = "You are missing at least one force";
+        } else if (fb.rAxis.rotation !== rotation) {
+            hint = "If you are using a rotated axis, make sure it is rotated the correct number of degrees";
+        } else {
+            hint = "Not quite! Try again";
         }
-        totalScore = (forceScore + magScore) / 2;
-        console.log("total score: " + totalScore);
-        $("#percent").text("Total: " + Math.round(totalScore) + "%");
+        $("#percent").text(Math.round(totalScore) + "%");
         $("#feedback0").html(forceScore + "%");
         $("#feedback1").html(magScore + "%");
         $("#hint").html(hint);
@@ -868,6 +877,17 @@ $(document).ready(function () {
         $("#testFeedback").text(percents[page - 1]);
     });
 });
+
+function needsOpAngle(key, key2, s) {
+    console.log("RUN NEEDSOPANGLE");
+    console.log("so: " + JSON.stringify(s));
+    if (s.hasOwnProperty(key) && s.hasOwnProperty(key2)) {
+        console.log("TRUE");
+        return true;
+    }
+    console.log("FALSE");
+    return false;
+}
 //DEBUGGING
 function render() {
     var aa = fb.arrowArray;
