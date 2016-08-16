@@ -32,7 +32,7 @@ var fb = (function () {
 function preload() {
     game.load.spritesheet('arrowBtns', 'assets/freebody/btnSheet.png', 20, 20);
     game.load.spritesheet('forceBtns', 'assets/freebody/btnsBlank.png', 100, 30, 3);
-    game.load.spritesheet('forces', 'assets/freebody/forceSheet.png', 40, 40, 9);
+    game.load.spritesheet('forces', 'assets/freebody/forceSheet2.png', 40, 40, 10);
     game.load.spritesheet('rotateBtn', 'assets/freebody/rotateBtn.png', 50, 50, 3);
     game.load.image('handle', 'assets/freebody/handle.png', 30, 30);
     game.load.image('forceCenter', 'assets/freebody/anchor.png', 15, 15);
@@ -233,6 +233,8 @@ function setUpArrow(comp, axis, radAngle) {
             arrow.forces.frame = 7;
         } else if (arrow.fType == "Friction") {
             arrow.forces.frame = 8;
+        } else if (arrow.fType == "C on B"){
+            arrow.forces.frame = 9;
         }
     }
     arrow.setForces = function () {

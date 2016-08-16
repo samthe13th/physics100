@@ -73,7 +73,6 @@ var Modal = function () {
 			});
 
 			var m = config.$modal;
-
 			m.style.visibility = "hidden";
 
 			config.$modalClose.addEventListener("click", function () {

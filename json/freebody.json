@@ -266,7 +266,7 @@
             "forces": [
                 "Weight",
                 "B on A",
-                "A on B",
+                "C on B",
                 "Normal",
                 "Friction"
             ],
