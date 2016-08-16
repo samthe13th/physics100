@@ -114,7 +114,7 @@
                 "Friction"
             ],
             "title": "Pulling a block",
-            "inst": "instr/block.html",
+            "inst": "instr/pullBlock.html",
             "img": "instr/diagrams/DragBox.png",
             "gif": "instr/diagrams/capture1.gif",
             "fb": {
@@ -147,7 +147,7 @@
                 "Friction"
             ],
             "title": "A hard push!",
-            "inst": "instr/block.html",
+            "inst": "instr/hardPush.html",
             "img": "instr/diagrams/friction1.png",
             "gif": "instr/diagrams/capture1.gif",
             "fb": {
@@ -176,7 +176,7 @@
                 "Friction"
             ],
             "title": "Pulleys 1",
-            "inst": "instr/block.html",
+            "inst": "instr/pulleys1.html",
             "img": "instr/diagrams/pulley1.png",
             "gif": "instr/diagrams/capture1.gif",
             "fb": {
@@ -209,7 +209,7 @@
                 "Friction"
             ],
             "title": "Pulleys 2",
-            "inst": "instr/block.html",
+            "inst": "instr/pulleys2.html",
             "img": "instr/diagrams/pulley2.png",
             "gif": "instr/diagrams/capture1.gif",
             "fb": {
@@ -238,11 +238,11 @@
                 "Weight",
                 "B on A",
                 "A on B",
-                "Normal",
-                "Friction"
+                "C on B",
+                "Normal"
             ],
             "title": "Pulleys 3 (A)",
-            "inst": "instr/block.html",
+            "inst": "instr/pulleys3.html",
             "img": "instr/diagrams/pulley3.png",
             "gif": "instr/diagrams/capture1.gif",
             "fb": {
@@ -266,12 +266,12 @@
             "forces": [
                 "Weight",
                 "B on A",
+                "A on B",
                 "C on B",
-                "Normal",
-                "Friction"
+                "Normal"
             ],
             "title": "Pulleys 3 (B)",
-            "inst": "instr/block.html",
+            "inst": "instr/pulleys3B.html",
             "img": "instr/diagrams/pulley3.png",
             "gif": "instr/diagrams/capture1.gif",
             "fb": {
@@ -289,7 +289,7 @@
                 },
                 "288": {
                     "fType": "A on B",
-                    "mag": 1
+                    "mag": 2
                 }
             },
             "majorForce": null,
