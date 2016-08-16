@@ -860,11 +860,11 @@ $(document).ready(function () {
         } else if (Object.keys(ansObj()).length > Object.keys(so).length) {
             hint = "You may be adding a force you don't need...";
         } else if (Object.keys(ansObj()).length < Object.keys(so).length) {
-            hint = "You are missing at least one force";
+            hint = "You are missing at least one force.";
         } else if (fb.rAxis.rotation !== rotation) {
             hint = "If you are using a rotated axis, make sure it is rotated the correct number of degrees";
         } else {
-            hint = "Not quite! Try again";
+            hint = "Not quite! Try again.";
         }
         $("#percent").text(Math.round(totalScore) + "%");
         $("#feedback0").html(forceScore + "%");
