@@ -41,6 +41,7 @@ function preload() {
     game.load.image('rotHandle', 'assets/freebody/rotHandleRight.png');
 }
 function create() {
+    Modal.init();
     aId = 1;
     fb.selectedArrow.forces = game.add.sprite(0, 0, 'forces', 0);
     fb.moveArrow.forces = game.add.sprite(0, 0, 'forces', 0);
@@ -719,6 +720,7 @@ function setUpMenus() {
     }
     mainMenu = new Menu("Main", thumbnails, titles);
     mainMenu.init();
+    toggleMenu("Main");
 }
 function toggleMenu(id) {
     document.getElementById("dropdown" + id).classList.toggle("show");
@@ -729,9 +731,6 @@ $(document).ready(function () {
     var help = document.getElementById("help");
     var span = document.getElementsByClassName("close")[0];
     var json;
-
-    Modal.init();
-    Modal.open();
 
     $.getJSON("json/freebody.json", function (data) {
         json = data;
@@ -828,12 +827,11 @@ $(document).ready(function () {
                 if (needsOpAngle(marked2.keys[x], opAngle, so)) {
                     console.log("so[" + cAns + "].mag: " + so[cAns].mag);
                     if ((so[cAns].mag > so[opAngle].mag
-                    && ao[cAns].mag > ao[opAngle].mag) ||
-                    (so[cAns].mag < so[opAngle].mag
-                    && ao[cAns].mag < ao[opAngle].mag) ||
-                    (so[cAns].mag === so[opAngle].mag
-                    && ao[cAns].mag === ao[opAngle].mag))
-                    {
+                        && ao[cAns].mag > ao[opAngle].mag) ||
+                        (so[cAns].mag < so[opAngle].mag
+                            && ao[cAns].mag < ao[opAngle].mag) ||
+                        (so[cAns].mag === so[opAngle].mag
+                            && ao[cAns].mag === ao[opAngle].mag)) {
                         console.log("Magnitude pair correct for " + cAns + " and " + opAngle);
                     } else {
                         magScore -= marked2.worth;
@@ -847,7 +845,7 @@ $(document).ready(function () {
             magScore = 0;
         };
         totalScore = Math.round((forceScore + magScore) / 2);
-        if (totalScore < 0){ totalScore = 0 };
+        if (totalScore < 0) { totalScore = 0 };
         console.log("ansObj length: " + Object.keys(ansObj()).length);
         console.log("so length: " + Object.keys(so).length);
         //HINTS
