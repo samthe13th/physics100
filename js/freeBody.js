@@ -11,7 +11,7 @@ var json;
 var cAngle;
 var cArrow;
 var aId;
-var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 35 }
+var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 20 }
 var fixedAngleArray = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var rotAngleArray = [0];
 var dirArray = ["N", "E", "S", "W"];
@@ -799,10 +799,12 @@ $(document).ready(function () {
         var rotation = json.exercises[page - 1].rot;
         var debugTxt = "";
         feedback.style.display = "block";
+        /*
         $("#debug-output").html(
             '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
             '<strong> Solution: </strong>' + JSON.stringify(so)
         );
+        */
         var txt = "";
         forceScore = marked2.percent[params[0]] * params.length;
         magScore = forceScore;
