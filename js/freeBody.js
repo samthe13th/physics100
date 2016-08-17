@@ -233,7 +233,7 @@ function setUpArrow(comp, axis, radAngle) {
             arrow.forces.frame = 7;
         } else if (arrow.fType == "Friction") {
             arrow.forces.frame = 8;
-        } else if (arrow.fType == "C on B"){
+        } else if (arrow.fType == "C on B") {
             arrow.forces.frame = 9;
         }
     }
@@ -267,7 +267,6 @@ function setUpArrow(comp, axis, radAngle) {
         }
     }
     fb.arrowArray.push(arrow);
-    console.log("Rad: " + arrow.radAngle + " Deg: " + arrow.degAngle);
 }
 function setUpExercise() {
     var pImg = json.exercises[page - 1].img;
@@ -311,7 +310,6 @@ function setUpForceBtns(btnArray) {
     }
     arrowGroup.visible = false;
 }
-
 //GETTERS
 function ansArray() {
     var ans = [fb.N_rel_arrow, fb.S_rel_arrow, fb.W_rel_arrow, fb.E_rel_arrow, fb.N_abs_arrow, fb.S_abs_arrow, fb.W_abs_arrow, fb.E_abs_arrow];
@@ -321,10 +319,8 @@ function ansObj() {
     var ans = {};
     var arrows = fb.arrowArray;
     var key;
-    //console.log(arrows);
     for (var i = 0; i < arrows.length; i++) {
         key = arrows[i].degAngle.toString();
-        //console.log("ansObj --> key: " + key);
         if (arrows[i].mag > 0) {
             ans[key] = {
                 "fType": arrows[i].fType,
@@ -334,9 +330,37 @@ function ansObj() {
     }
     return ans;
 }
+function rForce() {
+    this.init = function () {
+        this.zmag = 0;
+        this.xmag = 0;
+        this.ymag = 0;
+        this.degAngle = 0;
+    }
+    this.update = function () {
+        this.xmag = calcNetForce();
+    }
+}
+function calcNetForce() {
+    var netXY = { "h": 0, "v": 0 };
+    for (var i = 0; i < fb.arrowArray.length; i++) {
+        if (fb.arrowArray[i].mag > 0) {
+            var h, v;
+            h = fb.arrowArray[i].mag * Math.sin(fb.arrowArray[i].radAngle);
+            v = fb.arrowArray[i].mag * Math.cos(fb.arrowArray[i].radAngle);
+            console.log(fb.arrowArray[i].fType + " xmag = " + h);
+            console.log(fb.arrowArray[i].fType + " ymag = " + v);
+            if (v < 0.01){ v = 0 };
+            if (h < 0.01){ h = 0 };
+            netXY.h += h;
+            netXY.v += v;
+        }
+    }
+    console.log("Resultant xmag = " + netXY.h);
+    console.log("Resultant ymag = " + netXY.v);
+}
 function getArrowByAngle2(a) {
     if (fb.rAxis.rotation == 0) {
-        console.log("absolute position")
     }
 
     var a2 = a;
@@ -551,7 +575,6 @@ function update() {
         } else {
             gp.arrowLength = 50;
         }
-
         if (fb.hyp > 120) {
             if (cArrow.compass == "N") {
                 fb.rotHandle.visible = true;
@@ -563,9 +586,7 @@ function update() {
                 fb.rotHandle4.visible = true;
             }
         }
-
     }
-
     fb.hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
     fb.handle.x = aLength * Math.sin(ca) + game.world.centerX;
     fb.handle.y = game.world.centerY - aLength * Math.cos(ca);
@@ -608,7 +629,6 @@ function handleDown() {
         createArrow();
     } else if (cArrow.mag != 0) {
         fb.moveArrow = cArrow;
-        console.log("MAKE MOVE ARROW INTO CARROW (" + cArrow.fType);
         cArrow.hide(false);
         fb.currentArrow = game.add.graphics(0, 0);
         fb.currentArrow.visible = true;
@@ -621,7 +641,6 @@ function set_cAngle() {
 function handleUp() {
     set_cAngle();
     cArrow = getArrowByAngle(cAngle);
-    console.log("cAngle: " + cAngle + ", cArrow.radAngle: " + cArrow.radAngle);
     var fDiff = 38;
     if (fb.currentArrow != null) {
         if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
@@ -633,12 +652,9 @@ function handleUp() {
             draw_rel_arrow(cArrow, cAngle, gp.arrowLength, 0x000000);
             fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
             if (fb.selectedArrow.axis == "abs") {
-                console.log("cAngle 2: " + cAngle + ", cArrow.radAngle: " + cArrow.radAngle);
                 fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle) + game.world.centerX;
                 fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle);
-                console.log("x: " + fb.selectedArrow.forces.x + ", y: " + fb.selectedArrow.forces.y);
             } else {
-                console.log("set rel angle");
                 fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle - fb.rAxis.rotation) + game.world.centerX;
                 fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle - fb.rAxis.rotation);
             }
@@ -733,11 +749,9 @@ $(document).ready(function () {
     var help = document.getElementById("help");
     var span = document.getElementsByClassName("close")[0];
     var json;
-
     $.getJSON("json/freebody.json", function (data) {
         json = data;
     });
-
     var pTitles = ["Forces", "Magnitudes"]
     for (var i = 0; i < pTitles.length; i++) {
         var txt = "";
@@ -799,6 +813,7 @@ $(document).ready(function () {
         var rotation = json.exercises[page - 1].rot;
         var debugTxt = "";
         feedback.style.display = "block";
+        calcNetForce();
         /*
         $("#debug-output").html(
             '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
@@ -815,7 +830,6 @@ $(document).ready(function () {
             var subPercent = 100 / params.length;
             var test = "test";
             var netDir = null;
-            console.log("SO: " + JSON.stringify(so));
             if (marked2.keys[x] < 180) {
                 opAngle = (Number(marked2.keys[x]) + 180).toString();
             } else {
@@ -829,17 +843,14 @@ $(document).ready(function () {
                     }
                 };
                 if (needsOpAngle(marked2.keys[x], opAngle, so)) {
-                    console.log("so[" + cAns + "].mag: " + so[cAns].mag);
                     if ((so[cAns].mag > so[opAngle].mag
                         && ao[cAns].mag > ao[opAngle].mag) ||
                         (so[cAns].mag < so[opAngle].mag
                             && ao[cAns].mag < ao[opAngle].mag) ||
                         (so[cAns].mag === so[opAngle].mag
                             && ao[cAns].mag === ao[opAngle].mag)) {
-                        console.log("Magnitude pair correct for " + cAns + " and " + opAngle);
                     } else {
                         magScore -= marked2.worth;
-                        console.log("Magnitude pair NOT correct for " + cAns + " and " + opAngle);
                     }
                 }
             }
@@ -850,9 +861,6 @@ $(document).ready(function () {
         };
         totalScore = Math.round((forceScore + magScore) / 2);
         if (totalScore < 0) { totalScore = 0 };
-        console.log("ansObj length: " + Object.keys(ansObj()).length);
-        console.log("so length: " + Object.keys(so).length);
-        //HINTS
         if (totalScore == 100) {
             hint = "Great job!";
         } else if (forceScore === 100) {
@@ -880,13 +888,9 @@ $(document).ready(function () {
 });
 
 function needsOpAngle(key, key2, s) {
-    console.log("RUN NEEDSOPANGLE");
-    console.log("so: " + JSON.stringify(s));
     if (s.hasOwnProperty(key) && s.hasOwnProperty(key2)) {
-        console.log("TRUE");
         return true;
     }
-    console.log("FALSE");
     return false;
 }
 //DEBUGGING
@@ -930,5 +934,4 @@ if (cArrow != null) {
     game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "]", 10, 60);
 }
 */
-
 }
