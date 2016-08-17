@@ -17,7 +17,7 @@ var rotAngleArray = [0];
 var dirArray = ["N", "E", "S", "W"];
 var percents = [];
 var fb = (function () {
-    var currentArrow, selectedArrow;
+    var currentArrow, selectedArrow, rArrow;
     var arrowArray = [];
     var absArrows = [];
     var relArrows = [];
@@ -61,6 +61,8 @@ function create() {
         setPercents();
     });
     setDegs();
+    fb.rArrow = game.add.graphics(0, 0);
+    fb.rArrow.visible = true;
 }
 function setPercents() {
     for (var i = 0; i < json.exercises.length; i++) {
@@ -84,6 +86,7 @@ function createArrow() {
     fb.currentArrow = game.add.graphics(0, 0);
     fb.currentArrow.visible = true;
     draw_rel_arrow(fb.currentArrow, findAngle(), 0, 0xFFFFFF);
+
 }
 function createAxis(axis) {
     var axis = game.add.graphics(0, 0);
@@ -342,7 +345,7 @@ function rForce() {
     }
 }
 function calcNetForce() {
-    var netXY = { "h": 0, "v": 0 };
+    var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0};
     for (var i = 0; i < fb.arrowArray.length; i++) {
         if (fb.arrowArray[i].mag > 0) {
             var h, v;
@@ -350,14 +353,15 @@ function calcNetForce() {
             v = fb.arrowArray[i].mag * Math.cos(fb.arrowArray[i].radAngle);
             console.log(fb.arrowArray[i].fType + " xmag = " + h);
             console.log(fb.arrowArray[i].fType + " ymag = " + v);
-            if (v < 0.01){ v = 0 };
-            if (h < 0.01){ h = 0 };
-            netXY.h += h;
-            netXY.v += v;
+            netForce.h += h;
+            netForce.v += v;
         }
     }
-    console.log("Resultant xmag = " + netXY.h);
-    console.log("Resultant ymag = " + netXY.v);
+    if (netForce.h < 0.01 && netForce.h > -0.01) { netForce.h = 0 };
+    if (netForce.v < 0.02 && netForce.v > -0.01) { netForce.v = 0 };
+    netForce.a = Math.atan(netForce.h / netForce.v);
+    netForce.mag = Math.sqrt(Math.pow(netForce.h, 2) + Math.pow(netForce.v, 2));
+    return netForce;
 }
 function getArrowByAngle2(a) {
     if (fb.rAxis.rotation == 0) {
@@ -537,6 +541,30 @@ function draw_rel_arrow(arrow, rot, hyp, color) {
         arrow.rotation = rot;
     }
 }
+function drawResultant(arrow, rot, mag, color){
+    arrow.clear();
+    var aLength = 30 * mag;
+        if (mag < 0.1) {
+        aLength = 0;
+    } else {
+        arrow.lineStyle(5, color);
+        arrow.moveTo(game.width / 2, game.height / 2);
+        arrow.lineTo(game.width / 2, game.height / 2 - aLength);
+        arrow.lineStyle(1, color);
+        arrow.beginFill(color);
+        arrow.moveTo(game.width / 2, game.height / 2 - aLength);
+        arrow.lineTo(game.width / 2 - gp.arrowHead / 2, game.height / 2 - aLength);
+        arrow.lineTo(game.width / 2, game.height / 2 - aLength - gp.arrowHead);
+        arrow.lineTo(game.width / 2 + gp.arrowHead / 2, game.height / 2 - aLength);
+        arrow.lineTo(game.width / 2, game.height / 2 - aLength);
+        arrow.endFill();
+        arrow.pivot.x = game.world.centerX;
+        arrow.pivot.y = game.world.centerY;
+        arrow.x = game.world.centerX;
+        arrow.y = game.world.centerY;
+        arrow.rotation = rot;
+    }
+}
 //BOOLEANS
 function arrowHere() {
     if (fb.hyp < 20) { return true }
@@ -558,6 +586,7 @@ function set_cArrow(a) {
 function update() {
     var aLength = gp.arrowLength + 8;
     var ca = closestAngle(findAngle());
+    var nf;
     set_cArrow(ca);
     if (menuMode == false) {
         fb.rotHandle.visible = false;
@@ -615,6 +644,12 @@ function update() {
         }
     }
     setDegs();
+
+    /*
+    console.log("Resultant xmag = " + netForce.h);
+    console.log("Resultant ymag = " + netForce.v);
+    console.log("Resulatant angle = " + netForce.a)
+    */
 }
 function setDegs() {
     var aa = fb.arrowArray;
@@ -675,6 +710,8 @@ function handleUp() {
     } 
     */
     fb.moveArrow = null;
+    var nf = calcNetForce();
+    drawResultant(fb.rArrow, nf.a, nf.mag, 0xFF9900);
 }
 function showForceMenu() {
     menuMode = true;
@@ -697,6 +734,8 @@ function rotHandleDown(h) {
 function rotHandleUp(h) {
     rotHandlesGroup.handleSelected = false;
     fb.currentRotHandle = "";
+    var nf = calcNetForce();
+    drawResultant(fb.rArrow, nf.a, nf.mag, 0xFF9900);
 }
 function up() {
     out();
