@@ -345,7 +345,8 @@ function rForce() {
     }
 }
 function calcNetForce() {
-    var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0};
+    var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0 };
+    var netAngle = 0;
     for (var i = 0; i < fb.arrowArray.length; i++) {
         if (fb.arrowArray[i].mag > 0) {
             var h, v;
@@ -359,8 +360,15 @@ function calcNetForce() {
     }
     if (netForce.h < 0.01 && netForce.h > -0.01) { netForce.h = 0 };
     if (netForce.v < 0.02 && netForce.v > -0.01) { netForce.v = 0 };
-    netForce.a = Math.atan(netForce.h / netForce.v);
+    netAngle = Math.atan(netForce.h / netForce.v);
+    console.log("Net Angle: " + netAngle + " | abs : " + Math.abs(netAngle));
+    if (netForce.v < 0) {
+        netForce.a = (Math.PI / 2) + Math.abs(netAngle + Math.PI/2);
+    } else {
+        netForce.a = netAngle;
+    }
     netForce.mag = Math.sqrt(Math.pow(netForce.h, 2) + Math.pow(netForce.v, 2));
+    console.log("netAngle : " + netForce.a);
     return netForce;
 }
 function getArrowByAngle2(a) {
@@ -541,10 +549,10 @@ function draw_rel_arrow(arrow, rot, hyp, color) {
         arrow.rotation = rot;
     }
 }
-function drawResultant(arrow, rot, mag, color){
+function drawResultant(arrow, rot, mag, color) {
     arrow.clear();
     var aLength = 30 * mag;
-        if (mag < 0.1) {
+    if (mag < 0.1) {
         aLength = 0;
     } else {
         arrow.lineStyle(5, color);
