@@ -11,6 +11,7 @@ var json;
 var cAngle;
 var cArrow;
 var aId;
+var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0 };
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 20 }
 var fixedAngleArray = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
 var rotAngleArray = [0];
@@ -345,8 +346,10 @@ function rForce() {
     }
 }
 function calcNetForce() {
-    var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0 };
     var netAngle = 0;
+    netForce.h = 0;
+    netForce.v = 0;
+    netForce.mag = 0;
     for (var i = 0; i < fb.arrowArray.length; i++) {
         if (fb.arrowArray[i].mag > 0) {
             var h, v;
@@ -363,13 +366,12 @@ function calcNetForce() {
     netAngle = Math.atan(netForce.h / netForce.v);
     console.log("Net Angle: " + netAngle + " | abs : " + Math.abs(netAngle));
     if (netForce.v < 0) {
-        netForce.a = (Math.PI / 2) + Math.abs(netAngle + Math.PI/2);
+        netForce.a = (Math.PI / 2) + Math.abs(netAngle + Math.PI / 2);
     } else {
         netForce.a = netAngle;
     }
     netForce.mag = Math.sqrt(Math.pow(netForce.h, 2) + Math.pow(netForce.v, 2));
     console.log("netAngle : " + netForce.a);
-    return netForce;
 }
 function getArrowByAngle2(a) {
     if (fb.rAxis.rotation == 0) {
@@ -652,6 +654,8 @@ function update() {
         }
     }
     setDegs();
+    calcNetForce();
+    drawResultant(fb.rArrow, netForce.a, netForce.mag, 0xFF9900);
 
     /*
     console.log("Resultant xmag = " + netForce.h);
@@ -718,8 +722,8 @@ function handleUp() {
     } 
     */
     fb.moveArrow = null;
-    var nf = calcNetForce();
-    drawResultant(fb.rArrow, nf.a, nf.mag, 0xFF9900);
+    calcNetForce();
+    drawResultant(fb.rArrow, netForce.a, netForce.mag, 0xFF9900);
 }
 function showForceMenu() {
     menuMode = true;
@@ -742,8 +746,8 @@ function rotHandleDown(h) {
 function rotHandleUp(h) {
     rotHandlesGroup.handleSelected = false;
     fb.currentRotHandle = "";
-    var nf = calcNetForce();
-    drawResultant(fb.rArrow, nf.a, nf.mag, 0xFF9900);
+    calcNetForce();
+    drawResultant(fb.rArrow, netForce.a, netForce.mag, 0xFF9900);
 }
 function up() {
     out();
