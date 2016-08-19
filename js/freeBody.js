@@ -87,7 +87,8 @@ function createArrow() {
     fb.currentArrow = game.add.graphics(0, 0);
     fb.currentArrow.visible = true;
     draw_rel_arrow(fb.currentArrow, findAngle(), 0, 0xFFFFFF);
-
+    fb.currentArrow.mag = 0;
+    fb.currentArrow.radAngle = 0;
 }
 function createAxis(axis) {
     var axis = game.add.graphics(0, 0);
@@ -355,23 +356,23 @@ function calcNetForce() {
             var h, v;
             h = fb.arrowArray[i].mag * Math.sin(fb.arrowArray[i].radAngle);
             v = fb.arrowArray[i].mag * Math.cos(fb.arrowArray[i].radAngle);
-            console.log(fb.arrowArray[i].fType + " xmag = " + h);
-            console.log(fb.arrowArray[i].fType + " ymag = " + v);
             netForce.h += h;
             netForce.v += v;
         }
     }
+    if (fb.currentArrow) {
+        netForce.h += fb.currentArrow.mag * Math.sin(fb.currentArrow.radAngle);
+        netForce.v += fb.currentArrow.mag * Math.cos(fb.currentArrow.radAngle);
+    };
     if (netForce.h < 0.01 && netForce.h > -0.01) { netForce.h = 0 };
     if (netForce.v < 0.02 && netForce.v > -0.01) { netForce.v = 0 };
     netAngle = Math.atan(netForce.h / netForce.v);
-    console.log("Net Angle: " + netAngle + " | abs : " + Math.abs(netAngle));
     if (netForce.v < 0) {
         netForce.a = (Math.PI / 2) + Math.abs(netAngle + Math.PI / 2);
     } else {
         netForce.a = netAngle;
     }
     netForce.mag = Math.sqrt(Math.pow(netForce.h, 2) + Math.pow(netForce.v, 2));
-    console.log("netAngle : " + netForce.a);
 }
 function getArrowByAngle2(a) {
     if (fb.rAxis.rotation == 0) {
@@ -388,7 +389,6 @@ function getArrowByAngle2(a) {
         }
     }
     return returnArrow;
-
 }
 function absAngle(angle) {
     for (var i = 0; i < fixedAngleArray.length; i++) {
@@ -553,7 +553,7 @@ function draw_rel_arrow(arrow, rot, hyp, color) {
 }
 function drawResultant(arrow, rot, mag, color) {
     arrow.clear();
-    var aLength = 30 * mag;
+    var aLength = 50 * mag;
     if (mag < 0.1) {
         aLength = 0;
     } else {
@@ -653,6 +653,10 @@ function update() {
             rotate((Math.PI / 2) - Math.PI / 180);
         }
     }
+    if (fb.currentArrow != null) {
+        fb.currentArrow.radAngle = cArrow.radAngle;
+        //fb.currentArrow.mag = cArrow.mag;
+    }
     setDegs();
     calcNetForce();
     drawResultant(fb.rArrow, netForce.a, netForce.mag, 0xFF9900);
@@ -676,9 +680,11 @@ function handleDown() {
         createArrow();
     } else if (cArrow.mag != 0) {
         fb.moveArrow = cArrow;
-        cArrow.hide(false);
         fb.currentArrow = game.add.graphics(0, 0);
         fb.currentArrow.visible = true;
+        fb.currentArrow.mag = cArrow.mag;
+        fb.currentArrow.radAngle = cArrow.radAngle;
+        cArrow.hide(false);
         draw_rel_arrow(fb.currentArrow, closestAngle(findAngle()), gp.arrowLength, 0xffffff);
     }
 }
@@ -686,6 +692,7 @@ function set_cAngle() {
     cAngle = closestAngle(findAngle());
 }
 function handleUp() {
+    fb.currentArrow.mag = 0;
     set_cAngle();
     cArrow = getArrowByAngle(cAngle);
     var fDiff = 38;
@@ -951,8 +958,15 @@ function render() {
     var aaStr2 = "";
     var aaStr3 = "";
     var aaStr4 = "";
-    /*
 
+    if (fb.currentArrow != null) {
+        game.debug.text("ghostArrow: " + " [" + fb.currentArrow.mag + "] (" + fb.currentArrow.radAngle + ")", 0, 20);
+    }
+    game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "] (" + cArrow.radAngle + ")", 0, 40);
+    game.debug.text("y: " + netForce.v, 0, 300);
+    game.debug.text("x: " + netForce.h, 0, 320);
+    game.debug.text("a: " + netForce.a, 0, 340);
+    /*
     for (var i = 0; i < aa.length; i += 4) {
         aaStr1 += aa[i].aId + " " + aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + " (" + aa[i].mag + ")";
         aaStr2 += aa[i + 1].aId + " " + aa[i + 1].axis + " " + aa[i + 1].degAngle + ": " + aa[i + 1].fType + " (" + aa[i + 1].mag + ")";
