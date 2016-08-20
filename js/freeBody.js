@@ -11,6 +11,7 @@ var json;
 var cAngle;
 var cArrow;
 var aId;
+var ghost = false;
 var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0 };
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 20 }
 var fixedAngleArray = [0, (Math.PI / 2), Math.PI, (3 * Math.PI / 2), 2 * Math.PI];
@@ -199,7 +200,6 @@ function setUpArrow(comp, axis, radAngle) {
     var dir = comp + "_" + axis;
     var arrowId = dir + "_arrow";
     var arrow;
-
     fb[arrowId] = game.add.graphics(0, 0);
     arrow = fb[arrowId];
     arrow.compass = comp;
@@ -213,13 +213,7 @@ function setUpArrow(comp, axis, radAngle) {
     arrow.mag = 0;
     arrow.setForce = function () {
         arrow.fType = cArrow.fType;
-        if (gp.arrowLength == 100) {
-            arrow.mag = 2;
-        } else if (gp.arrowLength == 50) {
-            arrow.mag = 1;
-        } else {
-            arrow.mag = 0;
-        }
+        arrow.mag = gp.arrowLength / gp.magLength;
     }
     arrow.setFrames = function () {
         if (arrow.fType == "Weight") {
@@ -579,8 +573,7 @@ function drawResultant(arrow, rot, mag, color) {
 function arrowHere() {
     if (fb.hyp < 20) { return true }
     if (getArrowByAngle(closestAngle(findAngle())) != null) {
-        if ((getArrowByAngle(closestAngle(findAngle())).mag == 1 && fb.hyp > 50 && fb.hyp < 80)
-            || (getArrowByAngle(closestAngle(findAngle())).mag == 2 && fb.hyp > 99)) { return true }
+        if (getArrowByAngle(closestAngle(findAngle())).mag > 0) { return true }
     } return false;
 }
 function yCheck(p, m) {
@@ -609,10 +602,8 @@ function update() {
         }
         if (fb.hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
             aLength = 0;
-        } else if (fb.hyp > 90) {
-            gp.arrowLength = 100;
         } else {
-            gp.arrowLength = 50;
+            gp.arrowLength = fb.hyp;
         }
         if (fb.hyp > 120) {
             if (cArrow.compass == "N") {
@@ -627,9 +618,12 @@ function update() {
         }
     }
     fb.hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
+    console.log("aLength: " + aLength + " ||| cArrow.mag: " + cArrow.mag);
     fb.handle.x = aLength * Math.sin(ca) + game.world.centerX;
     fb.handle.y = game.world.centerY - aLength * Math.cos(ca);
-    if (fb.currentArrow != null) {
+    if (fb.currentArrow != null && ghost) {
+        fb.currentArrow.radAngle = cArrow.radAngle;
+        fb.currentArrow.mag = fb.hyp / gp.magLength;
         draw_rel_arrow(fb.currentArrow, ca, fb.hyp, 0xffffff);
     }
     if (rotHandlesGroup.handleSelected == true) {
@@ -654,7 +648,7 @@ function update() {
         }
     }
     if (fb.currentArrow != null) {
-        fb.currentArrow.radAngle = cArrow.radAngle;
+
         //fb.currentArrow.mag = cArrow.mag;
     }
     setDegs();
@@ -675,6 +669,7 @@ function setDegs() {
 }
 function handleDown() {
     var cArrow = getArrowByAngle(closestAngle(findAngle()));
+    ghost = true;
     if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
         fb.moveArrow = null;
         createArrow();
@@ -692,6 +687,7 @@ function set_cAngle() {
     cAngle = closestAngle(findAngle());
 }
 function handleUp() {
+    ghost = false;
     fb.currentArrow.mag = 0;
     set_cAngle();
     cArrow = getArrowByAngle(cAngle);
@@ -960,9 +956,10 @@ function render() {
     var aaStr4 = "";
 
     if (fb.currentArrow != null) {
-        game.debug.text("ghostArrow: " + " [" + fb.currentArrow.mag + "] (" + fb.currentArrow.radAngle + ")", 0, 20);
+        game.debug.text("ghost? " + ghost, 0, 20);
+        game.debug.text("ghostArrow: " + " [" + fb.currentArrow.mag + "] (" + fb.currentArrow.radAngle + ")", 0, 40);
     }
-    game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "] (" + cArrow.radAngle + ")", 0, 40);
+    game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "] (" + cArrow.radAngle + ")", 0, 60);
     game.debug.text("y: " + netForce.v, 0, 300);
     game.debug.text("x: " + netForce.h, 0, 320);
     game.debug.text("a: " + netForce.a, 0, 340);
