@@ -11,6 +11,7 @@ var json;
 var cAngle;
 var cArrow;
 var aId;
+var snap = 4;
 var ghost = false;
 var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0 };
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 20 }
@@ -362,9 +363,9 @@ function calcNetForce() {
     if (netForce.v < 0.02 && netForce.v > -0.01) { netForce.v = 0 };
     netAngle = Math.atan(netForce.h / netForce.v);
     if (netForce.v < 0) {
-        netForce.a = (Math.PI / 2) + Math.abs(netAngle + Math.PI / 2);
+        netForce.a = round((Math.PI / 2) + Math.abs(netAngle + Math.PI / 2), (180 / Math.PI));
     } else {
-        netForce.a = netAngle;
+        netForce.a = round(netAngle, (180 / Math.PI));
     }
     netForce.mag = Math.sqrt(Math.pow(netForce.h, 2) + Math.pow(netForce.v, 2));
 }
@@ -480,6 +481,7 @@ function findAngle() {
     if (cAngle == 2 * Math.PI) {
         cAngle = 0;
     }
+    cAngle = round(cAngle, (18 / Math.PI));
     return cAngle;
 }
 //SETTERS
@@ -522,9 +524,9 @@ function createRotHandles() {
     rotHandlesGroup.y = game.world.centerY;
 }
 function draw_rel_arrow(arrow, rot, hyp, color) {
-    var aLength = gp.arrowLength;
+    var aLength = hyp;
     arrow.clear();
-    if (hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
+    if (hyp < 10 && ((game.world.centerY - game.input.mousePointer.y) < 10)) {
         aLength = 0;
     } else {
         arrow.lineStyle(5, color);
@@ -548,9 +550,12 @@ function draw_rel_arrow(arrow, rot, hyp, color) {
 function drawResultant(arrow, rot, mag, color) {
     arrow.clear();
     var aLength = 50 * mag;
-    if (mag < 0.1) {
+    if (netForce.mag < (1 / snap)) {
+        netForce.mag = 0;
+        arrow.visible = false;
         aLength = 0;
     } else {
+        arrow.visible = true;
         arrow.lineStyle(5, color);
         arrow.moveTo(game.width / 2, game.height / 2);
         arrow.lineTo(game.width / 2, game.height / 2 - aLength);
@@ -566,6 +571,7 @@ function drawResultant(arrow, rot, mag, color) {
         arrow.pivot.y = game.world.centerY;
         arrow.x = game.world.centerX;
         arrow.y = game.world.centerY;
+        console.log("rot: " + rot);
         arrow.rotation = rot;
     }
 }
@@ -600,10 +606,13 @@ function update() {
         if (arrowHere()) {
             fb.handle.visible = true;
         }
-        if (fb.hyp < 50 && ((game.world.centerY - game.input.mousePointer.y) < 50)) {
+        if (fb.hyp < 10 && ((game.world.centerY - game.input.mousePointer.y) < 10)) {
             aLength = 0;
         } else {
             gp.arrowLength = fb.hyp;
+            if (ghost) {
+                gp.arrowLength = fb.currentArrow.mag * gp.magLength;
+            }
         }
         if (fb.hyp > 120) {
             if (cArrow.compass == "N") {
@@ -618,13 +627,24 @@ function update() {
         }
     }
     fb.hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
-    console.log("aLength: " + aLength + " ||| cArrow.mag: " + cArrow.mag);
+    //console.log("aLength: " + aLength + " ||| cArrow.mag: " + cArrow.mag);
     fb.handle.x = aLength * Math.sin(ca) + game.world.centerX;
     fb.handle.y = game.world.centerY - aLength * Math.cos(ca);
     if (fb.currentArrow != null && ghost) {
-        fb.currentArrow.radAngle = cArrow.radAngle;
+        var lastMag = fb.currentArrow.mag;
         fb.currentArrow.mag = fb.hyp / gp.magLength;
-        draw_rel_arrow(fb.currentArrow, ca, fb.hyp, 0xffffff);
+        if (cArrow.axis == "abs") {
+            fb.currentArrow.mag = round(fb.currentArrow.mag, snap);
+        }
+        fb.currentArrow.radAngle = cArrow.radAngle;
+        calcNetForce();
+        /*
+        if (netForce.mag < 0.3) {
+            fb.currentArrow.mag = lastMag;
+            fb.rArrow.visible = false;
+        }
+        */
+        draw_rel_arrow(fb.currentArrow, ca, fb.currentArrow.mag * gp.magLength, 0xffffff);
     }
     if (rotHandlesGroup.handleSelected == true) {
         var newRot;
@@ -647,19 +667,13 @@ function update() {
             rotate((Math.PI / 2) - Math.PI / 180);
         }
     }
-    if (fb.currentArrow != null) {
-
-        //fb.currentArrow.mag = cArrow.mag;
-    }
     setDegs();
     calcNetForce();
     drawResultant(fb.rArrow, netForce.a, netForce.mag, 0xFF9900);
-
-    /*
-    console.log("Resultant xmag = " + netForce.h);
-    console.log("Resultant ymag = " + netForce.v);
-    console.log("Resulatant angle = " + netForce.a)
-    */
+}
+function round(num, factor) {
+    var n = Math.round(num * factor) / factor;
+    return n;
 }
 function setDegs() {
     var aa = fb.arrowArray;
@@ -684,7 +698,7 @@ function handleDown() {
     }
 }
 function set_cAngle() {
-    cAngle = closestAngle(findAngle());
+    cAngle = round(closestAngle(findAngle()), (180 / Math.PI));
 }
 function handleUp() {
     ghost = false;
@@ -959,41 +973,44 @@ function render() {
         game.debug.text("ghost? " + ghost, 0, 20);
         game.debug.text("ghostArrow: " + " [" + fb.currentArrow.mag + "] (" + fb.currentArrow.radAngle + ")", 0, 40);
     }
-    game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "] (" + cArrow.radAngle + ")", 0, 60);
+    //game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "] (" + cArrow.radAngle + ")", 0, 60);
+    game.debug.text("cAngle (rad): " + cAngle, 0, 60);
+    game.debug.text("cAngle (deg): " + cAngle * (180 / Math.PI), 0, 80);
+    //game.debug.text("rArrow mag = " + netForce.mag, 0, 100);
+    game.debug.text("rArrow angle = " + netForce.a * (180 / Math.PI), 0, 100);
+    game.debug.text(cArrow.axis, 0, 120);
     game.debug.text("y: " + netForce.v, 0, 300);
     game.debug.text("x: " + netForce.h, 0, 320);
     game.debug.text("a: " + netForce.a, 0, 340);
     /*
-    for (var i = 0; i < aa.length; i += 4) {
-        aaStr1 += aa[i].aId + " " + aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + " (" + aa[i].mag + ")";
-        aaStr2 += aa[i + 1].aId + " " + aa[i + 1].axis + " " + aa[i + 1].degAngle + ": " + aa[i + 1].fType + " (" + aa[i + 1].mag + ")";
-        aaStr3 += aa[i + 2].aId + " " + aa[i + 2].axis + " " + aa[i + 2].degAngle + ": " + aa[i + 2].fType + " (" + aa[i + 2].mag + ")";
-        aaStr4 += aa[i + 3].aId + " " + aa[i + 3].axis + " " + aa[i + 3].degAngle + ": " + aa[i + 3].fType + " (" + aa[i + 3].mag + ")";
-    }
-
-    //game.debug.text("rAxis.rotation = " + fb.rAxis.rotation, 0, 310);
-    // game.debug.text(cArrow.aId + ": " + cArrow.fType + ", mag = " + cArrow.mag, 0, 310);
-
-    game.debug.text(aaStr1, 0, 330);
-    game.debug.text(aaStr2, 0, 350);
-    game.debug.text(aaStr3, 0, 370);
-    game.debug.text(aaStr4, 0, 390);
-    /*
-        //Debugging displays
-         game.debug.text("fb.N_rel_arrow_abs: " + fb.N_abs_arrow.fType + " // fb.N_rel_arrow_rel: " + fb.N_rel_arrow.fType, 10, 330);
-         game.debug.text("fb.E_rel_arrow_abs: " + fb.E_abs_arrow.fType + " // fb.E_rel_arrow_rel: " + fb.E_rel_arrow.fType, 10, 350);
-         game.debug.text("fb.S_rel_arrow_abs: " + fb.S_abs_arrow.fType + " // fb.S_rel_arrow_rel: " + fb.S_rel_arrow.fType, 10, 370);
-         game.debug.text("fb.W_rel_arrow_abs: " + fb.W_abs_arrow.fType + " // fb.W_rel_arrow_rel: " + fb.W_rel_arrow.fType, 10, 390);   
+            for (var i = 0; i < aa.length; i += 4) {
+                aaStr1 += aa[i].aId + " " + aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + " (" + aa[i].mag + ")";
+                aaStr2 += aa[i + 1].aId + " " + aa[i + 1].axis + " " + aa[i + 1].degAngle + ": " + aa[i + 1].fType + " (" + aa[i + 1].mag + ")";
+                aaStr3 += aa[i + 2].aId + " " + aa[i + 2].axis + " " + aa[i + 2].degAngle + ": " + aa[i + 2].fType + " (" + aa[i + 2].mag + ")";
+                aaStr4 += aa[i + 3].aId + " " + aa[i + 3].axis + " " + aa[i + 3].degAngle + ": " + aa[i + 3].fType + " (" + aa[i + 3].mag + ")";
+            }
+        
+            game.debug.text("rAxis.rotation = " + fb.rAxis.rotation, 0, 310);
+            game.debug.text(cArrow.aId + ": " + cArrow.fType + ", mag = " + cArrow.mag, 0, 310);
+        
+            game.debug.text(aaStr1, 0, 330);
+            game.debug.text(aaStr2, 0, 350);
+            game.debug.text(aaStr3, 0, 370);
+            game.debug.text(aaStr4, 0, 390);
+        
+            game.debug.text("fb.N_rel_arrow_abs: " + fb.N_abs_arrow.fType + " // fb.N_rel_arrow_rel: " + fb.N_rel_arrow.fType, 10, 330);
+            game.debug.text("fb.E_rel_arrow_abs: " + fb.E_abs_arrow.fType + " // fb.E_rel_arrow_rel: " + fb.E_rel_arrow.fType, 10, 350);
+            game.debug.text("fb.S_rel_arrow_abs: " + fb.S_abs_arrow.fType + " // fb.S_rel_arrow_rel: " + fb.S_rel_arrow.fType, 10, 370);
+            game.debug.text("fb.W_rel_arrow_abs: " + fb.W_abs_arrow.fType + " // fb.W_rel_arrow_rel: " + fb.W_rel_arrow.fType, 10, 390);
+        
+            if (fb.moveArrow != null) {
+                game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
+            }
+            if (fb.selectedArrow != null) {
+                game.debug.text("Selected Arrow: " + fb.selectedArrow.fType + " [" + fb.selectedArrow.mag + "]", 10, 40);
+            }
+            if (cArrow != null) {
+                game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "]", 10, 60);
+            }
         */
-    /*
-if (fb.moveArrow != null) {
-    game.debug.text("Move Arrow: " + fb.moveArrow.fType, 10, 20);
-}
-if (fb.selectedArrow != null) {
-    game.debug.text("Selected Arrow: " + fb.selectedArrow.fType + " [" + fb.selectedArrow.mag + "]", 10, 40);
-}
-if (cArrow != null) {
-    game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "]", 10, 60);
-}
-*/
 }
