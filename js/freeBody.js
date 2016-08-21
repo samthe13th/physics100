@@ -363,9 +363,12 @@ function calcNetForce() {
     if (netForce.v < 0.02 && netForce.v > -0.01) { netForce.v = 0 };
     netAngle = Math.atan(netForce.h / netForce.v);
     if (netForce.v < 0) {
-        netForce.a = round((Math.PI / 2) + Math.abs(netAngle + Math.PI / 2), (180 / Math.PI));
+        netForce.a = (Math.PI / 2) + Math.abs(netAngle + Math.PI / 2);
     } else {
-        netForce.a = round(netAngle, (180 / Math.PI));
+        netForce.a = netAngle;
+    }
+    if (Math.abs(closestAngle(netForce.a) - netForce.a) < (Math.PI/30)) {
+        netForce.a = closestAngle(netForce.a);
     }
     netForce.mag = Math.sqrt(Math.pow(netForce.h, 2) + Math.pow(netForce.v, 2));
 }
@@ -481,7 +484,7 @@ function findAngle() {
     if (cAngle == 2 * Math.PI) {
         cAngle = 0;
     }
-    cAngle = round(cAngle, (18 / Math.PI));
+    cAngle = round(cAngle, (180 / Math.PI));
     return cAngle;
 }
 //SETTERS
@@ -633,9 +636,11 @@ function update() {
     if (fb.currentArrow != null && ghost) {
         var lastMag = fb.currentArrow.mag;
         fb.currentArrow.mag = fb.hyp / gp.magLength;
+        /*  
         if (cArrow.axis == "abs") {
             fb.currentArrow.mag = round(fb.currentArrow.mag, snap);
         }
+        */
         fb.currentArrow.radAngle = cArrow.radAngle;
         calcNetForce();
         /*
@@ -968,7 +973,11 @@ function render() {
     var aaStr2 = "";
     var aaStr3 = "";
     var aaStr4 = "";
+    game.debug.text("netForce.a: " + netForce.a, 0, 60);
+    game.debug.text("closest Angle : " + closestAngle(netForce.a), 0, 40);
+    //game.debug.text("cAngle (deg): " + cAngle * (180 / Math.PI), 0, 80);
 
+    /*
     if (fb.currentArrow != null) {
         game.debug.text("ghost? " + ghost, 0, 20);
         game.debug.text("ghostArrow: " + " [" + fb.currentArrow.mag + "] (" + fb.currentArrow.radAngle + ")", 0, 40);
@@ -982,7 +991,7 @@ function render() {
     game.debug.text("y: " + netForce.v, 0, 300);
     game.debug.text("x: " + netForce.h, 0, 320);
     game.debug.text("a: " + netForce.a, 0, 340);
-    /*
+
             for (var i = 0; i < aa.length; i += 4) {
                 aaStr1 += aa[i].aId + " " + aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + " (" + aa[i].mag + ")";
                 aaStr2 += aa[i + 1].aId + " " + aa[i + 1].axis + " " + aa[i + 1].degAngle + ": " + aa[i + 1].fType + " (" + aa[i + 1].mag + ")";
