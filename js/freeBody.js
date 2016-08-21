@@ -362,12 +362,15 @@ function calcNetForce() {
     if (netForce.h < 0.01 && netForce.h > -0.01) { netForce.h = 0 };
     if (netForce.v < 0.02 && netForce.v > -0.01) { netForce.v = 0 };
     netAngle = Math.atan(netForce.h / netForce.v);
+    if (netAngle < 0) {
+        netAngle = (Math.PI / 2 * 3) + (Math.PI/2 + netAngle);
+    }
     if (netForce.v < 0) {
         netForce.a = (Math.PI / 2) + Math.abs(netAngle + Math.PI / 2);
     } else {
         netForce.a = netAngle;
     }
-    if (Math.abs(closestAngle(netForce.a) - netForce.a) < (Math.PI/30)) {
+    if (Math.abs(closestAngle(netForce.a) - netForce.a) < (Math.PI / 20)) {
         netForce.a = closestAngle(netForce.a);
     }
     netForce.mag = Math.sqrt(Math.pow(netForce.h, 2) + Math.pow(netForce.v, 2));
