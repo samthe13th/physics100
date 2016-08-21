@@ -639,19 +639,19 @@ function update() {
     if (fb.currentArrow != null && ghost) {
         var lastMag = fb.currentArrow.mag;
         fb.currentArrow.mag = fb.hyp / gp.magLength;
-        
+        /*
         if (cArrow.axis == "abs") {
             fb.currentArrow.mag = round(fb.currentArrow.mag, snap);
         }
-        
+        */
         fb.currentArrow.radAngle = cArrow.radAngle;
         calcNetForce();
-        /*
+        
         if (netForce.mag < 0.3) {
             fb.currentArrow.mag = lastMag;
             fb.rArrow.visible = false;
         }
-        */
+        
         draw_rel_arrow(fb.currentArrow, ca, fb.currentArrow.mag * gp.magLength, 0xffffff);
     }
     if (rotHandlesGroup.handleSelected == true) {
