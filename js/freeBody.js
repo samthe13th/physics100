@@ -11,7 +11,7 @@ var json;
 var cAngle;
 var cArrow;
 var aId;
-var snap = 4;
+var snap = 2;
 var ghost = false;
 var netForce = { "h": 0, "v": 0, "a": 0, "mag": 0 };
 var gp = { fDist: 100, boxWidth: 0, arrowLength: 50, magLength: 50, arrowHead: 18, rotHandleOffset: 20 }
@@ -639,11 +639,11 @@ function update() {
     if (fb.currentArrow != null && ghost) {
         var lastMag = fb.currentArrow.mag;
         fb.currentArrow.mag = fb.hyp / gp.magLength;
-        /*  
+        
         if (cArrow.axis == "abs") {
             fb.currentArrow.mag = round(fb.currentArrow.mag, snap);
         }
-        */
+        
         fb.currentArrow.radAngle = cArrow.radAngle;
         calcNetForce();
         /*
@@ -976,8 +976,6 @@ function render() {
     var aaStr2 = "";
     var aaStr3 = "";
     var aaStr4 = "";
-    game.debug.text("netForce.a: " + netForce.a, 0, 60);
-    game.debug.text("closest Angle : " + closestAngle(netForce.a), 0, 40);
     //game.debug.text("cAngle (deg): " + cAngle * (180 / Math.PI), 0, 80);
 
     /*
