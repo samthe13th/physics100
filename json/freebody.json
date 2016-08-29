@@ -126,7 +126,7 @@
                     "fType": "Weight",
                     "mag": 1
                 },
-                "32": {
+                "70": {
                     "fType": "Tension",
                     "mag": 1
                 },
@@ -135,8 +135,8 @@
                     "mag": 1
                 }
             },
-            "majorForce": "32",
-            "rot": 32
+            "majorForce": "90",
+            "rot": 70
         },
         {
             "forces": [
