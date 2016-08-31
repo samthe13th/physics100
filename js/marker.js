@@ -17,48 +17,75 @@ var Marker = function () {
             feedback.properties = [];
             feedback.keys = [];
             feedback.worth = (1 / (Object.keys(soln).length * properties.length)) * 100;
-            console.log("feedback.worth: " + feedback.worth);
             for (var p = 0; p < properties.length; p++) {
                 feedback.percent[properties[p]] = 0;
             }
             for (var k in soln) {
                 feedback.keys.push(k);
-                console.log("Marker => Key: " + k);
             }
             for (var p = 0; p < properties.length; p++) {
                 feedback.properties.push(properties[p]);
                 if ($.isEmptyObject(ans)) {
                     feedback.percent.total = 0;
                 }
-                //check for right answers
                 for (var k in soln) {
                     if (ans.hasOwnProperty(k)) {
                         if (ans[k][properties[p]] == soln[k][properties[p]]) {
-                            console.log(ans[k][properties[p]] + " == " + soln[k][properties[p]]);
                             feedback.percent[properties[p]] += feedback.worth;
-                            console.log(ans[k] + " => " + properties[p] + ": " + feedback.percent[properties[p]]);
-                        } else {
-                            console.log(ans[k][properties[p]] + " != " + soln[k][properties[p]]);
-                        }
+                        } 
                     }
                 }
                 for (var a in ans) {
                     if (soln.hasOwnProperty(a)) {
-                        console.log("noice");
                     } else {
-                        console.log("no mataching solution found");
                         feedback.percent[properties[p]] -= feedback.worth;
                     }
                 }
-
             };
             var total = 0;
             for (var x = 0; x < properties.length; x++) {
-                console.log("CALC TOTAL => " + properties[x] + ": " + feedback.percent[properties[x]]);
                 total += feedback.percent[properties[x]];
             }
             feedback.percent.total = Math.round(total);
-            console.log(feedback.percent.total + "%");
+            return feedback;
+        },
+        mark_simple_obj: function (ans, soln) {
+            //Marks simple object. eg { key1: param1, key2: param2 }
+            var solnValues = {};
+            var ansValues = {};
+            feedback.percent.keys = 0;
+            feedback.percent.values = 0;
+            feedback.percent.kv = 0;
+            feedback.worth = (1 / (Object.keys(soln).length) * 100);
+            if ($.isEmptyObject(ans)) {
+                feedback.percent.total = 0;
+            } else {
+                for (var s in soln) {
+                    solnValues[soln[s]] = s;
+                    if (ans.hasOwnProperty(s)) {
+                        feedback.percent.keys += feedback.worth;
+                    } 
+                }
+                if (feedback.percent.keys <= 0) {
+                    feedback.percent.keys = 0;
+                } else if (feedback.percent.keys >= 100) {
+                    feedback.percent.keys = 100;
+                }
+                for (var a in ans) {
+                    ansValues[ans[a]] = a;
+                    if (soln.hasOwnProperty(a)) {
+                        if (soln[a] === ans[a]) {
+                            feedback.percent.kv += feedback.worth;
+                        }
+                    }
+                }
+                for (var s in solnValues){
+                    if (ansValues.hasOwnProperty(s)){
+                        feedback.percent.values += feedback.worth;
+                    }
+                }
+                feedback.percent.total = Math.round((feedback.percent.values + feedback.percent.kv)/2);
+            }
             return feedback;
         },
         mark_array_of_objs: function (ans, soln, properties) {
@@ -68,7 +95,6 @@ var Marker = function () {
             for (var p = 0; p < properties.length; p++) {
                 feedback.percent[properties[p]] = 100;
             }
-            //iterate through answer array
             for (var i = 0; i < ans.length; i++) {
                 for (var j = 0; j < properties.length; j++) {
                     if (ans[i][properties[j]] != soln[i][properties[j]]) {

@@ -337,6 +337,18 @@ function ansObj() {
     }
     return ans;
 }
+function ansObjSimple() {
+    var ans = {};
+    var arrows = fb.arrowArray;
+    var key;
+    for (var i = 0; i < arrows.length; i++) {
+        key = arrows[i].degAngle.toString();
+        if (arrows[i].mag > 0) {
+            ans[key] = arrows[i].fType;
+        }
+    }
+    return ans;
+}
 function rForce() {
     this.init = function () {
         this.zmag = 0;
@@ -603,11 +615,9 @@ function drawResultant(arrow, rot, mag, color) {
 //BOOLEANS
 function arrowHere() {
     if (fb.hyp < 30) { return true }
-
     if (getArrowByAngle(closestAngle(findAngle())) != null) {
         if (getArrowByAngle(closestAngle(findAngle())).mag > 0) { return true }
     }
-
     return false;
 }
 function yCheck(p, m) {
@@ -672,7 +682,6 @@ function update() {
         }
     }
     fb.hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
-    //console.log("aLength: " + aLength + " ||| cArrow.mag: " + cArrow.mag);
     fb.handle.x = aLength * Math.sin(ca) + game.world.centerX;
     fb.handle.y = game.world.centerY - aLength * Math.cos(ca);
     if (fb.ghostArrow != null && state === "create") {
@@ -712,7 +721,6 @@ function update() {
         }
     }
     setDegs();
-    //calcNetForce();
     drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
 }
 function handleCentered() {
@@ -788,14 +796,8 @@ function handleUp() {
         }
         fb.ghostArrow.destroy();
     }
-    /*
-    if (fb.moveArrow.dir == fb.selectedArrow.dir) {
-        fb.moveArrow.fType = fb.selectedArrow.fType
-    } 
-    */
     fb.moveArrow = null;
     removeUnusedTypes();
-    //calcNetForce();
     drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
 }
 function removeUnusedTypes() {
@@ -856,7 +858,6 @@ function Menu(id, mitems, titles) {
 var goto = function (i) {
     page = i + 1;
     setUpExercise();
-    //toggleMenu("Main");
     resetFBD();
 }
 function setUpMenus() {
@@ -885,13 +886,6 @@ $(document).ready(function () {
     $.getJSON("json/freebody.json", function (data) {
         json = data;
     });
-    var pTitles = ["Forces", "Magnitudes"]
-    for (var i = 0; i < pTitles.length; i++) {
-        var txt = "";
-        txt = pTitles[i];
-        //$("#feedback-body").append("<div class='sub-percent'>" + txt + " correct: </div><div id='feedback" + i + "'>test</div>");
-    }
-
     $("#testFeedback").click(function (event) {
         var aa = fb.arrowArray;
         var ans = ansObj();
@@ -902,7 +896,6 @@ $(document).ready(function () {
             op += ans.k + " ";
         }
         alert("percents: " + JSON.stringify(percents));
-        // alert(aaStr);
     })
     $("#prev").click(function (event) {
         if (page > 1) {
@@ -929,86 +922,58 @@ $(document).ready(function () {
         var fbTypes = true;
         var numAns = true;
         var a = ansArray();
-        var ao = ansObj()
+        var aoSimple = ansObjSimple();
         var title = json.exercises[page - 1].title;
         var so = json.exercises[page - 1].fb;
-        var mForce = json.exercises[page - 1].majorForce;
+        var solnNetForce = json.exercises[page - 1].netForce;
+        var ansNetForce = Math.round(netForce.a * 180 / Math.PI);
         var aLength = a.length;
-        var aWorth = 100 / 6;
-        var fbTxt = "Feedback goes here";
-        var params = ["fType", "mag"];
-        var marked2 = Marker.mark_2d_obj(ao, so, params);
+        var marked = Marker.mark_simple_obj(aoSimple, so);
         var totalScore = 0;
-        var magScore = 0;
         var magError = 0;
-        var forceScore = 0;
+        var forceScoreSimple = forceScoreSimple = marked.percent.total;
         var hint = "hint";
         var rotation = json.exercises[page - 1].rot;
-        var debugTxt = "";
         feedback.style.display = "block";
-        //calcNetForce();
         /*
         $("#debug-output").html(
-            '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
+            '<strong> Force Score (simple): </strong>' + forceScoreSimple + '<br>' +
+            '<strong> angles (simple): </strong>' + marked.percent.keys + '<br>' +
+            '<strong> force types (simple): </strong>' + marked.percent.values + '<br>' +
+            '<strong> kv (simple): </strong>' + marked.percent.kv + '<br>' +
+            '<strong> Answer: </strong>' + JSON.stringify(aoSimple) + '<br>' +
             '<strong> Solution: </strong>' + JSON.stringify(so)
         );
         */
-        var txt = "";
-        forceScore = marked2.percent[params[0]] * params.length;
-
-        magScore = forceScore;
-        for (var x = 0; x < marked2.keys.length; x++) {
-            var cAns = marked2.keys[x].toString();
-            var opAngle;
-            var opMag;
-            var subPercent = 100 / params.length;
-            var test = "test";
-            var netDir = null;
-            if (marked2.keys[x] < 180) {
-                opAngle = (Number(marked2.keys[x]) + 180).toString();
-            } else {
-                opAngle = (marked2.keys[x] - 180).toString();
-            }
-            if (ao[cAns] !== undefined) {
-                if (ao[opAngle] === undefined) {
-                    ao[opAngle] = {
-                        "fType": "",
-                        "mag": 0
-                    }
-                };
-                if (needsOpAngle(marked2.keys[x], opAngle, so)) {
-                    if ((so[cAns].mag > so[opAngle].mag
-                        && ao[cAns].mag > ao[opAngle].mag) ||
-                        (so[cAns].mag < so[opAngle].mag
-                            && ao[cAns].mag < ao[opAngle].mag) ||
-                        (so[cAns].mag === so[opAngle].mag
-                            && ao[cAns].mag === ao[opAngle].mag)) {
-                    } else {
-                        magScore -= marked2.worth;
-                    }
-                }
-            }
+        if (fb.rArrow.visible == false || netForce.mag == 0) {
+            ansNetForce = null;
         }
-        if (forceScore < 0) { forceScore = 0 };
-        if (magScore < 0) { magScore = 0 };
-        totalScore = Math.round((forceScore + magScore) / 2);
+        if (solnNetForce !== null) {
+            solnNetForce = parseInt(solnNetForce);
+        }
+        if (ansNetForce !== solnNetForce) {
+            magError += (marked.worth / 2);
+        };
+        totalScore = Math.round(forceScoreSimple - magError);
         if (totalScore < 0) { totalScore = 0 };
         if (totalScore == 100) {
             hint = "Great job!";
-        } else if (forceScore === 100) {
-            hint = "Check the magnitudes of your force arrows!";
-        } else if (Object.keys(ansObj()).length > Object.keys(so).length) {
+        } else if (forceScoreSimple === 100) {
+            if (solnNetForce === null){
+                hint = "Make sure your net force is zero for this problem.";
+            } else {
+                hint = "Make sure your net force arrow (orange) is pointing in the direction of acceleration for the system.";
+            }
+        } else if (Object.keys(ansObjSimple()).length > Object.keys(so).length) {
             hint = "You may be adding a force you don't need...";
-        } else if (Object.keys(ansObj()).length < Object.keys(so).length) {
+        } else if (Object.keys(ansObjSimple()).length < Object.keys(so).length) {
             hint = "You are missing at least one force.";
-        } else if (fb.rAxis.rotation !== rotation) {
-            hint = "If you are using a rotated axis, make sure it is rotated the correct number of degrees";
+        } else if (marked.percent.values === 100) {
+            hint = "Your forces are correct, but are not all facing the right direction";
         } else {
             hint = "Not quite! Try again.";
         }
         $("#percent").text(Math.round(totalScore) + "%");
-        $("#feedback0").html(forceScore + "%");
-        $("#feedback1").html(magScore + "%");
         $("#hint").html(hint);
         percents[page - 1] = Math.round(totalScore) + "%";
         var pId = page - 1;
@@ -1018,13 +983,6 @@ $(document).ready(function () {
         $("#testFeedback").text(percents[page - 1]);
     });
 });
-
-function needsOpAngle(key, key2, s) {
-    if (s.hasOwnProperty(key) && s.hasOwnProperty(key2)) {
-        return true;
-    }
-    return false;
-}
 //DEBUGGING
 function render() {
     var aa = fb.arrowArray;
@@ -1032,20 +990,16 @@ function render() {
     var aaStr2 = "";
     var aaStr3 = "";
     var aaStr4 = "";
+/*
+    game.debug.text("netForce.a: " + netForce.a, 0, 60);
+    game.debug.text(" netForce.mag: " + netForce.mag, 0, 80);
 
-    // game.debug.text("netForce.a: " + netForce.a, 0, 60);
-    // game.debug.text(" netForce.mag: " + netForce.mag, 0, 80);
-
-    /*
     if (fb.ghostArrow != null) {
         game.debug.text("ghost? " + ghost, 0, 20);
         game.debug.text("ghostArrow: " + " [" + fb.ghostArrow.mag + "] (" + fb.ghostArrow.radAngle + ")", 0, 40);
     }
-    /*
         game.debug.text("rAxis.rotation = " + fb.rAxis.rotation, 0, 310);
         game.debug.text(cArrow.aId + ": " + cArrow.fType + ", mag = " + cArrow.mag, 0, 310);
-    */
-    /*
     for (var i = 0; i < aa.length; i += 4) {
         aaStr1 += aa[i].degAngle + ":" + aa[i].fType + "(" + round(aa[i].mag, 10) + ") ";
         aaStr2 += aa[i + 1].degAngle + ":" + aa[i + 1].fType + "(" + round(aa[i + 1].mag, 10) + ") ";
@@ -1056,7 +1010,6 @@ function render() {
     game.debug.text(aaStr2, 0, 300);
     game.debug.text(aaStr3, 0, 320);
     game.debug.text(aaStr4, 0, 340);
-
     if (fb.ghostArrow != null) {
         game.debug.text("Ghost Arrow: " + " [" + fb.ghostArrow.mag + "]", 10, 20);
     }
