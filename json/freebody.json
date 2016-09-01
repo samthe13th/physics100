@@ -49,7 +49,7 @@
             "img": "instr/diagrams/curlingRock2.png",
             "fb": {
                 "Normal": "0",
-                "Friction": "279",
+                "Friction": "270",
                 "Weight": "180"
             },
             "netForce": "270"

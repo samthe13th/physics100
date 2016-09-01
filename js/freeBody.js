@@ -648,14 +648,17 @@ function update() {
             }
         }
         if (fb.hyp > 120) {
-            if (cArrow.compass == "N") {
-                fb.rotHandle.visible = true;
-            } else if (cArrow.compass == "E") {
-                fb.rotHandle2.visible = true;
-            } else if (cArrow.compass == "S") {
-                fb.rotHandle3.visible = true;
-            } else {
-                fb.rotHandle4.visible = true;
+            fb.hoverArrow.visible = false;
+            if (fb.hyp < (game.world.width / 2)) {
+                if (cArrow.compass == "N") {
+                    fb.rotHandle.visible = true;
+                } else if (cArrow.compass == "E") {
+                    fb.rotHandle2.visible = true;
+                } else if (cArrow.compass == "S") {
+                    fb.rotHandle3.visible = true;
+                } else {
+                    fb.rotHandle4.visible = true;
+                }
             }
         }
     }
@@ -923,7 +926,7 @@ $(document).ready(function () {
                 hint = "Make sure your net force arrow (orange) is pointing in the direction of acceleration for the system.";
             }
         } else if (Object.keys(ansObj()).length > Object.keys(so).length) {
-            hint = "You may be adding a force you don't need...";
+            hint = "You may be adding a force or two that you don't need...";
         } else if (Object.keys(ansObj()).length < Object.keys(so).length) {
             hint = "You are missing at least one force.";
         } else if (marked.percent.values === 100) {
