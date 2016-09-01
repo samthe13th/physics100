@@ -315,10 +315,6 @@ function setUpForceBtns(btnArray) {
     arrowGroup.visible = false;
 }
 //GETTERS
-function ansArray() {
-    var ans = [fb.N_rel_arrow, fb.S_rel_arrow, fb.W_rel_arrow, fb.E_rel_arrow, fb.N_abs_arrow, fb.S_abs_arrow, fb.W_abs_arrow, fb.E_abs_arrow];
-    return ans;
-}
 function ansObj() {
     var ans = {};
     var arrows = fb.arrowArray;
@@ -681,8 +677,13 @@ function update() {
         }
         drawArrow(fb.ghostArrow, ca, fb.ghostArrow.mag * gp.magLength, 0xffffff);
     }
+    rotateHandle();
+    setDegs();
+    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
+}
+function rotateHandle() {
+    var newRot;
     if (rotHandlesGroup.handleSelected == true) {
-        var newRot;
         if (fb.currentRotHandle.pos == 0) {
             newRot = findAngle();
         } else if (fb.currentRotHandle.pos == Math.PI / 2) {
@@ -702,8 +703,6 @@ function update() {
             rotate((Math.PI / 2) - Math.PI / 180);
         }
     }
-    setDegs();
-    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
 }
 function handleCentered() {
     return (fb.handle.x === game.world.centerX && fb.handle.y === game.world.centerY);
@@ -884,36 +883,26 @@ $(document).ready(function () {
         feedback.style.display = "none";
     })
     $("#submit").click(function (event) {
-        var percent = 100;
-        var ans = $("#ans").val();
-        var fbAns = true;
-        var fbDir = true;
-        var fbTypes = true;
-        var numAns = true;
-        var a = ansArray();
         var ao = ansObj();
-        var title = json.exercises[page - 1].title;
         var so = json.exercises[page - 1].fb;
         var solnNetForce = json.exercises[page - 1].netForce;
         var ansNetForce = Math.round(netForce.a * 180 / Math.PI);
-        var aLength = a.length;
         var marked = Marker.mark_simple_obj(ao, so);
         var totalScore = 0;
         var magError = 0;
         var forceScoreSimple = forceScoreSimple = marked.percent.total;
         var hint = "hint";
-        var rotation = json.exercises[page - 1].rot;
         feedback.style.display = "block";
         /*
-        $("#debug-output").html(
-            '<strong> Force Score (simple): </strong>' + forceScoreSimple + '<br>' +
-            '<strong> angles (simple): </strong>' + marked.percent.keys + '<br>' +
-            '<strong> force types (simple): </strong>' + marked.percent.values + '<br>' +
-            '<strong> kv (simple): </strong>' + marked.percent.kv + '<br>' +
-            '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
-            '<strong> Solution: </strong>' + JSON.stringify(so)
-        );
-        */
+         $("#debug-output").html(
+             '<strong> Force Score (simple): </strong>' + forceScoreSimple + '<br>' +
+             '<strong> angles (simple): </strong>' + marked.percent.keys + '<br>' +
+             '<strong> force types (simple): </strong>' + marked.percent.values + '<br>' +
+             '<strong> kv (simple): </strong>' + marked.percent.kv + '<br>' +
+             '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
+             '<strong> Solution: </strong>' + JSON.stringify(so)
+         );
+       */
         if (fb.rArrow.visible == false || netForce.mag == 0) {
             ansNetForce = null;
         }
@@ -953,4 +942,4 @@ $(document).ready(function () {
     });
 });
 //DEBUGGING
-function render() {};
+function render() { };
