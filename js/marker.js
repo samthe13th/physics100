@@ -76,15 +76,15 @@ var Marker = function () {
                     if (soln.hasOwnProperty(a)) {
                         if (soln[a] === ans[a]) {
                             feedback.percent.kv += feedback.worth;
-                        }
+                        } 
                     }
                 }
-                for (var s in solnValues){
-                    if (ansValues.hasOwnProperty(s)){
-                        feedback.percent.values += feedback.worth;
+                for (var angle in ansValues){
+                    if (!solnValues.hasOwnProperty(angle)){
+                        feedback.percent.kv -= feedback.worth;
                     }
                 }
-                feedback.percent.total = Math.round((feedback.percent.values + feedback.percent.kv)/2);
+                feedback.percent.total = Math.round((feedback.percent.keys + feedback.percent.kv)/2);
             }
             return feedback;
         },

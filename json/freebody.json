@@ -11,13 +11,11 @@
             "title": "Block",
             "inst": "instr/block.html",
             "img": "instr/diagrams/block2.png",
-            "gif": "instr/diagrams/capture1.gif",
             "fb": {
-                "0": "Normal",
-                "180": "Weight"
+                "Normal": "0",
+                "Weight": "180"
             },
-            "netForce": null,
-            "rot": 0
+            "netForce": null
         },
         {
             "forces": [
@@ -31,13 +29,12 @@
             "inst": "instr/2blocks1.html",
             "img": "instr/diagrams/AonB.png",
             "fb": {
-                "0": "Normal",
-                "90": "Push",
-                "180": "Weight",
-                "270": "B on A"
+                "Normal": "0",
+                "Push": "90",
+                "Weight": "180",
+                "B on A": "270"
             },
-            "netForce": "90",
-            "rot": 0
+            "netForce": "90"
         },
         {
             "forces": [
@@ -51,12 +48,11 @@
             "inst": "instr/curling.html",
             "img": "instr/diagrams/curlingRock2.png",
             "fb": {
-                "0": "Normal",
-                "270": "Friction",
-                "180": "Weight"
+                "Normal": "0",
+                "Friction": "279",
+                "Weight": "180"
             },
-            "netForce": "270",
-            "rot": 0
+            "netForce": "270"
         },
         {
             "forces": [
@@ -70,10 +66,9 @@
             "inst": "instr/football.html",
             "img": "instr/diagrams/football.png",
             "fb": {
-                "180": "Weight"
+                "Weight": "180"
             },
-            "netForce": "180",
-            "rot": 0
+            "netForce": "180"
         },
         {
             "forces": [
@@ -86,15 +81,13 @@
             "title": "Pulling a block",
             "inst": "instr/pullBlock.html",
             "img": "instr/diagrams/DragBox.png",
-            "gif": "instr/diagrams/capture1.gif",
             "fb": {
-                "0": "Normal",
-                "180": "Weight",
-                "60": "Tension",
-                "270": "Friction"
+                "Normal": "0",
+                "Weight": "180",
+                "Tension": "60",
+                "Friction": "270"
             },
-            "netForce": "90",
-            "rot": 60
+            "netForce": "90"
         },
         {
             "forces": [
@@ -107,14 +100,12 @@
             "title": "A hard push!",
             "inst": "instr/hardPush.html",
             "img": "instr/diagrams/friction1.png",
-            "gif": "instr/diagrams/capture1.gif",
             "fb": {
-                "0": "Friction",
-                "180": "Weight",
-                "90": "Push"
+                "Friction": "0",
+                "Weight": "180",
+                "Push": "90"
             },
-            "netForce": "90",
-            "rot": 0
+            "netForce": "90"
         },
         {
             "forces": [
@@ -127,15 +118,13 @@
             "title": "Pulleys 1",
             "inst": "instr/pulleys1.html",
             "img": "instr/diagrams/pulley1.png",
-            "gif": "instr/diagrams/capture1.gif",
             "fb": {
-                "0": "Normal",
-                "180": "Weight",
-                "90": "Tension",
-                "270": "Friction"
+                "Normal": "0",
+                "Weight": "180",
+                "Tension": "90",
+                "Friction": "270"
             },
-            "netForce": "90",
-            "rot": 0
+            "netForce": "90"
         },
         {
             "forces": [
@@ -148,15 +137,13 @@
             "title": "Pulleys 2",
             "inst": "instr/pulleys2.html",
             "img": "instr/diagrams/pulley2.png",
-            "gif": "instr/diagrams/capture1.gif",
             "fb": {
-                "180": "Weight",
-                "36": "Normal",
-                "126": "Friction",
-                "306": "Tension"
+                "Weight": "180",
+                "Normal": "36",
+                "Friction": "126",
+                "Tension": "306"
             },
-            "netForce": "306",
-            "rot": 36
+            "netForce": "306"
         },
         {
             "forces": [
@@ -169,14 +156,12 @@
             "title": "Pulleys 3 (A)",
             "inst": "instr/pulleys3.html",
             "img": "instr/diagrams/pulley3.png",
-            "gif": "instr/diagrams/capture1.gif",
             "fb": {
-                "40": "B on A",
-                "180": "Weight",
-                "310": "Normal"
+                "B on A": "40",
+                "Weight": "180",
+                "Normal": "310"
             },
-            "netForce": null,
-            "rot": 40
+            "netForce": null
         },
         {
             "forces": [
@@ -189,15 +174,13 @@
             "title": "Pulleys 3 (B)",
             "inst": "instr/pulleys3B.html",
             "img": "instr/diagrams/pulley3.png",
-            "gif": "instr/diagrams/capture1.gif",
             "fb": {
-                "18": "Normal",
-                "108": "C on B",
-                "180": "Weight",
-                "288": "A on B"
+                "Normal": "18",
+                "C on B": "108",
+                "Weight": "180",
+                "A on B": "288"
             },
-            "netForce": null,
-            "rot": 18
+            "netForce": null
         }
     ]
 }

@@ -322,11 +322,11 @@ function ansArray() {
 function ansObj() {
     var ans = {};
     var arrows = fb.arrowArray;
-    var key;
+    var value;
     for (var i = 0; i < arrows.length; i++) {
-        key = arrows[i].degAngle.toString();
+        value = arrows[i].degAngle.toString();
         if (arrows[i].mag > 0) {
-            ans[key] = arrows[i].fType;
+            ans[arrows[i].fType] = value;
         }
     }
     return ans;
