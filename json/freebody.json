@@ -9,8 +9,8 @@
                 "Friction"
             ],
             "title": "Block",
-            "inst": "instr/block.html",
-            "img": "instr/diagrams/block2.png",
+            "inst": "../instr/block.html",
+            "img": "../instr/diagrams/block2.png",
             "fb": {
                 "Normal": "0",
                 "Weight": "180"
@@ -26,8 +26,8 @@
                 "Push"
             ],
             "title": "Two Blocks",
-            "inst": "instr/2blocks1.html",
-            "img": "instr/diagrams/AonB.png",
+            "inst": "../instr/2blocks1.html",
+            "img": "../instr/diagrams/AonB.png",
             "fb": {
                 "Normal": "0",
                 "Push": "90",
@@ -45,8 +45,8 @@
                 "Tension"
             ],
             "title": "Curling",
-            "inst": "instr/curling.html",
-            "img": "instr/diagrams/curlingRock2.png",
+            "inst": "../instr/curling.html",
+            "img": "../instr/diagrams/curlingRock2.png",
             "fb": {
                 "Normal": "0",
                 "Friction": "270",
@@ -63,8 +63,8 @@
                 "Air"
             ],
             "title": "Football in air",
-            "inst": "instr/football.html",
-            "img": "instr/diagrams/football.png",
+            "inst": "../instr/football.html",
+            "img": "../instr/diagrams/football.png",
             "fb": {
                 "Weight": "180"
             },
@@ -79,8 +79,8 @@
                 "Friction"
             ],
             "title": "Pulling a block",
-            "inst": "instr/pullBlock.html",
-            "img": "instr/diagrams/DragBox.png",
+            "inst": "../instr/pullBlock.html",
+            "img": "../instr/diagrams/DragBox.png",
             "fb": {
                 "Normal": "0",
                 "Weight": "180",
@@ -92,18 +92,18 @@
         {
             "forces": [
                 "Weight",
-                "Push",
-                "Normal",
+                "B on A",
+                "A on B",
                 "Tension",
                 "Friction"
             ],
             "title": "A hard push!",
-            "inst": "instr/hardPush.html",
-            "img": "instr/diagrams/friction1.png",
+            "inst": "../instr/hardPush.html",
+            "img": "../instr/diagrams/friction1.png",
             "fb": {
                 "Friction": "0",
                 "Weight": "180",
-                "Push": "90"
+                "A on B": "90"
             },
             "netForce": "90"
         },
@@ -116,8 +116,8 @@
                 "Friction"
             ],
             "title": "Pulleys 1",
-            "inst": "instr/pulleys1.html",
-            "img": "instr/diagrams/pulley1.png",
+            "inst": "../instr/pulleys1.html",
+            "img": "../instr/diagrams/pulley1.png",
             "fb": {
                 "Normal": "0",
                 "Weight": "180",
@@ -135,8 +135,8 @@
                 "Friction"
             ],
             "title": "Pulleys 2",
-            "inst": "instr/pulleys2.html",
-            "img": "instr/diagrams/pulley2.png",
+            "inst": "../instr/pulleys2.html",
+            "img": "../instr/diagrams/pulley2.png",
             "fb": {
                 "Weight": "180",
                 "Normal": "36",
@@ -154,8 +154,8 @@
                 "Normal"
             ],
             "title": "Pulleys 3 (A)",
-            "inst": "instr/pulleys3.html",
-            "img": "instr/diagrams/pulley3.png",
+            "inst": "../instr/pulleys3.html",
+            "img": "../instr/diagrams/pulley3.png",
             "fb": {
                 "B on A": "40",
                 "Weight": "180",
@@ -172,8 +172,8 @@
                 "Normal"
             ],
             "title": "Pulleys 3 (B)",
-            "inst": "instr/pulleys3B.html",
-            "img": "instr/diagrams/pulley3.png",
+            "inst": "../instr/pulleys3B.html",
+            "img": "../instr/diagrams/pulley3.png",
             "fb": {
                 "Normal": "18",
                 "C on B": "108",

@@ -31,15 +31,14 @@ var fb = (function () {
     return rFb;
 } ());
 function preload() {
-    game.load.spritesheet('arrowBtns', 'assets/freebody/btnSheet.png', 20, 20);
-    game.load.spritesheet('forceBtns', 'assets/freebody/btnsBlank.png', 100, 30, 3);
-    game.load.spritesheet('forces', 'assets/freebody/forceSheet2.png', 40, 40, 10);
-    game.load.spritesheet('rotateBtn', 'assets/freebody/rotateBtn.png', 50, 50, 3);
-    game.load.image('handle', 'assets/freebody/blank.png', 30, 30);
-    game.load.image('centerHandle', 'assets/freebody/handle.png', 30, 30);
-    game.load.image('forceCenter', 'assets/freebody/anchor.png', 15, 15);
-    game.load.image('deg', 'assets/freebody/deg.png', 10, 10);
-    game.load.image('rotHandle', 'assets/freebody/rotHandleRight.png');
+    game.load.spritesheet('arrowBtns', '../assets/freebody/btnSheet.png', 20, 20);
+    game.load.spritesheet('forceBtns', '../assets/freebody/btnsBlank.png', 100, 30, 3);
+    game.load.spritesheet('forces', '../assets/freebody/forceSheet2.png', 40, 40, 10);
+    game.load.image('handle', '../assets/freebody/blank.png', 30, 30);
+    game.load.image('centerHandle', '../assets/freebody/handle.png', 30, 30);
+    game.load.image('forceCenter', '../assets/freebody/anchor.png', 15, 15);
+    game.load.image('deg', '../assets/freebody/deg.png', 10, 10);
+    game.load.image('rotHandle', '../assets/freebody/rotHandleRight.png');
 }
 function create() {
     Modal.init();
@@ -55,7 +54,7 @@ function create() {
     createRotHandles();
     createAxis();
     setUpGraphics();
-    $.getJSON("json/freebody.json", function (data) {
+    $.getJSON("../json/freebody.json", function (data) {
         json = data;
         setUpExercise();
         setUpMenus();
@@ -69,7 +68,7 @@ function create() {
     fb.rArrow.visible = true;
 }
 function setPercents() {
-    for (var i = 0; i < json.exercises.length; i++) {
+    for (var i = 0; i < exercises.length; i++) {
         percents.push("");
     }
 }
@@ -273,18 +272,21 @@ function setUpArrow(comp, axis, radAngle) {
     fb.arrowArray.push(arrow);
 }
 function setUpExercise() {
-    var pImg = json.exercises[page - 1].img;
-    var pGif = json.exercises[page - 1].gif;
-    var title = "Exercise " + page + ": " + json.exercises[page - 1].title;
-    var forceArray = json.exercises[page - 1].forces;
+    var exercise = json.exercises[exercises[page - 1] - 1];
+    var pImg = exercise.img;
+    var pGif = exercise.gif;
+    var title = exercise.title;
+    var forceArray = exercise.forces;
     var percentDisplay = percents[page - 1];
     $('#pTitle').text(title);
     $('#pImg').attr('src', pImg);
-    $('#instr').load(json.exercises[page - 1].inst);
-    $('#unknown').html(json.exercises[page - 1].unk);
-    $('#units').text(json.exercises[page - 1].units);
+    $('#instr').load(exercise.inst);
+    $('#unknown').html(exercise.unk);
+    $('#units').text(exercise.units);
     $('#testFeedback').text(percentDisplay);
     setUpForceBtns(forceArray);
+    console.log("Exercise: " + [exercises[page - 1] - 1]);
+
 }
 function setUpForceBtns(btnArray) {
     var buttonBlock = game.add.graphics(0, 0);
@@ -829,15 +831,17 @@ function angleConvert(angle) {
     } else { rtnAngle = game.math.degToRad(angle) }
     return rtnAngle;
 }
-function Menu(id, mitems, titles) {
+function Menu(id, exs, mitems, titles) {
+    console.log("exs: " + JSON.stringify(exs) + " thumbs: " + JSON.stringify(mitems) + " titles: " + JSON.stringify(titles));
     this.init = function () {
         $('#dropdown' + id).html();
-        for (var i = 0; i < mitems.length; i++) {
-            $('#dropdown' + id).append("<button onclick=goto(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px' title='" + titles[i] + "'></img><br><span class='percentBtn' id='percent" + i + "'></span></button>");
+        for (var i = 0; i < exercises.length; i++) {
+            console.log("Add: " + exs[i] + " || " + mitems[i] + " || " + titles[i]);
+            $('#dropdown' + id).append("<button onclick=gotoPage(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px' title='" + titles[i] + "'></img><br><span class='percentBtn' id='percent" + exs[i] + "'></span></button>");
         }
     }
 }
-var goto = function (i) {
+var gotoPage = function (i) {
     page = i + 1;
     setUpExercise();
     resetFBD();
@@ -846,15 +850,29 @@ function setUpMenus() {
     var mainMenu;
     var titles = [];
     var thumbnails = [];
+    var ids = [];
+    for (var i = 0; i < exercises.length; i++) {
+        titles.push(json.exercises[exercises[i] - 1].title);
+        thumbnails.push(json.exercises[exercises[i] - 1].img);
+        ids.push(exercises[i] - 1);
+    }
+    /*
     for (var i = 0; i < json.exercises.length; i++) {
         titles.push(json.exercises[i].title);
     }
     for (var i = 0; i < json.exercises.length; i++) {
         thumbnails.push(json.exercises[i].img)
     }
-    mainMenu = new Menu("Main", thumbnails, titles);
+    */
+    mainMenu = new Menu("Main", ids, thumbnails, titles);
     mainMenu.init();
-    toggleMenu("Main");
+    if (exercises.length > 1) {
+        toggleMenu("Main");
+    } else {
+        document.getElementById("exs-menu").remove();
+        document.getElementById("prev").remove();
+        document.getElementById("next").remove();
+    }
 }
 function toggleMenu(id) {
     document.getElementById("dropdown" + id).classList.toggle("show");
@@ -865,7 +883,7 @@ $(document).ready(function () {
     var help = document.getElementById("help");
     var span = document.getElementsByClassName("close")[0];
     var json;
-    $.getJSON("json/freebody.json", function (data) {
+    $.getJSON("../json/freebody.json", function (data) {
         json = data;
     });
     $("#prev").click(function (event) {
@@ -876,7 +894,7 @@ $(document).ready(function () {
         resetFBD();
     })
     $("#next").click(function (event) {
-        if (page < json.exercises.length) {
+        if (page < exercises.length) {
             page++;
         }
         setUpExercise();
@@ -887,8 +905,8 @@ $(document).ready(function () {
     })
     $("#submit").click(function (event) {
         var ao = ansObj();
-        var so = json.exercises[page - 1].fb;
-        var solnNetForce = json.exercises[page - 1].netForce;
+        var so = json.exercises[exercises[page - 1] - 1].fb;
+        var solnNetForce = json.exercises[exercises[page - 1] - 1].netForce;
         var ansNetForce = Math.round(netForce.a * 180 / Math.PI);
         var marked = Marker.mark_simple_obj(ao, so);
         var totalScore = 0;
@@ -937,7 +955,7 @@ $(document).ready(function () {
         $("#percent").text(Math.round(totalScore) + "%");
         $("#hint").html(hint);
         percents[page - 1] = Math.round(totalScore) + "%";
-        var pId = page - 1;
+        var pId = exercises[page - 1] - 1;
         var percentId = "#percent" + pId;
         $(percentId).text(percents[page - 1]);
         $(percentId).prop("background-color", "#000000");
