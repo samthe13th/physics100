@@ -21,7 +21,9 @@ var rotAngleArray = [0];
 var dirArray = ["N", "E", "S", "W"];
 var percents = [];
 var helper;
-var helpTracker = "create";
+var helpTracker = "t_addArrow";
+var helpLevels = ["t_addArrow", "t_rotate", "t_addArrow2", "t_netForce", "t_removeArrow"];
+var completedHelpLevels = [];
 var helpTxt;
 var helpGroup;
 var fb = (function () {
@@ -72,7 +74,7 @@ function create() {
     drawArrow(fb.hoverArrow, findAngle(), 2, 0xCCCCCC);
     fb.hoverArrow.visible = false;
     fb.rArrow.visible = true;
-    helpTracker = "create";
+    helpTracker = helpLevels[0];
     helper = game.add.graphics(0.0);
     createHelp();
     updateHelp();
@@ -132,7 +134,7 @@ function createAxis(axis) {
 function createHelp() {
     var text = "test";
     var style = { font: "17px Helvetica", fill: "#000000", align: "center" };
-    drawHelp();
+    if (tutorial) { drawHelp() };
     helper.pivot.x = 80;
     helper.pivot.y = -25;
     helper.x = game.world.centerX;
@@ -156,19 +158,19 @@ function drawHelp() {
     helper.clear();
     helper.beginFill(0xffffff, 0.7);
     helper.drawRoundedRect(0, 0, 160, 100, 10);
-    if (helpTracker === "create") {
+    if (helpTracker === "t_addArrow") {
         helper.moveTo(60, 100);
         helper.lineTo(80, 120);
         helper.lineTo(100, 100);
-    } else if (helpTracker === "rotate") {
+    } else if (helpTracker === "t_rotate") {
         helper.moveTo(60, 0);
         helper.lineTo(165, -40);
         helper.lineTo(120, 0);
-    } else if (helpTracker === "netForce") {
+    } else if (helpTracker === "t_netForce") {
         helper.moveTo(60, 100);
         helper.lineTo(165, 140);
         helper.lineTo(110, 100);
-    } else if (helpTracker === "remove") {
+    } else if (helpTracker === "t_removeArrow") {
         helper.moveTo(100, 0);
         helper.lineTo(160, -40);
         helper.lineTo(140, 0);
@@ -181,17 +183,18 @@ function drawHelp() {
 function updateHelp() {
     drawHelp();
     helper.visible = true;
-    if (helpTracker === "create") {
+    helpGroup.visible = true;
+    if (helpTracker === "t_addArrow") {
         helpTxt.setText("To add arrows: \ndrag from \ncenter");
-    } else if (helpTracker === "rotate") {
+    } else if (helpTracker === "t_rotate") {
         helpGroup.y = - 140;
         helpGroup.x = - 90;
         helpTxt.setText("To rotate axis: \n drag axis \nclockwise");
-    } else if (helpTracker === "netForce") {
+    } else if (helpTracker === "t_netForce") {
         helpGroup.y = - 140;
         helpGroup.x = - 90;
         helpTxt.setText("Drag arrows \n to change \n magnitude");
-    } else if (helpTracker === "remove") {
+    } else if (helpTracker === "t_removeArrow") {
         helpGroup.y = 40;
         helpGroup.x = - 90;
         helpTxt.setText("To remove arrows: \n click and drag \n arrow to center");
@@ -359,14 +362,27 @@ function setUpExercise() {
     var percentDisplay = percents[page - 1];
     $('#pImg').attr('src', exercise.img);
     $('#pTitle').text(title);
-    $('#instr').load(exercise.inst);
+    $('#instr').load(exercise.inst, null,
+        function () {
+            if (tutorial) {
+                for (var i = 0; i < completedHelpLevels.length; i++) {
+                    var id = "#" + completedHelpLevels[i];
+                    $(id).attr("src", "../assets/freebody/checkboxB.png");
+                }
+            }
+        });
     $('#unknown').html(exercise.unk);
     $('#units').text(exercise.units);
     $('#testFeedback').text(percentDisplay);
-    if (exercise.title === "Tutorial"){
+    if (exercise.title === "Tutorial") {
         $("#submit").hide();
+        if (helpTracker !== null) {
+            helpGroup.visible = true;
+            helper.visible = true;
+        }
     } else {
         $("#submit").show();
+        helpGroup.visible = false;
     }
     setUpForceBtns(forceArray);
 }
@@ -875,39 +891,47 @@ function handleUp() {
 var arrowCount1;
 var arrowCount2;
 function tutorialMark() {
-    if (helpTracker === "create") {
+    if (helpTracker === "t_addArrow") {
         if (fb.arrowArray[6].degAngle === 180 && fb.arrowArray[6].mag > 0) {
             $('#t_addArrow').attr("src", "../assets/freebody/checkboxB.png");
-            helpTracker = "rotate";
+            completedHelpLevels.push(helpLevels[0]);
+            helpLevels.shift();
+            helpTracker = helpLevels[0];
             updateHelp();
         }
     };
-    if (helpTracker === "rotate") {
+    if (helpTracker === "t_rotate") {
         if (Math.round(fb.rAxis.rotation * 180 / Math.PI) === 60) {
             $("#t_rotate").attr("src", "../assets/freebody/checkboxB.png");
-            helpTracker = "create2";
+            completedHelpLevels.push(helpLevels[0]);
+            helpLevels.shift();
+            helpTracker = helpLevels[0];
             updateHelp();
         }
     };
-    if (helpTracker === "create2") {
+    if (helpTracker === "t_addArrow2") {
         if (fb.arrowArray[0].degAngle === 60 && fb.arrowArray[0].mag > 0) {
             $("#t_addArrow2").attr("src", "../assets/freebody/checkboxB.png");
-            helpTracker = "netForce";
+            completedHelpLevels.push(helpLevels[0]);
+            helpLevels.shift();
+            helpTracker = helpLevels[0];
             updateHelp();
         }
     };
-    if (helpTracker === "netForce" && netForce.a === Math.PI / 2) {
+    if (helpTracker === "t_netForce" && netForce.a === Math.PI / 2) {
         arrowCount1 = 0;
         $("#t_netForce").attr("src", "../assets/freebody/checkboxB.png");
-        helpTracker = "remove";
+        completedHelpLevels.push(helpLevels[0]);
         for (var i = 0; i < fb.arrowArray.length; i++) {
             if (fb.arrowArray[i].mag > 0) {
                 arrowCount1++;
             }
         }
+        helpLevels.shift();
+        helpTracker = helpLevels[0];
         updateHelp();
     };
-    if (helpTracker === "remove") {
+    if (helpTracker === "t_removeArrow") {
         arrowCount2 = 0;
         for (var i = 0; i < fb.arrowArray.length; i++) {
             if (fb.arrowArray[i].mag > 0) {
@@ -916,7 +940,12 @@ function tutorialMark() {
         }
         if (arrowCount2 < arrowCount1) {
             $("#t_removeArrow").attr("src", "../assets/freebody/checkboxB.png");
+            completedHelpLevels.push(helpLevels[0]);
             helpTracker = null;
+            var feedback = document.getElementById("feedback");
+            feedback.style.display = "block";
+            $("#percent").text("Tutorial Complete!");
+            $("#hint").text("If you need another refresher, the HELP menu covers all the basics.")
             updateHelp();
         }
     };
@@ -947,7 +976,7 @@ function forceSelect(btn) {
 }
 function rotHandleDown(h) {
     rotHandlesGroup.handleSelected = true;
-    state = "rotate";
+    state = "t_rotate";
     fb.currentRotHandle = h;
 }
 function rotHandleUp(h) {
@@ -974,11 +1003,9 @@ function angleConvert(angle) {
     return rtnAngle;
 }
 function Menu(id, exs, mitems, titles) {
-    console.log("exs: " + JSON.stringify(exs) + " thumbs: " + JSON.stringify(mitems) + " titles: " + JSON.stringify(titles));
     this.init = function () {
         $('#dropdown' + id).html();
         for (var i = 0; i < exercises.length; i++) {
-            console.log("Add: " + exs[i] + " || " + mitems[i] + " || " + titles[i]);
             $('#dropdown' + id).append("<button onclick=gotoPage(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px' title='" + titles[i] + "'></img><br><span class='percentBtn' id='percent" + exs[i] + "'></span></button>");
         }
     }
