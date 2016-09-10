@@ -27,12 +27,11 @@ var completedHelpLevels = [];
 var helpTxt;
 var helpGroup;
 var fb = (function () {
-    var ghostArrow, selectedArrow, rArrow, hoverArrow;
+    var ghostArrow, rArrow, hoverArrow;
     var arrowArray = [];
     var rotHandle, rotHandle2, rotHandle3, rotHandle4, currentRotHandle;
     var angleText, deg, rAxis, forceCenter, handle, centerHandle, hyp, rotHyp;
     var rFb = {};
-    rFb.selectedArrow = { "fType": "" };
     rFb.moveArrow = { "fType": "" };
     rFb.currentRotHandle = "";
     return rFb;
@@ -51,7 +50,6 @@ function preload() {
 function create() {
     Modal.init();
     aId = 1;
-    fb.selectedArrow.forces = game.add.sprite(0, 0, 'forces', 0);
     fb.moveArrow.forces = game.add.sprite(0, 0, 'forces', 0);
     fb.moveArrow.dir = "";
     fb.arrowArray = [];
@@ -363,8 +361,10 @@ function setUpExercise() {
     $('#pImg').attr('src', exercise.img);
     $('#pTitle').text(title);
     $('#instr').load(exercise.inst, null,
+        //callback:
         function () {
             if (tutorial) {
+                //mark tutorial tasks already completed
                 for (var i = 0; i < completedHelpLevels.length; i++) {
                     var id = "#" + completedHelpLevels[i];
                     $(id).attr("src", "../assets/freebody/checkboxB.png");
@@ -709,11 +709,11 @@ function set_cArrow(a) {
 }
 //EVENT HANDLING
 function update() {
-    var aLength = gp.arrowLength;
-    var ca = closestAngle(findAngle());
-    var nf;
-    set_cArrow(ca);
-    if (menuMode == false) {
+    if (menuMode === false) {
+        var aLength = gp.arrowLength;
+        var ca = closestAngle(findAngle());
+        var nf;
+        set_cArrow(ca);
         fb.rotHandle.visible = false;
         fb.rotHandle2.visible = false;
         fb.rotHandle3.visible = false;
@@ -860,21 +860,22 @@ function handleUp() {
             cArrow.setForce();
             cArrow.visible = true;
             drawArrow(cArrow, cAngle, gp.arrowLength, 0x000000);
-            fb.selectedArrow = getArrowByAngle(closestAngle(findAngle()));
-            if (fb.selectedArrow.axis == "abs") {
-                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle) + game.world.centerX;
-                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle);
+            cArrow = getArrowByAngle(closestAngle(findAngle()));
+            if (cArrow.axis == "abs") {
+                cArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle) + game.world.centerX;
+                cArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle);
             } else {
-                fb.selectedArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle - fb.rAxis.rotation) + game.world.centerX;
-                fb.selectedArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle - fb.rAxis.rotation);
+                cArrow.forces.x = (fDiff + gp.arrowLength) * Math.sin(cArrow.radAngle - fb.rAxis.rotation) + game.world.centerX;
+                cArrow.forces.y = game.world.centerY - (fDiff + gp.arrowLength) * Math.cos(cArrow.radAngle - fb.rAxis.rotation);
             }
             if (fb.moveArrow == null) {
+                //state = "menu";
                 showForceMenu();
             } else {
-                fb.selectedArrow.fType = fb.moveArrow.fType;
-                fb.selectedArrow.visible = true;
-                fb.selectedArrow.setFrames();
-                fb.selectedArrow.forces.visible = true;
+                cArrow.fType = fb.moveArrow.fType;
+                cArrow.visible = true;
+                cArrow.setFrames();
+                cArrow.forces.visible = true;
             }
         }
         fb.ghostArrow.destroy();
@@ -901,7 +902,7 @@ function tutorialMark() {
         }
     };
     if (helpTracker === "t_rotate") {
-        if (Math.round(fb.rAxis.rotation * 180 / Math.PI) === 60) {
+        if (Math.round(fb.rAxis.rotation * 180 / Math.PI) === 30) {
             $("#t_rotate").attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[0]);
             helpLevels.shift();
@@ -966,23 +967,25 @@ function showForceMenu() {
 }
 function forceSelect(btn) {
     arrowGroup.visible = false;
-    fb.selectedArrow.forces.visible = true;
-    fb.selectedArrow.fType = btn.id;
-    fb.selectedArrow.setFrames();
+    cArrow.forces.visible = true;
+    cArrow.fType = btn.id;
+    cArrow.setFrames();
     menuMode = false;
+   // fb.newArrow = null;
     if (tutorial) {
         tutorialMark();
     }
 }
 function rotHandleDown(h) {
+    state = "rotate";
     rotHandlesGroup.handleSelected = true;
-    state = "t_rotate";
     fb.currentRotHandle = h;
 }
 function rotHandleUp(h) {
+    state = null;
+    console.log(rotHandlesGroup.rotation);
     rotHandlesGroup.handleSelected = false;
     fb.currentRotHandle = "";
-    state = null;
     drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
     if (tutorial) {
         tutorialMark();
@@ -1133,5 +1136,50 @@ $(document).ready(function () {
 });
 //DEBUGGING
 function render() {
+    var aa = fb.arrowArray;
+    var aaStr1 = "";
+    var aaStr2 = "";
+    var aaStr3 = "";
+    var aaStr4 = "";
+    /*
+    if (fb.currentArrow != null) {
+        game.debug.text("ghostArrow: " + " [" + fb.currentArrow.mag + "] (" + fb.currentArrow.radAngle + ")", 0, 20);
+    }
+    game.debug.text("cArrow: " + cArrow.fType + " [" + cArrow.mag + "] (" + cArrow.radAngle + ")", 0, 40);
+    game.debug.text("y: " + netForce.v, 0, 300);
+    game.debug.text("x: " + netForce.h, 0, 320);
+    game.debug.text("a: " + netForce.a, 0, 340);
+    */
+    for (var i = 0; i < aa.length; i += 4) {
+        aaStr1 += aa[i].axis + " " + aa[i].degAngle + ": " + aa[i].fType + "(" + round(aa[i].mag, 10) + ")";
+        aaStr2 += aa[i + 1].axis + " " + aa[i + 1].degAngle + ": " + aa[i + 1].fType + "(" + round(aa[i + 1].mag, 10) + ")";
+        aaStr3 += aa[i + 2].axis + " " + aa[i + 2].degAngle + ": " + aa[i + 2].fType + "(" + round(aa[i + 2].mag, 10) + ")";
+        aaStr4 += aa[i + 3].axis + " " + aa[i + 3].degAngle + ": " + aa[i + 3].fType + "(" + round(aa[i + 3].mag, 10) + ")";
+    }
+    //game.debug.text("rAxis.rotation = " + fb.rAxis.rotation, 0, 310);
+    // game.debug.text(cArrow.aId + ": " + cArrow.fType + ", mag = " + cArrow.mag, 0, 310);
+    game.debug.text(aaStr1, 0, 280);
+    game.debug.text(aaStr2, 0, 300);
+    game.debug.text(aaStr3, 0, 320);
+    game.debug.text(aaStr4, 0, 340);
+    /*
+        //Debugging displays
+         game.debug.text("fb.N_rel_arrow_abs: " + fb.N_abs_arrow.fType + " // fb.N_rel_arrow_rel: " + fb.N_rel_arrow.fType, 10, 330);
+         game.debug.text("fb.E_rel_arrow_abs: " + fb.E_abs_arrow.fType + " // fb.E_rel_arrow_rel: " + fb.E_rel_arrow.fType, 10, 350);
+         game.debug.text("fb.S_rel_arrow_abs: " + fb.S_abs_arrow.fType + " // fb.S_rel_arrow_rel: " + fb.S_rel_arrow.fType, 10, 370);
+         game.debug.text("fb.W_rel_arrow_abs: " + fb.W_abs_arrow.fType + " // fb.W_rel_arrow_rel: " + fb.W_rel_arrow.fType, 10, 390);   
+
+        */
+
+    if (fb.ghostArrow != null) {
+        game.debug.text("Ghost Arrow: " + "[" + fb.ghostArrow.mag + "]", 10, 20);
+    }
+    // game.debug.text("State: " + state, 10, 20);
+    if (cArrow != null) {
+        game.debug.text("cArrow: " + cArrow.fType + "(" + cArrow.degAngle + ") [" + cArrow.mag + "]", 10, 60);
+    }
+    if (fb.moveArrow != null) {
+        game.debug.text("mArrow: " + fb.moveArrow.fType + "(" + fb.moveArrow.degAngle + ") [" + fb.moveArrow.mag + "]", 10, 80);
+    }
 
 };
