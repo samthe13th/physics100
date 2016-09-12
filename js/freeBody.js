@@ -396,7 +396,7 @@ function setUpArrow(comp, axis, radAngle) {
     fb.arrowArray.push(arrow);
 }
 function setUpExercise() {
-    var exercise = json.exercises[exercises[page - 1] - 1];
+    var exercise = json.exercises[exercises[page - 1]];
     var pGif = exercise.gif;
     var title = exercise.title;
     var forceArray = exercise.forces;
@@ -968,7 +968,7 @@ function tutorialMark() {
         }
     };
     if (helpTracker === "t_rotate") {
-        if (Math.round(fb.rAxis.rotation * 180 / Math.PI) === 60) {
+        if (Math.round(fb.rAxis.rotation * 180 / Math.PI) === 50) {
             $("#t_rotate").attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[1]);
             //helpLevels.shift();
@@ -977,7 +977,7 @@ function tutorialMark() {
         }
     };
     if (helpTracker === "t_addArrow2") {
-        if (fb.arrowArray[0].degAngle === 60 && fb.arrowArray[0].mag > 0) {
+        if (fb.arrowArray[0].degAngle === 50 && fb.arrowArray[0].mag > 0) {
             $("#t_addArrow2").attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[2]);
             //helpLevels.shift();
@@ -1099,9 +1099,9 @@ function setUpMenus() {
     var thumbnails = [];
     var ids = [];
     for (var i = 0; i < exercises.length; i++) {
-        titles.push(json.exercises[exercises[i] - 1].title);
-        thumbnails.push(json.exercises[exercises[i] - 1].thumb);
-        ids.push(exercises[i] - 1);
+        titles.push(json.exercises[exercises[i]].title);
+        thumbnails.push(json.exercises[exercises[i]].thumb);
+        ids.push(exercises[i]);
     }
     /*
     for (var i = 0; i < json.exercises.length; i++) {
@@ -1143,6 +1143,7 @@ $(document).ready(function () {
     $("#next").click(function (event) {
         if (page < exercises.length) {
             page++;
+            console.log("page: " + page);
         }
         setUpExercise();
         resetFBD();
