@@ -5,7 +5,7 @@ var tutorial = true;
 var menuMode = false;
 var progress = [];
 var graphicsGroup;
-var arrowGroup;
+var forceBtnsGroup;
 var rotHandlesGroup;
 var arcGraphics;
 var forceBtns;
@@ -112,6 +112,7 @@ function createResetBtn() {
     resetBtn = game.add.button(4, 4, 'resetBtn', resetExercise, this, 1, 0, 0);
 }
 function resetExercise() {
+    closeMenu();
     for (var i = 0; i < fb.arrowArray.length; i++) {
         progress[page - 1][i].a = 0;
         progress[page - 1][i].m = 0;
@@ -125,8 +126,18 @@ function resetExercise() {
         completedHelpLevels = [];
         helpTracker = helpLevels[0];
         updateHelp();
+        $("#percent0").text("");
+        $("#testFeedback").text("");
     }
     resetFBD();
+}
+function closeMenu() {
+    if (currentArrow.fType === "") {
+        currentArrow.mag = 0;
+    }
+    state = null;
+    menuMode = false;
+    forceBtnsGroup.visible = false;
 }
 function createHandle() {
     fb.handle = game.add.sprite(0, 0, 'handle', 0);
@@ -440,9 +451,9 @@ function setUpForceBtns(btnArray) {
     buttonBlock.pivot.set(buttonBlock.width / 2, buttonBlock.height / 2);
     buttonBG.beginFill(0x000000, 0.5);
     buttonBG.drawRect(0, 0, game.width, game.height);
-    arrowGroup = game.add.group();
-    arrowGroup.add(buttonBG);
-    arrowGroup.add(buttonBlock);
+    forceBtnsGroup = game.add.group();
+    forceBtnsGroup.add(buttonBG);
+    forceBtnsGroup.add(buttonBlock);
     forceBtns[0] = game.add.button(game.world.centerX, game.world.centerY - 60, 'forceBtns', function () { forceSelect(forceBtns[0]) }, this, 1, 0, 0);
     forceBtns[1] = game.add.button(game.world.centerX, game.world.centerY - 30, 'forceBtns', function () { forceSelect(forceBtns[1]) }, this, 1, 0, 0);
     forceBtns[2] = game.add.button(game.world.centerX, game.world.centerY, 'forceBtns', function () { forceSelect(forceBtns[2]) }, this, 1, 0, 0);
@@ -454,10 +465,10 @@ function setUpForceBtns(btnArray) {
         forceBtns[i].id = btnArray[i];
         addBtnText(forceBtns[i], btnArray[i]);
         window.rich = forceBtns[i];
-        arrowGroup.add(forceBtns[i]);
-        arrowGroup.add(forceBtns[i].text);
+        forceBtnsGroup.add(forceBtns[i]);
+        forceBtnsGroup.add(forceBtns[i].text);
     }
-    arrowGroup.visible = false;
+    forceBtnsGroup.visible = false;
 }
 //GETTERS
 function ansObj() {
@@ -962,27 +973,30 @@ function tutorialMark() {
         if (fb.arrowArray[6].degAngle === 180 && fb.arrowArray[6].mag > 0) {
             $('#t_addArrow').attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[0]);
-            //helpLevels.shift();
             helpTracker = helpLevels[1];
             updateHelp();
+            $("#percent0").text("20%");
+            $("#testFeedback").text("20%");
         }
     };
     if (helpTracker === "t_rotate") {
         if (Math.round(fb.rAxis.rotation * 180 / Math.PI) === 50) {
             $("#t_rotate").attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[1]);
-            //helpLevels.shift();
             helpTracker = helpLevels[2];
             updateHelp();
+            $("#percent0").text("40%");
+            $("#testFeedback").text("40%");
         }
     };
     if (helpTracker === "t_addArrow2") {
         if (fb.arrowArray[0].degAngle === 50 && fb.arrowArray[0].mag > 0) {
             $("#t_addArrow2").attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[2]);
-            //helpLevels.shift();
             helpTracker = helpLevels[3];
             updateHelp();
+            $("#percent0").text("60%");
+            $("#testFeedback").text("60%");
         }
     };
     if (helpTracker === "t_netForce" && netForce.a === Math.PI / 2) {
@@ -994,9 +1008,10 @@ function tutorialMark() {
                 arrowCount1++;
             }
         }
-        //helpLevels.shift();
         helpTracker = helpLevels[4];
         updateHelp();
+        $("#percent0").text("80%");
+        $("#testFeedback").text("80%");
     };
     if (helpTracker === "t_removeArrow") {
         arrowCount2 = 0;
@@ -1014,6 +1029,8 @@ function tutorialMark() {
             $("#percent").text("Tutorial Complete!");
             $("#hint").text("If you need another refresher, the HELP menu covers all the basics.")
             updateHelp();
+            $("#percent0").text("100%");
+            $("#testFeedback").text("100%");
         }
     };
 };
@@ -1027,13 +1044,13 @@ function removeUnusedTypes() {
 function showForceMenu() {
     menuMode = true;
     state = "menu";
-    arrowGroup.visible = true;
+    forceBtnsGroup.visible = true;
     for (var i = 0; i < forceBtns.length; i++) {
         forceBtns[i].text.visible = true;
     }
 }
 function forceSelect(btn) {
-    arrowGroup.visible = false;
+    forceBtnsGroup.visible = false;
     currentArrow.forces.visible = true;
     currentArrow.fType = btn.id;
     currentArrow.setFrames();
@@ -1080,7 +1097,7 @@ function Menu(id, exs, mitems, titles) {
     }
 }
 function gotoPage(i) {
-
+    closeMenu();
     saveProgress(page);
     page = i + 1;
     setUpExercise();
@@ -1134,6 +1151,7 @@ $(document).ready(function () {
         json = data;
     });
     $("#prev").click(function (event) {
+        closeMenu();
         if (page > 1) {
             page--;
         }
@@ -1141,6 +1159,7 @@ $(document).ready(function () {
         resetFBD();
     })
     $("#next").click(function (event) {
+        closeMenu();
         if (page < exercises.length) {
             page++;
             console.log("page: " + page);
@@ -1152,15 +1171,17 @@ $(document).ready(function () {
         feedback.style.display = "none";
     })
     $("#submit").click(function (event) {
-        var ao = ansObj();
-        var so = json.exercises[exercises[page - 1] - 1].fb;
-        var solnNetForce = json.exercises[exercises[page - 1] - 1].netForce;
-        var ansNetForce = Math.round(netForce.a * 180 / Math.PI);
-        var marked = Marker.mark_simple_obj(ao, so);
-        var totalScore = 0;
-        var magError = 0;
-        var forceScoreSimple = forceScoreSimple = marked.percent.total;
-        var hint = "hint";
+        var ao, so, solnNetForce, ansNetForce, marked, totalScore, magError, forceScoreSimple, hint;
+        closeMenu();
+        ao = ansObj();
+        so = json.exercises[exercises[page - 1]].fb;
+        solnNetForce = json.exercises[exercises[page - 1]].netForce;
+        ansNetForce = Math.round(netForce.a * 180 / Math.PI);
+        marked = Marker.mark_simple_obj(ao, so);
+        totalScore = 0;
+        magError = 0;
+        forceScoreSimple = forceScoreSimple = marked.percent.total;
+        hint = "hint";
         feedback.style.display = "block";
         /*
          $("#debug-output").html(
@@ -1203,7 +1224,7 @@ $(document).ready(function () {
         $("#percent").text(Math.round(totalScore) + "%");
         $("#hint").html(hint);
         percents[page - 1] = Math.round(totalScore) + "%";
-        var pId = exercises[page - 1] - 1;
+        var pId = exercises[page - 1];
         var percentId = "#percent" + pId;
         $(percentId).text(percents[page - 1]);
         $(percentId).prop("background-color", "#000000");
