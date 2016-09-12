@@ -11,6 +11,7 @@ var arcGraphics;
 var forceBtns;
 var json;
 var cAngle;
+var resetBtn;
 var currentArrow;
 var aId;
 var fDiff = 38;
@@ -48,6 +49,7 @@ function preload() {
     game.load.image('deg', '../assets/freebody/deg.png', 10, 10);
     game.load.image('rotHandle', '../assets/freebody/rotHandleRight.png');
     game.load.spritesheet('checkbox', '../assets/freebody/checkbox.png', 50, 50, 2);
+    game.load.spritesheet('resetBtn', '../assets/freebody/resetBtn.png', 70, 30);
 }
 function create() {
     Modal.init();
@@ -79,6 +81,7 @@ function create() {
     helper = game.add.graphics(0.0);
     createHelp();
     updateHelp();
+    createResetBtn();
 }
 function setProgress() {
     for (var i = 0; i < exercises.length; i++) {
@@ -104,6 +107,26 @@ function createForceCenter() {
     fb.forceCenter.anchor.set(0.5);
     fb.forceCenter.x = game.world.centerX;
     fb.forceCenter.y = game.world.centerY;
+}
+function createResetBtn() {
+    resetBtn = game.add.button(4, 4, 'resetBtn', resetExercise, this, 1, 0, 0);
+}
+function resetExercise() {
+    for (var i = 0; i < fb.arrowArray.length; i++) {
+        progress[page - 1][i].a = 0;
+        progress[page - 1][i].m = 0;
+        progress[page - 1][i].f = "";
+    };
+    if (tutorial) {
+        for (var i = 0; i < completedHelpLevels.length; i++) {
+            var id = "#" + completedHelpLevels[i];
+            $(id).attr("src", "../assets/freebody/checkboxA.png");
+        }
+        completedHelpLevels = [];
+        helpTracker = helpLevels[0];
+        updateHelp();
+    }
+    resetFBD();
 }
 function createHandle() {
     fb.handle = game.add.sprite(0, 0, 'handle', 0);
@@ -191,6 +214,7 @@ function drawHelp() {
         helper.lineTo(140, 0);
     } else {
         helpTxt.setText("");
+        helper.visible = false;
     }
     helper.endFill();
 }
@@ -201,6 +225,8 @@ function updateHelp() {
     helpGroup.visible = true;
     if (helpTracker === "t_addArrow") {
         helpTxt.setText("To add arrows: \ndrag from \ncenter");
+        helpGroup.y = -150;
+        helpGroup.x = 0;
     } else if (helpTracker === "t_rotate") {
         helpGroup.y = - 140;
         helpGroup.x = - 90;
@@ -636,7 +662,6 @@ function resetFBD() {
     for (var i = 0; i < arrayLength; i++) {
         fb.arrowArray[i].fType = progress[page - 1][i].f;
         fb.arrowArray[i].mag = progress[page - 1][i].m;
-        // fb.arrowArray[i].radAngle = progress[page - 1][i].r;
         if (progress[page - 1][i].f !== "") {
             fb.arrowArray[i].setFrames();
             drawArrow(fb.arrowArray[i], fb.arrowArray[i].radAngle, fb.arrowArray[i].mag * gp.magLength, 0x000000);
@@ -660,6 +685,9 @@ function resetFBD() {
     } else {
         fb.angleText.visible = true;
         fb.deg.visible = true;
+    }
+    if (tutorial) {
+        drawHelp();
     }
 }
 function createRotHandles() {
@@ -934,40 +962,40 @@ function tutorialMark() {
         if (fb.arrowArray[6].degAngle === 180 && fb.arrowArray[6].mag > 0) {
             $('#t_addArrow').attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[0]);
-            helpLevels.shift();
-            helpTracker = helpLevels[0];
+            //helpLevels.shift();
+            helpTracker = helpLevels[1];
             updateHelp();
         }
     };
     if (helpTracker === "t_rotate") {
         if (Math.round(fb.rAxis.rotation * 180 / Math.PI) === 60) {
             $("#t_rotate").attr("src", "../assets/freebody/checkboxB.png");
-            completedHelpLevels.push(helpLevels[0]);
-            helpLevels.shift();
-            helpTracker = helpLevels[0];
+            completedHelpLevels.push(helpLevels[1]);
+            //helpLevels.shift();
+            helpTracker = helpLevels[2];
             updateHelp();
         }
     };
     if (helpTracker === "t_addArrow2") {
         if (fb.arrowArray[0].degAngle === 60 && fb.arrowArray[0].mag > 0) {
             $("#t_addArrow2").attr("src", "../assets/freebody/checkboxB.png");
-            completedHelpLevels.push(helpLevels[0]);
-            helpLevels.shift();
-            helpTracker = helpLevels[0];
+            completedHelpLevels.push(helpLevels[2]);
+            //helpLevels.shift();
+            helpTracker = helpLevels[3];
             updateHelp();
         }
     };
     if (helpTracker === "t_netForce" && netForce.a === Math.PI / 2) {
         arrowCount1 = 0;
         $("#t_netForce").attr("src", "../assets/freebody/checkboxB.png");
-        completedHelpLevels.push(helpLevels[0]);
+        completedHelpLevels.push(helpLevels[3]);
         for (var i = 0; i < fb.arrowArray.length; i++) {
             if (fb.arrowArray[i].mag > 0) {
                 arrowCount1++;
             }
         }
-        helpLevels.shift();
-        helpTracker = helpLevels[0];
+        //helpLevels.shift();
+        helpTracker = helpLevels[4];
         updateHelp();
     };
     if (helpTracker === "t_removeArrow") {
@@ -979,7 +1007,7 @@ function tutorialMark() {
         }
         if (arrowCount2 < arrowCount1) {
             $("#t_removeArrow").attr("src", "../assets/freebody/checkboxB.png");
-            completedHelpLevels.push(helpLevels[0]);
+            completedHelpLevels.push(helpLevels[4]);
             helpTracker = null;
             var feedback = document.getElementById("feedback");
             feedback.style.display = "block";
