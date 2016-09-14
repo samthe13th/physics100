@@ -12,6 +12,7 @@ var forceBtns;
 var json;
 var cAngle;
 var resetBtn;
+var submitBtn;
 var currentArrow;
 var aId;
 var fDiff = 38;
@@ -29,6 +30,7 @@ var helpLevels = ["t_addArrow", "t_rotate", "t_addArrow2", "t_netForce", "t_remo
 var completedHelpLevels = [];
 var helpTxt;
 var helpGroup;
+var feedback, help, json;
 var fb = (function () {
     var ghostArrowDisplay, rArrow, hoverArrowDisplay;
     var arrowArray = [];
@@ -49,10 +51,11 @@ function preload() {
     game.load.image('deg', '../assets/freebody/deg.png', 10, 10);
     game.load.image('rotHandle', '../assets/freebody/rotHandleRight.png');
     game.load.spritesheet('checkbox', '../assets/freebody/checkbox.png', 50, 50, 2);
-    game.load.spritesheet('resetBtn', '../assets/freebody/resetBtn.png', 70, 30);
+    game.load.spritesheet('resetBtn', '../assets/freebody/resetBtn.png', 82, 35);
+    game.load.spritesheet('submitBtn', '../assets/freebody/submitBtn.png', 82, 35);
 }
 function create() {
-    Modal.init();
+    //Modal.init();
     aId = 1;
     fb.moveArrow.forces = game.add.sprite(0, 0, 'forces', 0);
     fb.moveArrow.dir = "";
@@ -82,6 +85,7 @@ function create() {
     createHelp();
     updateHelp();
     createResetBtn();
+    createSubmitBtn();
 }
 function setProgress() {
     for (var i = 0; i < exercises.length; i++) {
@@ -111,6 +115,73 @@ function createForceCenter() {
 function createResetBtn() {
     resetBtn = game.add.button(4, 4, 'resetBtn', resetExercise, this, 1, 0, 0);
 }
+function createSubmitBtn() {
+    submitBtn = game.add.button(-4, 4, 'submitBtn', submitAction, this, 1, 0, 0);
+    submitBtn.x += (game.world.width - submitBtn.width);
+}
+function submitAction() {
+    console.log("Submit btn clicked");
+    var ao, so, solnNetForce, ansNetForce, marked, totalScore, magError, forceScoreSimple, hint;
+    closeMenu();
+    ao = ansObj();
+    so = json.exercises[exercises[page - 1]].fb;
+    solnNetForce = json.exercises[exercises[page - 1]].netForce;
+    ansNetForce = Math.round(netForce.a * 180 / Math.PI);
+    marked = Marker.mark_simple_obj(ao, so);
+    totalScore = 0;
+    magError = 0;
+    forceScoreSimple = forceScoreSimple = marked.percent.total;
+    hint = "hint";
+    feedback.style.display = "block";
+    /*
+     $("#debug-output").html(
+         '<strong> Force Score (simple): </strong>' + forceScoreSimple + '<br>' +
+         '<strong> angles (simple): </strong>' + marked.percent.keys + '<br>' +
+         '<strong> force types (simple): </strong>' + marked.percent.values + '<br>' +
+         '<strong> kv (simple): </strong>' + marked.percent.kv + '<br>' +
+         '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
+         '<strong> Solution: </strong>' + JSON.stringify(so)
+     );
+   */
+    if (fb.rArrow.visible == false || netForce.mag == 0) {
+        ansNetForce = null;
+    }
+    if (solnNetForce !== null) {
+        solnNetForce = parseInt(solnNetForce);
+    }
+    if (ansNetForce !== solnNetForce) {
+        magError += (marked.worth / 2);
+    };
+    totalScore = Math.round(forceScoreSimple - magError);
+    if (totalScore < 0) { totalScore = 0 };
+    if (totalScore == 100) {
+        hint = "Great job!";
+    } else if (forceScoreSimple === 100) {
+        if (solnNetForce === null) {
+            hint = "Make sure your net force is zero for this problem.";
+        } else {
+            hint = "Make sure your net force arrow (orange) is pointing in the direction of acceleration for the system.";
+        }
+    } else if (Object.keys(ansObj()).length > Object.keys(so).length) {
+        hint = "You may be adding a force or two that you don't need...";
+    } else if (Object.keys(ansObj()).length < Object.keys(so).length) {
+        hint = "You are missing at least one force.";
+    } else if (marked.percent.values === 100) {
+        hint = "Your forces are correct, but are not all facing the right direction";
+    } else {
+        hint = "Not quite! Try again.";
+    }
+    $("#percent").text(Math.round(totalScore) + "%");
+    $("#hint").html(hint);
+    percents[page - 1] = Math.round(totalScore) + "%";
+    var pId = exercises[page - 1];
+    var percentId = "#percent" + pId;
+    $(percentId).text(percents[page - 1]);
+    $(percentId).css("visibility", "visible");
+    if (totalScore === 100) {
+        $(percentId).css("background-color", "#5cb85c");
+    }
+}
 function resetExercise() {
     closeMenu();
     for (var i = 0; i < fb.arrowArray.length; i++) {
@@ -127,7 +198,6 @@ function resetExercise() {
         helpTracker = helpLevels[0];
         updateHelp();
         $("#percent0").text("");
-        $("#testFeedback").text("");
     }
     resetFBD();
 }
@@ -427,10 +497,10 @@ function setUpExercise() {
         });
     $('#unknown').html(exercise.unk);
     $('#units').text(exercise.units);
-    $('#testFeedback').text(percentDisplay);
     if (exercise.title === "Tutorial") {
         tutorial = true;
         $("#submit").hide();
+        submitBtn.visible = false;
         if (helpTracker !== null) {
             helpGroup.visible = true;
             helper.visible = true;
@@ -438,9 +508,12 @@ function setUpExercise() {
     } else {
         tutorial = false;
         $("#submit").show();
+        submitBtn.visible = true;
         helpGroup.visible = false;
     }
     setUpForceBtns(forceArray);
+    var mId = page - 1;
+    $("#menuBtn" + mId).css({ "border-style": "solid", "border-width": "3px", "border-color": "#4C9EDA" });
 }
 function setUpForceBtns(btnArray) {
     var buttonBlock = game.add.graphics(0, 0);
@@ -970,13 +1043,13 @@ function positionForces(arrow) {
 }
 function tutorialMark() {
     if (helpTracker === "t_addArrow") {
+        $(percent0).css("visibility", "visible");
         if (fb.arrowArray[6].degAngle === 180 && fb.arrowArray[6].mag > 0) {
             $('#t_addArrow').attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[0]);
             helpTracker = helpLevels[1];
             updateHelp();
             $("#percent0").text("20%");
-            $("#testFeedback").text("20%");
         }
     };
     if (helpTracker === "t_rotate") {
@@ -986,7 +1059,6 @@ function tutorialMark() {
             helpTracker = helpLevels[2];
             updateHelp();
             $("#percent0").text("40%");
-            $("#testFeedback").text("40%");
         }
     };
     if (helpTracker === "t_addArrow2") {
@@ -996,7 +1068,6 @@ function tutorialMark() {
             helpTracker = helpLevels[3];
             updateHelp();
             $("#percent0").text("60%");
-            $("#testFeedback").text("60%");
         }
     };
     if (helpTracker === "t_netForce" && netForce.a === Math.PI / 2) {
@@ -1011,7 +1082,6 @@ function tutorialMark() {
         helpTracker = helpLevels[4];
         updateHelp();
         $("#percent0").text("80%");
-        $("#testFeedback").text("80%");
     };
     if (helpTracker === "t_removeArrow") {
         arrowCount2 = 0;
@@ -1030,7 +1100,6 @@ function tutorialMark() {
             $("#hint").text("If you need another refresher, the HELP menu covers all the basics.")
             updateHelp();
             $("#percent0").text("100%");
-            $("#testFeedback").text("100%");
         }
     };
 };
@@ -1092,16 +1161,20 @@ function Menu(id, exs, mitems, titles) {
     this.init = function () {
         $('#dropdown' + id).html();
         for (var i = 0; i < exercises.length; i++) {
-            $('#dropdown' + id).append("<button onclick=gotoPage(" + i + ") class='menuBtn'><img src=" + mitems[i] + " style='width:90px' title='" + titles[i] + "'></img><br><span class='percentBtn' id='percent" + exs[i] + "'></span></button>");
+            $('#dropdown' + id).append("<button onclick=gotoPage(" + i + ") class='menuBtn' id='menuBtn" + exs[i] + "'><img src=" + mitems[i] + " style='width:90px' title='" + titles[i] + "'></img><br><span class='percentBtn' id='percent" + exs[i] + "'></span></button>");
         }
     }
 }
 function gotoPage(i) {
-    closeMenu();
-    saveProgress(page);
-    page = i + 1;
-    setUpExercise();
-    resetFBD();
+    var id = page - 1;
+    if (i !== id) {
+        $("#menuBtn" + id).css({ "border-color": "#C3C3C3", "border-width": "1px" });
+        closeMenu();
+        saveProgress(page);
+        page = i + 1;
+        setUpExercise();
+        resetFBD();
+    }
 }
 function saveProgress(p) {
     for (var i = 0; i < fb.arrowArray.length; i++) {
@@ -1143,10 +1216,10 @@ function toggleMenu(id) {
 }
 //JQUERY 
 $(document).ready(function () {
-    var feedback = document.getElementById("feedback");
-    var help = document.getElementById("help");
-    var span = document.getElementsByClassName("close")[0];
-    var json;
+    feedback = document.getElementById("feedback");
+    help = document.getElementById("help");
+    //span = document.getElementsByClassName("close")[0];
+    json;
     $.getJSON("../json/freebody.json", function (data) {
         json = data;
     });
@@ -1227,8 +1300,9 @@ $(document).ready(function () {
         var pId = exercises[page - 1];
         var percentId = "#percent" + pId;
         $(percentId).text(percents[page - 1]);
+        $(percentId).css({ "color": "white", "background-color": "#5cb85c", "border-radius": "8px", "padding-left": "8px", "padding-right": "8px" });
         $(percentId).prop("background-color", "#000000");
-        $("#testFeedback").text(percents[page - 1]);
+
     });
 });
 //DEBUGGING
