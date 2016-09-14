@@ -87,7 +87,6 @@ function create() {
     createResetBtn();
     createSubmitBtn();
     rotate(0);
-    fb.angleText.visible = false;
 }
 function setProgress() {
     for (var i = 0; i < exercises.length; i++) {
@@ -354,7 +353,8 @@ function groupRelAxisGraphics(graphics) {
 }
 function rotate(rads) {
     var degs = Math.round(rads * 180 / Math.PI);
-    if (fb.rAxis.rotation === 0) {
+    if (fb.rAxis.rotation < Math.PI / 180) {
+        console.log(fb.rAxis.rotation);
         fb.angleText.visible = false;
         for (var i = 0; i < 4; i++) {
             if (fb.arrowArray[i].mag > 0) {
@@ -622,9 +622,11 @@ function getArrowByAngle2(a) {
 
     var a2 = a;
     var returnArrow = fb.arrowArray[0];
+    
     if (a2 == 2 * Math.PI && state !== "rotate") {
         a2 = 0;
     }
+    
     for (var i = 0; i < fb.arrowArray.length; i++) {
         if (a2 == fb.arrowArray[i].radAngle && fb.hyp >= 20) {
             returnArrow = fb.arrowArray[i];
@@ -649,9 +651,11 @@ function getArrowByAngle(a) {
         return getArrowByAngle2(a2);
     } else {
         var i = 0;
+        
         if (a2 === 2 * Math.PI) {
             a2 = 0;
         }
+        
         for (i; i < 4; i++) {
             if (a2 == fb.arrowArray[i].radAngle && fb.hyp >= 10) {
                 returnArrow1 = fb.arrowArray[i];
@@ -725,9 +729,11 @@ function findAngle() {
             cAngle = Math.PI + Math.abs(Math.atan((game.input.mousePointer.x - fb.forceCenter.x) / (fb.forceCenter.y - game.input.mousePointer.y)));
         }
     }
+
     if (cAngle == 2 * Math.PI) {
         cAngle = 0;
     }
+
     cAngle = round(cAngle, (180 / Math.PI));
     return cAngle;
 }
@@ -950,7 +956,7 @@ function rotateHandle() {
     var newRot;
     if (rotHandlesGroup.handleSelected == true) {
         if (fb.currentRotHandle.pos == 0) {
-            newRot = findAngle();
+            newRot = findAngle() + fb.currentRotHandle.pos;
         } else if (fb.currentRotHandle.pos == Math.PI / 2) {
             newRot = findAngle() - Math.PI / 2;
         } else if (fb.currentRotHandle.pos == Math.PI) {
@@ -958,12 +964,14 @@ function rotateHandle() {
         } else if (fb.currentRotHandle.pos == 3 * Math.PI / 2) {
             newRot = findAngle() - 3 * Math.PI / 2;
         }
+        //don't rotate past 90 degrees
         if (newRot >= 0 && newRot <= Math.PI / 2) {
             rotate(newRot);
         }
-        if (newRot > 15 * Math.PI / 16 || newRot < Math.PI / 64) {
-            rotate(0);
+        if (fb.currentRotHandle.pos !== (3 * Math.PI / 2) && (newRot > 15 * Math.PI / 16 || newRot < Math.PI / 64)) {
+             rotate(0);
         }
+        //stop at 89 degrees
         if (newRot > (Math.PI / 2 - Math.PI / 64) && newRot < (Math.PI / 2 + Math.PI / 64)) {
             rotate((Math.PI / 2) - Math.PI / 180);
         }
@@ -1060,8 +1068,8 @@ function positionForces(arrow) {
 }
 function tutorialMark() {
     if (helpTracker === "t_addArrow") {
-        $(percent0).css("visibility", "visible");
         if (fb.arrowArray[6].degAngle === 180 && fb.arrowArray[6].mag > 0) {
+            $(percent0).css("visibility", "visible");
             $('#t_addArrow').attr("src", "../assets/freebody/checkboxB.png");
             completedHelpLevels.push(helpLevels[0]);
             helpTracker = helpLevels[1];
@@ -1269,6 +1277,8 @@ function render() {
     var aaStr3 = "";
     var aaStr4 = "";
 
+   // game.debug.text("cAngle: " + cAngle, 0, 340);
+   // game.debug.text("currentRotHandle.pos: " + fb.currentRotHandle.pos, 0, 320);
     /*
     game.debug.text("currentArrow: " + currentArrow.fType + " [" + currentArrow.mag + "] (" + currentArrow.radAngle + ")", 0, 40);
     game.debug.text("y: " + netForce.v, 0, 300);
