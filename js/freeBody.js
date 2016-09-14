@@ -86,6 +86,8 @@ function create() {
     updateHelp();
     createResetBtn();
     createSubmitBtn();
+    rotate(0);
+    fb.angleText.visible = false;
 }
 function setProgress() {
     for (var i = 0; i < exercises.length; i++) {
@@ -731,6 +733,7 @@ function findAngle() {
 }
 //SETTERS
 function setUpRotHandle(rotH, angle) {
+    //alert("rotHandleX: " + rotH.posX);
     rotH.rotation = angle;
     rotH.pivot.set(rotH.width / 2, rotH.height / 2);
     rotH.inputEnabled = true;
@@ -739,6 +742,9 @@ function setUpRotHandle(rotH, angle) {
     rotH.events.onInputUp.add(function () { rotHandleUp(rotH) }, this);
     rotH.pos = angle;
     rotHandlesGroup.add(rotH);
+    rotH.posX = game.world.centerX + fb.rotHyp * Math.sin(angle);
+    rotH.posY = game.world.centerY - fb.rotHyp * Math.cos(angle);
+    console.log("rotH.posX: " + rotH.posX);
 }
 function resetFBD() {
     $("#ans").val('');
@@ -788,6 +794,7 @@ function createRotHandles() {
     rotHandlesGroup.pivot.set(0, 0);
     rotHandlesGroup.x = game.world.centerX;
     rotHandlesGroup.y = game.world.centerY;
+    fb.rotHandle.proximity = Math.sqrt(Math.pow((fb.rotHandle.y - game.input.mousePointer.y), 2) + Math.pow((fb.rotHandle.x - game.world.centerX), 2));
 }
 function drawArrow(arrow, rot, hyp, color) {
     var aLength = hyp;
@@ -864,10 +871,10 @@ function update() {
         var ca = closestAngle(findAngle());
         var nf;
         set_currentArrow(ca);
-        fb.rotHandle.visible = false;
-        fb.rotHandle2.visible = false;
-        fb.rotHandle3.visible = false;
-        fb.rotHandle4.visible = false;
+        fb.rotHandle.visible = true;
+        fb.rotHandle2.visible = true;
+        fb.rotHandle3.visible = true;
+        fb.rotHandle4.visible = true;
         fb.handle.visible = false;
         if (arrowHere() && state !== "arrow") {
             fb.handle.visible = true;
@@ -899,20 +906,18 @@ function update() {
         }
         if (fb.hyp > 120) {
             fb.hoverArrowDisplay.visible = false;
-            if (fb.hyp < (game.world.width / 2)) {
-                if (currentArrow.compass == "N") {
-                    fb.rotHandle.visible = true;
-                } else if (currentArrow.compass == "E") {
-                    fb.rotHandle2.visible = true;
-                } else if (currentArrow.compass == "S") {
-                    fb.rotHandle3.visible = true;
-                } else {
-                    fb.rotHandle4.visible = true;
-                }
-            }
         }
+        setAlpha(fb.rotHandle);
+        setAlpha(fb.rotHandle2);
+        setAlpha(fb.rotHandle3);
+        setAlpha(fb.rotHandle4);
     }
     fb.hyp = Math.sqrt(Math.pow((game.world.centerY - game.input.mousePointer.y), 2) + Math.pow((game.input.mousePointer.x - game.world.centerX), 2));
+    updateDistFromRotHandle(fb.rotHandle, rotAngleArray[0]);
+    updateDistFromRotHandle(fb.rotHandle2, rotAngleArray[1]);
+    updateDistFromRotHandle(fb.rotHandle3, rotAngleArray[2]);
+    updateDistFromRotHandle(fb.rotHandle4, rotAngleArray[3]);
+
     fb.handle.x = aLength * Math.sin(ca) + game.world.centerX;
     fb.handle.y = game.world.centerY - aLength * Math.cos(ca);
     if (fb.ghostArrowDisplay != null && state === "arrow") {
@@ -933,6 +938,13 @@ function update() {
     rotateHandle();
     setDegs();
     drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
+}
+function setAlpha(rotH) {
+    var alphaVal = 1 - (rotH.proximity / fb.rotHyp);
+    if (alphaVal < 0.2 || state === "arrow" || (game.world.centerX - fb.hyp) < 10) {
+        alphaVal = 0;
+    }
+    rotH.alpha = alphaVal;
 }
 function rotateHandle() {
     var newRot;
@@ -989,6 +1001,11 @@ function handleDown() {
         drawArrow(fb.ghostArrowDisplay, closestAngle(findAngle()), gp.arrowLength, 0xffffff);
         currentArrow.hide(false);
     }
+}
+function updateDistFromRotHandle(rotH, angle) {
+    rotH.posX = game.world.centerX + fb.rotHyp * Math.sin(angle);
+    rotH.posY = game.world.centerY - fb.rotHyp * Math.cos(angle);
+    rotH.proximity = Math.sqrt(Math.pow((rotH.posY - game.input.mousePointer.y), 2) + Math.pow((rotH.posX - game.input.mousePointer.x), 2));
 }
 function set_cAngle() {
     cAngle = round(closestAngle(findAngle()), (180 / Math.PI));
@@ -1243,67 +1260,6 @@ $(document).ready(function () {
     $("#fb-close").click(function (event) {
         feedback.style.display = "none";
     })
-    $("#submit").click(function (event) {
-        var ao, so, solnNetForce, ansNetForce, marked, totalScore, magError, forceScoreSimple, hint;
-        closeMenu();
-        ao = ansObj();
-        so = json.exercises[exercises[page - 1]].fb;
-        solnNetForce = json.exercises[exercises[page - 1]].netForce;
-        ansNetForce = Math.round(netForce.a * 180 / Math.PI);
-        marked = Marker.mark_simple_obj(ao, so);
-        totalScore = 0;
-        magError = 0;
-        forceScoreSimple = forceScoreSimple = marked.percent.total;
-        hint = "hint";
-        feedback.style.display = "block";
-        /*
-         $("#debug-output").html(
-             '<strong> Force Score (simple): </strong>' + forceScoreSimple + '<br>' +
-             '<strong> angles (simple): </strong>' + marked.percent.keys + '<br>' +
-             '<strong> force types (simple): </strong>' + marked.percent.values + '<br>' +
-             '<strong> kv (simple): </strong>' + marked.percent.kv + '<br>' +
-             '<strong> Answer: </strong>' + JSON.stringify(ao) + '<br>' +
-             '<strong> Solution: </strong>' + JSON.stringify(so)
-         );
-       */
-        if (fb.rArrow.visible == false || netForce.mag == 0) {
-            ansNetForce = null;
-        }
-        if (solnNetForce !== null) {
-            solnNetForce = parseInt(solnNetForce);
-        }
-        if (ansNetForce !== solnNetForce) {
-            magError += (marked.worth / 2);
-        };
-        totalScore = Math.round(forceScoreSimple - magError);
-        if (totalScore < 0) { totalScore = 0 };
-        if (totalScore == 100) {
-            hint = "Great job!";
-        } else if (forceScoreSimple === 100) {
-            if (solnNetForce === null) {
-                hint = "Make sure your net force is zero for this problem.";
-            } else {
-                hint = "Make sure your net force arrow (orange) is pointing in the direction of acceleration for the system.";
-            }
-        } else if (Object.keys(ansObj()).length > Object.keys(so).length) {
-            hint = "You may be adding a force or two that you don't need...";
-        } else if (Object.keys(ansObj()).length < Object.keys(so).length) {
-            hint = "You are missing at least one force.";
-        } else if (marked.percent.values === 100) {
-            hint = "Your forces are correct, but are not all facing the right direction";
-        } else {
-            hint = "Not quite! Try again.";
-        }
-        $("#percent").text(Math.round(totalScore) + "%");
-        $("#hint").html(hint);
-        percents[page - 1] = Math.round(totalScore) + "%";
-        var pId = exercises[page - 1];
-        var percentId = "#percent" + pId;
-        $(percentId).text(percents[page - 1]);
-        $(percentId).css({ "color": "white", "background-color": "#5cb85c", "border-radius": "8px", "padding-left": "8px", "padding-right": "8px" });
-        $(percentId).prop("background-color", "#000000");
-
-    });
 });
 //DEBUGGING
 function render() {
@@ -1312,6 +1268,7 @@ function render() {
     var aaStr2 = "";
     var aaStr3 = "";
     var aaStr4 = "";
+
     /*
     game.debug.text("currentArrow: " + currentArrow.fType + " [" + currentArrow.mag + "] (" + currentArrow.radAngle + ")", 0, 40);
     game.debug.text("y: " + netForce.v, 0, 300);
