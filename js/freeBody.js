@@ -87,6 +87,7 @@ function create() {
     createResetBtn();
     createSubmitBtn();
     rotate(0);
+    $("#menuBtn2").css({ "border-style": "solid", "border-width": "3px", "border-color": "#4C9EDA" });
 }
 function setProgress() {
     for (var i = 0; i < exercises.length; i++) {
@@ -514,7 +515,7 @@ function setUpExercise() {
         helpGroup.visible = false;
     }
     setUpForceBtns(forceArray);
-    var mId = page - 1;
+    var mId = exercises[page - 1];
     $("#menuBtn" + mId).css({ "border-style": "solid", "border-width": "3px", "border-color": "#4C9EDA" });
 }
 function setUpForceBtns(btnArray) {
@@ -947,7 +948,7 @@ function update() {
 }
 function setAlpha(rotH) {
     var alphaVal = 1 - (rotH.proximity / fb.rotHyp);
-    if (alphaVal < 0.2 || state === "arrow" || (game.world.centerX - fb.hyp) < 10) {
+    if (alphaVal < 0.2 || state === "arrow" || (game.world.centerX - fb.hyp) < 4) {
         alphaVal = 0;
     }
     rotH.alpha = alphaVal;
@@ -1191,8 +1192,10 @@ function Menu(id, exs, mitems, titles) {
     }
 }
 function gotoPage(i) {
-    var id = page - 1;
-    if (i !== id) {
+    console.log("page: " + page);
+    console.log("goto: " + i);
+    var id = exercises[page - 1];
+    if (i !== page - 1) {
         $("#menuBtn" + id).css({ "border-color": "#C3C3C3", "border-width": "1px" });
         closeMenu();
         saveProgress(page);
