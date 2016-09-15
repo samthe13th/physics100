@@ -27,6 +27,7 @@ var percents = [];
 var helper;
 var helpTracker = "t_addArrow";
 var helpLevels = ["t_addArrow", "t_rotate", "t_addArrow2", "t_netForce", "t_removeArrow"];
+var submitHelp = true;
 var completedHelpLevels = [];
 var helpTxt;
 var helpGroup;
@@ -87,7 +88,6 @@ function create() {
     createResetBtn();
     createSubmitBtn();
     rotate(0);
-    $("#menuBtn2").css({ "border-style": "solid", "border-width": "3px", "border-color": "#4C9EDA" });
 }
 function setProgress() {
     for (var i = 0; i < exercises.length; i++) {
@@ -122,7 +122,6 @@ function createSubmitBtn() {
     submitBtn.x += (game.world.width - submitBtn.width);
 }
 function submitAction() {
-    console.log("Submit btn clicked");
     var ao, so, solnNetForce, ansNetForce, marked, totalScore, magError, forceScoreSimple, hint;
     closeMenu();
     ao = ansObj();
@@ -199,7 +198,7 @@ function resetExercise() {
         completedHelpLevels = [];
         helpTracker = helpLevels[0];
         updateHelp();
-        $("#percent0").text("");
+        $("#percent0").css("visibility","hidden");
     }
     resetFBD();
 }
@@ -255,7 +254,9 @@ function createAxis(axis) {
 function createHelp() {
     var text = "test";
     var style = { font: "17px Helvetica", fill: "#000000", align: "center" };
-    if (tutorial) { drawHelp() };
+    if (tutorial || submitHelp) {
+        drawHelp(tutorial);
+    };
     helper.pivot.x = 80;
     helper.pivot.y = -25;
     helper.x = game.world.centerX;
@@ -275,56 +276,70 @@ function createHelp() {
     helpGroup.add(helpTxt);
     helpGroup.y = -150;
 }
-function drawHelp() {
+function drawHelp(t) {
     helper.clear();
     helper.beginFill(0xffffff, 0.7);
     helper.drawRoundedRect(0, 0, 160, 100, 10);
-    if (helpTracker === "t_addArrow") {
-        helper.moveTo(60, 100);
-        helper.lineTo(80, 120);
-        helper.lineTo(100, 100);
-    } else if (helpTracker === "t_rotate") {
-        helper.moveTo(60, 0);
-        helper.lineTo(165, -40);
-        helper.lineTo(120, 0);
-    } else if (helpTracker === "t_netForce") {
-        helper.moveTo(60, 100);
-        helper.lineTo(165, 140);
-        helper.lineTo(110, 100);
-    } else if (helpTracker === "t_removeArrow") {
-        helper.moveTo(100, 0);
-        helper.lineTo(160, -40);
-        helper.lineTo(140, 0);
+    if (t) {
+        if (helpTracker === "t_addArrow") {
+            helper.moveTo(60, 100);
+            helper.lineTo(80, 120);
+            helper.lineTo(100, 100);
+        } else if (helpTracker === "t_rotate") {
+            helper.moveTo(60, 0);
+            helper.lineTo(165, -40);
+            helper.lineTo(120, 0);
+        } else if (helpTracker === "t_netForce") {
+            helper.moveTo(60, 100);
+            helper.lineTo(165, 140);
+            helper.lineTo(110, 100);
+        } else if (helpTracker === "t_removeArrow") {
+            helper.moveTo(100, 0);
+            helper.lineTo(160, -40);
+            helper.lineTo(140, 0);
+        } else {
+            helpTxt.setText("");
+            helper.visible = false;
+        }
     } else {
-        helpTxt.setText("");
-        helper.visible = false;
+        helper.moveTo(100, 0);
+        helper.lineTo(130, -30);
+        helper.lineTo(140, 0);
     }
     helper.endFill();
 }
 //GRAPHICS
 function updateHelp() {
-    drawHelp();
+    if (tutorial || submitHelp) {
+        drawHelp(tutorial);
+    }
     helper.visible = true;
     helpGroup.visible = true;
-    if (helpTracker === "t_addArrow") {
-        helpTxt.setText("To add arrows: \ndrag from \ncenter");
-        helpGroup.y = -150;
-        helpGroup.x = 0;
-    } else if (helpTracker === "t_rotate") {
-        helpGroup.y = - 140;
-        helpGroup.x = - 90;
-        helpTxt.setText("To rotate axis: \n drag axis \nclockwise");
-    } else if (helpTracker === "t_netForce") {
-        helpGroup.y = - 140;
-        helpGroup.x = - 90;
-        helpTxt.setText("Drag arrows \n to change \n magnitude");
-    } else if (helpTracker === "t_removeArrow") {
-        helpGroup.y = 40;
-        helpGroup.x = - 90;
-        helpTxt.setText("To remove arrows: \n click and drag \n arrow to center");
+    if (tutorial) {
+        if (helpTracker === "t_addArrow") {
+            helpTxt.setText("To add arrows: \ndrag from \ncenter");
+            helpGroup.y = -150;
+            helpGroup.x = 0;
+        } else if (helpTracker === "t_rotate") {
+            helpGroup.y = - 140;
+            helpGroup.x = - 90;
+            helpTxt.setText("To rotate axis: \n drag axis \nclockwise");
+        } else if (helpTracker === "t_netForce") {
+            helpGroup.y = - 140;
+            helpGroup.x = - 90;
+            helpTxt.setText("Drag arrows \n to change \n magnitude");
+        } else if (helpTracker === "t_removeArrow") {
+            helpGroup.y = 40;
+            helpGroup.x = - 90;
+            helpTxt.setText("To remove arrows: \n click and drag \n arrow to center");
+        } else {
+            helper.visible = false;
+            helpTxt.setText("");
+        }
     } else {
-        helper.visible = false;
-        helpTxt.setText("");
+        helpGroup.y = -130;
+        helpGroup.x = 90;
+        helpTxt.setText("Click to \n submit answer.");
     }
 }
 function setUpGraphics() {
@@ -355,7 +370,6 @@ function groupRelAxisGraphics(graphics) {
 function rotate(rads) {
     var degs = Math.round(rads * 180 / Math.PI);
     if (fb.rAxis.rotation < Math.PI / 180) {
-        console.log(fb.rAxis.rotation);
         fb.angleText.visible = false;
         for (var i = 0; i < 4; i++) {
             if (fb.arrowArray[i].mag > 0) {
@@ -504,7 +518,7 @@ function setUpExercise() {
         tutorial = true;
         $("#submit").hide();
         submitBtn.visible = false;
-        if (helpTracker !== null) {
+        if (helpTracker !== null || submitHelp) {
             helpGroup.visible = true;
             helper.visible = true;
         }
@@ -513,10 +527,12 @@ function setUpExercise() {
         $("#submit").show();
         submitBtn.visible = true;
         helpGroup.visible = false;
+        helper.visible = false;
     }
     setUpForceBtns(forceArray);
     var mId = exercises[page - 1];
-    $("#menuBtn" + mId).css({ "border-style": "solid", "border-width": "3px", "border-color": "#4C9EDA" });
+    updateHelp();
+    // $("#menuBtn" + mId).css({ "border-width": "3px", "border-color": "#4C9EDA" });
 }
 function setUpForceBtns(btnArray) {
     var buttonBlock = game.add.graphics(0, 0);
@@ -623,11 +639,11 @@ function getArrowByAngle2(a) {
 
     var a2 = a;
     var returnArrow = fb.arrowArray[0];
-    
+
     if (a2 == 2 * Math.PI && state !== "rotate") {
         a2 = 0;
     }
-    
+
     for (var i = 0; i < fb.arrowArray.length; i++) {
         if (a2 == fb.arrowArray[i].radAngle && fb.hyp >= 20) {
             returnArrow = fb.arrowArray[i];
@@ -652,11 +668,11 @@ function getArrowByAngle(a) {
         return getArrowByAngle2(a2);
     } else {
         var i = 0;
-        
+
         if (a2 === 2 * Math.PI) {
             a2 = 0;
         }
-        
+
         for (i; i < 4; i++) {
             if (a2 == fb.arrowArray[i].radAngle && fb.hyp >= 10) {
                 returnArrow1 = fb.arrowArray[i];
@@ -751,7 +767,6 @@ function setUpRotHandle(rotH, angle) {
     rotHandlesGroup.add(rotH);
     rotH.posX = game.world.centerX + fb.rotHyp * Math.sin(angle);
     rotH.posY = game.world.centerY - fb.rotHyp * Math.cos(angle);
-    console.log("rotH.posX: " + rotH.posX);
 }
 function resetFBD() {
     $("#ans").val('');
@@ -783,9 +798,12 @@ function resetFBD() {
         fb.angleText.visible = true;
         fb.deg.visible = true;
     }
-    if (tutorial) {
-        drawHelp();
-    }
+    if (tutorial || submitHelp) {
+        drawHelp(tutorial);
+    } else {
+        helpGroup.visible = false;
+        helper.visible = false;
+    };
 }
 function createRotHandles() {
     rotHandlesGroup = game.add.group();
@@ -970,7 +988,7 @@ function rotateHandle() {
             rotate(newRot);
         }
         if (fb.currentRotHandle.pos !== (3 * Math.PI / 2) && (newRot > 15 * Math.PI / 16 || newRot < Math.PI / 64)) {
-             rotate(0);
+            rotate(0);
         }
         //stop at 89 degrees
         if (newRot > (Math.PI / 2 - Math.PI / 64) && newRot < (Math.PI / 2 + Math.PI / 64)) {
@@ -997,6 +1015,11 @@ function setDegs() {
 function handleDown() {
     var currentArrow = getArrowByAngle(closestAngle(findAngle()));
     state = "arrow";
+    if (!tutorial && submitHelp){
+        submitHelp = false;
+        helpGroup.visible = false;
+        helper.visible = false;
+    }
     if (fb.handle.x == game.world.centerX && fb.handle.y == game.world.centerY) {
         fb.moveArrow = null;
         createArrow();
@@ -1054,7 +1077,6 @@ function handleUp() {
     if (tutorial) {
         tutorialMark();
     }
-
 }
 var arrowCount1;
 var arrowCount2;
@@ -1123,8 +1145,9 @@ function tutorialMark() {
             var feedback = document.getElementById("feedback");
             feedback.style.display = "block";
             $("#percent").text("Tutorial Complete!");
-            $("#hint").text("If you need another refresher, the HELP menu covers all the basics.")
+            $("#hint").text("Click RESET to do the tutorial again if you need more practice.")
             updateHelp();
+            $("#percent0").css("background-color", "#5cb85c");
             $("#percent0").text("100%");
         }
     };
@@ -1192,11 +1215,9 @@ function Menu(id, exs, mitems, titles) {
     }
 }
 function gotoPage(i) {
-    console.log("page: " + page);
-    console.log("goto: " + i);
     var id = exercises[page - 1];
     if (i !== page - 1) {
-        $("#menuBtn" + id).css({ "border-color": "#C3C3C3", "border-width": "1px" });
+        //$("#menuBtn" + id).css({ "border-color": "#C3C3C3"});
         closeMenu();
         saveProgress(page);
         page = i + 1;
@@ -1263,7 +1284,6 @@ $(document).ready(function () {
         closeMenu();
         if (page < exercises.length) {
             page++;
-            console.log("page: " + page);
         }
         setUpExercise();
         resetFBD();
@@ -1280,8 +1300,9 @@ function render() {
     var aaStr3 = "";
     var aaStr4 = "";
 
-   // game.debug.text("cAngle: " + cAngle, 0, 340);
-   // game.debug.text("currentRotHandle.pos: " + fb.currentRotHandle.pos, 0, 320);
+    //game.debug.text("submitHelp: " + submitHelp, 0, 340);
+    //game.debug.text("tutorial: " + tutorial, 0, 320);
+    // game.debug.text("currentRotHandle.pos: " + fb.currentRotHandle.pos, 0, 320);
     /*
     game.debug.text("currentArrow: " + currentArrow.fType + " [" + currentArrow.mag + "] (" + currentArrow.radAngle + ")", 0, 40);
     game.debug.text("y: " + netForce.v, 0, 300);
