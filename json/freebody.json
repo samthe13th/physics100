@@ -12,10 +12,7 @@
             "inst": "../instr/tutorial.html",
             "img": null,
             "thumb": "../instr/diagrams/tutorial.jpg",
-            "fb": {
-                "Normal": "0",
-                "Weight": "180"
-            },
+            "fb": {},
             "netForce": null
         },
         {

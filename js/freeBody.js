@@ -965,10 +965,12 @@ function update() {
     drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
 }
 function setAlpha(rotH) {
-    var alphaVal = 1 - (rotH.proximity / fb.rotHyp);
-    if (alphaVal < 0.2 || state === "arrow" || (game.world.centerX - fb.hyp) < 4) {
+    var alphaVal = 1 - (rotH.proximity / (fb.rotHyp / 2));
+    
+    if (alphaVal < 0.01 || state === "arrow") {
         alphaVal = 0;
     }
+    
     rotH.alpha = alphaVal;
 }
 function rotateHandle() {
