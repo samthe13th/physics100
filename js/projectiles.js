@@ -10,7 +10,7 @@ var drag = function () {
         newpos = calcPosition(startx, starty, vx, vy, (sliderPoint / 10), a);
     }
     ball.translate((newpos.x - ball.x), (newpos.y - ball.y));
-    yline.translate((ball.x - yline.x),0);
+    yline.translate((ball.x - yline.x), 0);
     yline.x = ball.x
     ball.h = Math.round(100 * (height + pxltom * (ball.starty - ball.y))) / 100;
     ball.dy = Math.abs(ball.h - height);
@@ -30,8 +30,8 @@ var off = function () {
     dragging = { o: null };
 }
 var sandbox = Raphael(0, 10, 600, 500);
-var border,slider;
-var border = sandbox.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });;
+var border, slider;
+var border = sandbox.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
 var startx = 50;
 var starty = 150;
 var height = 100;
@@ -43,7 +43,7 @@ var a = 9.81;
 var ball = sandbox.circle(startx, starty, 10).attr({ stroke: "#ffffff" });
 var axis = sandbox.path(["M", 50, 80, "l", 0, 280, "l", 500, 0]).attr({ stroke: "#ffffff" });
 var yline = sandbox.path(["M", startx, starty, "l", 0, 200]).attr({ stroke: "none" })
-yline.y = starty; 
+yline.y = starty;
 yline.x = startx * mtopxl;
 var mtopxl = 200 / height;
 var pxltom = height / 200;
@@ -123,7 +123,19 @@ function drawRuler(id, x, y) {
         }
     }
 }
-var slider = Slider(sandbox,50, 40, 500, drag, on, off);
+var slider = Slider(sandbox, 50, 40, 500, maxTime, drag, on, off);
 slider.label = sandbox.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 20 });
-slider.setSnap(maxTime);
+
+var params = sandbox.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
+var drag_angle = function () {
+    this.label.attr({ text: sliderPoint + " degs" });
+};
+var angle_slider = Slider(sandbox, 150, 200, 300, 180, drag_angle, on, off);
+angle_slider.label = sandbox.text(sliderX, (sliderY - 20), "0 degs").attr({ "font-size": 20 });
+var drag_height = function () {
+    this.label.attr({ text: sliderPoint + " m" });
+};
+var height_slider = Slider(sandbox, 150, 330, 300, 100, drag_height, on, off);
+height_slider.label = sandbox.text(sliderX, (sliderY - 20), "0 m").attr({ "font-size": 20 });
+
 //sandbox.rect(0,0,600,500).attr({fill: "red"});

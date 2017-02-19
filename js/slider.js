@@ -4,9 +4,9 @@ var sliderWidth = 10
 var sliderRoundness = 8;
 var dragging = { o: null };
 var sliderX, sliderY, sliderLength;
-var Slider = function (stage, x, y, l, drag, on, off) {
+var Slider = function (stage, x, y, l, m, drag, on, off) {
     var bar, rtnSlider, label;
-    var snap = 10;
+    var snap = m;
     var snapTo = [];
     var makeSnapPoints = function () {
         for (var i = 0; i < snap; i++) {
@@ -29,7 +29,7 @@ var Slider = function (stage, x, y, l, drag, on, off) {
         rtnSlider.snap = s;
     }
     rtnSlider.label = function (l) {
-            //rtnSlider.label = stage.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 20 });
+            rtnSlider.label = stage.text(sliderX, (sliderY - 20), "0 " + l).attr({ "font-size": 20 });
     }
     rtnSlider.snapTo = snapTo;
     rtnSlider.snap = snap;
