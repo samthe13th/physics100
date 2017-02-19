@@ -1,4 +1,4 @@
-var sandbox = Raphael(0, 10, 600, 500);
+var sandbox = Raphael(0, 10, 600, 600);
 var drag = function () {
     this.label.attr({ text: (sliderPoint / 10) + " sec" });
     var currentSpeed, newpos;
@@ -34,15 +34,16 @@ var off = function () {
     dragging = { o: null };
 }
 var border, slider;
-var border = sandbox.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
+var border = sandbox.rect(10, 0, 580, 510, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
 var startx = 50;
-var starty = 150;
+var starty; 
 var height = 100;
 var v = 0;
 setAngle(-Math.PI / 6);
 var vx;
 var vy;
 var a = 9.81;
+starty = 250 - height;
 var ball = sandbox.circle(startx, starty, 10).attr({ stroke: "#ffffff" });
 var axis = sandbox.path(["M", 50, 80, "l", 0, 280, "l", 500, 0]).attr({ stroke: "#ffffff" });
 var yline = sandbox.path(["M", startx, starty, "l", 0, 200]).attr({ stroke: "none" })
@@ -135,8 +136,9 @@ function drawRuler(id, x, y) {
         }
     }
 }
-var slider = Slider(sandbox, 180, 50, 300, maxTime, drag, on, off);
+var slider = Slider(sandbox, 180, 450, 300, maxTime, drag, on, off);
 slider.label = sandbox.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 18 });
+var timetext = sandbox.text(130, 455, "Time:").attr({ "font-size": 18 });
 
 var screen2 = Raphael(0, 10, 600, 500);
 var params = screen2.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
@@ -173,7 +175,7 @@ var angle_slider = Slider(screen2, 180, 200, 300, 180, drag_angle, on, off);
 angle_slider.label = screen2.text(sliderX, (sliderY - 20), "0" + ' degs').attr({ "font-size": 14 });
 var height_slider = Slider(screen2, 180, 260, 300, 100, drag_height, on, off);
 height_slider.label = screen2.text(sliderX, (sliderY - 20), "0 m").attr({ "font-size": 14 });
-var speed_slider = Slider(screen2, 180, 320, 300, 29, drag_speed, on, off);
+var speed_slider = Slider(screen2, 180, 320, 300, 39, drag_speed, on, off);
 speed_slider.label = screen2.text(sliderX, (sliderY - 20), "1 m/s").attr({ "font-size": 14 });
 var go_btn = screen2.rect(320, 50, 120, 50, 12)
     .attr({ "font-size": 12, "stroke": "white", "fill": "white", "opacity": 0.5 })
