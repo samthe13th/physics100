@@ -3,12 +3,13 @@ var drag = function () {
     this.label.attr({ text: (sliderPoint / 10) + " sec" });
     var currentSpeed, newpos;
     if (sliderPoint === maxTime) {
+        console.log("end of slider");
         currentSpeed = endSpeed;
-        newpos = calcPosition(startx, starty, vx, vy, (sliderPoint / 10), a);
-        newpos.y = 500;
+        newpos = calcPosition((pxltom * startx), (pxltom * starty), vx, vy, (sliderPoint / 10), a);
+        newpos.y = 350;
     } else {
         currentSpeed = Math.round(10 * getSpeed(speed(vx, vy), 9.81, ball.dy)) / 10;
-        newpos = calcPosition(startx, starty, vx, vy, (sliderPoint / 10), a);
+        newpos = calcPosition((pxltom * startx), (pxltom * starty), vx, vy, (sliderPoint / 10), a);
     }
     ball.translate((newpos.x - ball.x), (newpos.y - ball.y));
     yline.translate((ball.x - yline.x), 0);
@@ -16,7 +17,7 @@ var drag = function () {
     ball.h = Math.round(100 * (height + pxltom * (ball.starty - ball.y))) / 100;
     ball.dy = Math.abs(ball.h - height);
     speedTxt.attr({
-        text: " Speed: " + currentSpeed + " m/s"
+        text: "ball.y: " + ball.y + " Speed: " + currentSpeed + " m/s"
     });
     vyTxt.attr({
         text: " Vy: " + Math.round(100 * (-1 * getVy(vy, 9.81, (sliderPoint / 10)))) / 100 + " m/s"
@@ -43,25 +44,25 @@ setAngle(-Math.PI / 6);
 var vx;
 var vy;
 var a = 9.81;
-starty = 250 - height;
+var mtopxl = 200 / 100;
+var pxltom = 100 / 200;
+starty = 350 - (height * mtopxl);
 var ball = sandbox.circle(startx, starty, 10).attr({ stroke: "#ffffff" });
 var axis = sandbox.path(["M", 50, 80, "l", 0, 280, "l", 500, 0]).attr({ stroke: "#ffffff" });
 var yline = sandbox.path(["M", startx, starty, "l", 0, 200]).attr({ stroke: "none" })
 yline.y = starty;
 yline.x = startx * mtopxl;
-var mtopxl = 200 / height;
-var pxltom = height / 200;
 var endSpeed;
 function setEndSpeed() {
     endSpeed = Math.round(10 * getSpeed(speed(vx, vy), a, height)) / 10;
 }
 setEndSpeed();
-var endy = calcPosition(startx, starty, vx, vy, timeAtGround(endSpeed, v, a), a);
-ball.x = startx * mtopxl;
-ball.y = starty * mtopxl;
+//var endy = calcPosition(startx, starty, vx, vy, timeAtGround(endSpeed, v, a), a);
+ball.x = startx;
+ball.y = starty;
 ball.startx = ball.x;
 ball.starty = starty * mtopxl;
-ball.endy = ball.y + (100 * mtopxl);
+//ball.endy = ball.y + (height * mtopxl);
 function calcPosition(x0, y0, vx, vy, t, a) {
     var pos = {};
     pos.x = (x0 + (vx * t)) * mtopxl;
@@ -115,7 +116,7 @@ function drawRuler(id, x, y) {
         xpos = x;
         for (var i = 0; i < 15; i++) {
             sandbox.path(["M", xpos, ypos, "l", - tickSize, 0]).attr({ stroke: "#ffffff" });
-            ypos -= (10 * mtopxl);
+            ypos -= 20;
             if (tickSize === 10) {
                 tickSize = 5;
             } else {
@@ -169,6 +170,8 @@ var drag_speed = function () {
 };
 var drag_height = function () {
     this.label.attr({ text: sliderPoint + " m" });
+    height = sliderPoint;
+    starty = 350 - (height * mtopxl);
 };
 
 var angle_slider = Slider(screen2, 180, 200, 300, 180, drag_angle, on, off);
@@ -186,6 +189,8 @@ var go_btn = screen2.rect(320, 50, 120, 50, 12)
         setMaxTime();
         slider.setSnap(maxTime);
         setEndSpeed();
+        ball.translate(0,(starty - ball.y));
+        ball.y = starty;
         // speedTxt.attr({
         //     text: " Speed: " + v + " m/s"
         // });
