@@ -18,8 +18,8 @@ var Slider = function (stage, x, y, l, m, drag, on, off) {
     sliderY = y;
     sliderLength = l;
     makeSnapPoints();
-    bar = stage.rect(sliderX, sliderY, sliderLength, sliderWidth, sliderRoundness);
-    rtnSlider = stage.rect(sliderX, sliderY - (sliderWidth / 2), 10, 20).attr({ fill: "white" })
+    bar = stage.rect(sliderX, sliderY, sliderLength, sliderWidth, sliderRoundness).attr({ fill: "white", opacity: 0.5, stroke: "none" });
+    rtnSlider = stage.rect(sliderX, sliderY - (sliderWidth / 2), 10, 20).attr({ fill: "white", stroke: "none" })
         .drag(drag, on, off);
     rtnSlider.xabs = sliderX
     rtnSlider.setColor = function (c) {
@@ -30,6 +30,10 @@ var Slider = function (stage, x, y, l, m, drag, on, off) {
     }
     rtnSlider.label = function (l) {
             rtnSlider.label = stage.text(sliderX, (sliderY - 20), "0 " + l).attr({ "font-size": 20 });
+    }
+    rtnSlider.hideSlider = function(){
+        bar.hide();
+        this.hide();
     }
     rtnSlider.snapTo = snapTo;
     rtnSlider.snap = snap;

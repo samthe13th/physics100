@@ -1,3 +1,4 @@
+var sandbox = Raphael(0, 10, 600, 500);
 var drag = function () {
     this.label.attr({ text: (sliderPoint / 10) + " sec" });
     var currentSpeed, newpos;
@@ -19,6 +20,9 @@ var drag = function () {
     });
     vyTxt.attr({
         text: " Vy: " + Math.round(100 * (-1 * getVy(vy, 9.81, (sliderPoint / 10)))) / 100 + " m/s"
+    });
+    vxTxt.attr({
+        text: " Vx: " + vx
     })
     ball.x = newpos.x;
     ball.y = newpos.y;
@@ -29,7 +33,6 @@ var on = function () {
 var off = function () {
     dragging = { o: null };
 }
-var sandbox = Raphael(0, 10, 600, 500);
 var border, slider;
 var border = sandbox.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
 var startx = 50;
@@ -74,7 +77,12 @@ function speed(x, y) {
 function getVy(v0, a, t) {
     return (v0 + a * t);
 }
-var maxTime = Math.round(timeAtGround(getSpeed(vy, a, height), vy, a) * 10);
+var maxTime;
+var setMaxTime = function () {
+    maxTime = Math.round(timeAtGround(getSpeed(vy, a, height), vy, a) * 10)
+    console.log("max time: " + maxTime)
+}
+setMaxTime();
 var speedTxt = sandbox.text(500, 80, "Speed: 0 m/s").attr({ "font-size": 20 }).attr({ fill: "#ffffff" });
 var vxTxt = sandbox.text(500, 110, "Vx: " + vx + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
 var vyTxt = sandbox.text(500, 130, "Vy: " + (-1 * vy) + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
@@ -123,19 +131,71 @@ function drawRuler(id, x, y) {
         }
     }
 }
-var slider = Slider(sandbox, 50, 40, 500, maxTime, drag, on, off);
-slider.label = sandbox.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 20 });
+var slider = Slider(sandbox, 180, 50, 300, maxTime, drag, on, off);
+slider.label = sandbox.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 18 });
 
-var params = sandbox.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
+var screen2 = Raphael(0, 10, 600, 500);
+var params = screen2.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
+var angletext = screen2.text(120, 200, "Angle:").attr({ "font-size": 18 });
+var heighttext = screen2.text(120, 260, "Height:").attr({ "font-size": 18 });
+var speedtext = screen2.text(120, 320, "Speed:").attr({ "font-size": 18 });
+var ballAngle = 0;
+var aHead = 12;
+var cx = 80;
+// rotateAxis(45);
+var csize = 160;
+var arrow = screen2.path("M" + cx + " " + cx + " " + "L" + cx + " " + (aHead + 5) + " l" + (-aHead / 2) + " 0 l" + (aHead / 2) + " " + (-aHead) + "l" + (aHead / 2) + " " + aHead + "l" + (-aHead / 2) + " 0 Z")
+    .attr({ "stroke": "white", "stroke-width": 4, "fill": "white" })
+    .translate(100, 20);
+arrow.angle = 0;
+var ball2 = screen2.circle(180, 100, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
+ball2.y;
 var drag_angle = function () {
     this.label.attr({ text: sliderPoint + " degs" });
+    var da = sliderPoint - arrow.angle;
+    arrow.rotate(da, cx, (csize / 2));
+    arrow.angle = sliderPoint;
 };
-var angle_slider = Slider(sandbox, 150, 200, 300, 180, drag_angle, on, off);
-angle_slider.label = sandbox.text(sliderX, (sliderY - 20), "0 degs").attr({ "font-size": 20 });
+var drag_speed = function () {
+    this.label.attr({ text: (1 + sliderPoint) + " m/s" });
+    v = sliderPoint + 1;
+    console.log("v: " + v);
+};
 var drag_height = function () {
     this.label.attr({ text: sliderPoint + " m" });
 };
-var height_slider = Slider(sandbox, 150, 330, 300, 100, drag_height, on, off);
-height_slider.label = sandbox.text(sliderX, (sliderY - 20), "0 m").attr({ "font-size": 20 });
 
+var angle_slider = Slider(screen2, 180, 200, 300, 180, drag_angle, on, off);
+angle_slider.label = screen2.text(sliderX, (sliderY - 20), "0" + ' degs').attr({ "font-size": 14 });
+var height_slider = Slider(screen2, 180, 260, 300, 100, drag_height, on, off);
+height_slider.label = screen2.text(sliderX, (sliderY - 20), "0 m").attr({ "font-size": 14 });
+var speed_slider = Slider(screen2, 180, 320, 300, 29, drag_speed, on, off);
+speed_slider.label = screen2.text(sliderX, (sliderY - 20), "1 m/s").attr({ "font-size": 14 });
+var go_btn = screen2.rect(320, 50, 120, 50, 12)
+    .attr({ "font-size": 12, "stroke": "white", "fill": "white", "opacity": 0.5 })
+    .click(function () {
+        console.log("clicked go");
+        setAngle(arrow.angle * (Math.PI / 180) - (Math.PI / 2));
+        setVxVy();
+        setMaxTime();
+        slider.setSnap(maxTime);
+        // speedTxt.attr({
+        //     text: " Speed: " + v + " m/s"
+        // });
+        // vyTxt.attr({
+        //     text: " Vy: " + Math.round(100 * (-1 * getVy(vy, 9.81, (sliderPoint / 10)))) / 100 + " m/s"
+        // });
+        // vxTxt.attr({
+        //     text: " Vx: " + vx
+        // })
+        screen2.remove();
+    })
+    .mouseover(function () {
+        console.log("over go");
+        $("body").css({ cursor: "pointer" });
+    })
+    .mouseout(function () {
+        console.log("out go");
+        $("body").css({ cursor: "default" });
+    })
 //sandbox.rect(0,0,600,500).attr({fill: "red"});
