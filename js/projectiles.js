@@ -38,7 +38,7 @@ var border = sandbox.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "
 var startx = 50;
 var starty = 150;
 var height = 100;
-var v = 20;
+var v = 0;
 setAngle(-Math.PI / 6);
 var vx;
 var vy;
@@ -50,7 +50,11 @@ yline.y = starty;
 yline.x = startx * mtopxl;
 var mtopxl = 200 / height;
 var pxltom = height / 200;
-var endSpeed = Math.round(10 * getSpeed(speed(vx, vy), a, height)) / 10;
+var endSpeed;
+function setEndSpeed() {
+    endSpeed = Math.round(10 * getSpeed(speed(vx, vy), a, height)) / 10;
+}
+setEndSpeed();
 var endy = calcPosition(startx, starty, vx, vy, timeAtGround(endSpeed, v, a), a);
 ball.x = startx * mtopxl;
 ball.y = starty * mtopxl;
@@ -179,6 +183,7 @@ var go_btn = screen2.rect(320, 50, 120, 50, 12)
         setVxVy();
         setMaxTime();
         slider.setSnap(maxTime);
+        setEndSpeed();
         // speedTxt.attr({
         //     text: " Speed: " + v + " m/s"
         // });
