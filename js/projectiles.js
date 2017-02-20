@@ -151,7 +151,7 @@ function drawRuler(id, x, y) {
         }
     }
 }
-var slider = Slider(sandbox, 180, 450, 300, maxTime, drag, on, off);
+var slider = Slider(sandbox, 90, 450, 300, maxTime, drag, on, off);
 slider.label = sandbox.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 18 });
 var params_btn = sandbox.rect(280, 35, 120, 50, 12)
     .attr({ "font-size": 12, "stroke": "white", "fill": "white", "opacity": 0.5 })
@@ -171,8 +171,8 @@ function makeScreen2() {
     var param_offset_y = 160;
     var timetext = sandbox.text(130, 455, "Time:").attr({ "font-size": 18 });
     var screen2 = Raphael(0, 10, 600, 600);
-    var mask = screen2.rect(10, 0, 580, 510, 15).attr({ "fill": "white", "stroke": "white", "opacity": 0.5 })
-    var params = screen2.rect(40, 100, 520, 340, 15).attr({ stroke: "#ffffff", "stroke-width": 2, fill: "#ff4f71" });
+    var mask = screen2.rect(10, 0, 580, 510, 15).attr({ "fill": "white", "stroke": "white", "opacity": 0.7 })
+    var params = screen2.rect(50, 100, 490, 340, 15).attr({ stroke: "none", fill: "#ff4f71" });
     var angletext = screen2.text(240, param_offset_y, "Angle").attr({ "font-size": 18 });
     var heighttext = screen2.text(240, (param_offset_y + 80), "Height").attr({ "font-size": 18 });
     var speedtext = screen2.text(240, (param_offset_y + 160), "Speed").attr({ "font-size": 18 });
@@ -214,8 +214,12 @@ function makeScreen2() {
     var speed_slider = Slider(screen2, 90, (param_offset_y + 200), 300, 40, drag_speed, on, off);
     speed_slider.label = screen2.text(sliderX, (sliderY - 20), parameters.speed + " m/s").attr({ "font-size": 14 });
     speed_slider.setSlider(parameters.speed);
-    var go_btn = screen2.rect(320, 50, 120, 50, 12)
-        .attr({ "font-size": 12, "stroke": "white", "fill": "white", "opacity": 0.5 })
+    var close_circle = screen2.circle(515, 125, 15).attr({ fill: "white", opacity: 0.5, stroke: "none" });
+    var close_btn = screen2.path(["M", 505, 115, "l", 20, 20, "M", 525, 115, "l", -20, 20])
+        .attr({ "font-size": 12, "stroke": "#ff4f71", "stroke-width": 4 })
+    var close = screen2.set();
+    close.push(close_btn)
+        .push(close_circle)
         .click(function () {
             setAngle(arrow.angle * (Math.PI / 180) - (Math.PI / 2));
             setVxVy();
@@ -235,5 +239,4 @@ function makeScreen2() {
         .mouseout(function () {
             $("body").css({ cursor: "default" });
         })
-    v = 20;
 }
