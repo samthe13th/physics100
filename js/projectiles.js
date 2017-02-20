@@ -1,8 +1,9 @@
 var sandbox = Raphael(0, 10, 600, 600);
+var ground = 370;
 var parameters = {
-    "angle": 5,
-    "height": 10,
-    "speed": 25
+    "angle": 45,
+    "height": 100,
+    "speed": 20
 }
 var drag = function () {
     this.label.attr({ text: (slider.sliderPoint / 10) + " sec" });
@@ -10,7 +11,7 @@ var drag = function () {
     if (slider.sliderPoint === maxTime) {
         currentSpeed = endSpeed;
         newpos = calcPosition((pxltom * startx), (pxltom * starty), vx, vy, (slider.sliderPoint / 10), a);
-        newpos.y = 350;
+        newpos.y = ground;
     } else {
         var cVy = Math.round(100 * (-1 * getVy(vy, 9.81, (slider.sliderPoint / 10)))) / 100;
         currentSpeed = Math.round(10 * Math.sqrt(Math.pow(cVy, 2) + Math.pow(vx, 2))) / 10;
@@ -50,22 +51,22 @@ var off = function () {
     dragging = { o: null };
 }
 var border, slider;
-var border = sandbox.rect(10, 0, 580, 510, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
-var startx = 50;
+var border = sandbox.rect(10, 0, 580, 510).attr({ stroke: "#ffffff", fill: "#7c83cd" });
+var startx = 60;
 var starty;
 var height = parameters.height;
 var current_height = height;
 var current_dx = 0;
-var v = 20;
+var v = 20.0;
 setAngle(-Math.PI / 4);
 var vx;
 var vy;
 var a = 9.81;
 var mtopxl = 200 / 100;
 var pxltom = 100 / 200;
-starty = 350 - (height * mtopxl);
+starty = ground - (height * mtopxl);
 var ball = sandbox.circle(startx, starty, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
-var axis = sandbox.path(["M", 50, 80, "l", 0, 280, "l", 500, 0]).attr({ stroke: "#ffffff" });
+var axis = sandbox.path(["M", startx, 100, "l", 0, 280, "l", 500, 0]).attr({ stroke: "#ffffff" });
 var yline = sandbox.path(["M", startx, starty, "l", 0, 200]).attr({ stroke: "none" });
 var coords = sandbox.text(startx + 40, starty - 20, "(0,100)").attr({ "fill": "white", "font-size": 16 });
 coords.x = startx + 30;
@@ -106,9 +107,9 @@ var setMaxTime = function () {
     maxTime = Math.round(timeAtGround(getSpeed(vy, a, height), vy, a) * 10)
 }
 setMaxTime();
-var speedTxt = sandbox.text(500, 40, "Speed:" + parameters.speed + " m/s").attr({ "font-size": 20 }).attr({ fill: "#ffffff" });
-var vxTxt = sandbox.text(500, 60, "Vx: " + vx + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
-var vyTxt = sandbox.text(500, 80, "Vy: " + (-1 * vy) + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
+var speedTxt = sandbox.text(320, 50, "Speed: " + parameters.speed + " m/s").attr({ "font-size": 25 }).attr({ fill: "#ffffff" });
+var vxTxt = sandbox.text(500, 35, "Vx: " + vx + " m/s").attr({ "font-size": 16 }).attr({ fill: "#ffffff" });
+var vyTxt = sandbox.text(500, 60, "Vy: " + (-1 * vy) + " m/s").attr({ "font-size": 16 }).attr({ fill: "#ffffff" });
 function setAngle(x) {
     angle = x;
     setVxVy();
@@ -118,8 +119,8 @@ function setVxVy() {
     vy = Math.round(100 * v * Math.sin(angle)) / 100;
 }
 function drawRulers() {
-    drawRuler("y", 50, 360);
-    drawRuler("x", 50, 360);
+    drawRuler("y", startx, ground + 10);
+    drawRuler("x", startx, ground + 10);
 }
 drawRulers();
 function drawRuler(id, x, y) {
@@ -151,10 +152,14 @@ function drawRuler(id, x, y) {
         }
     }
 }
-var slider = Slider(sandbox, 90, 450, 300, maxTime, drag, on, off);
-slider.label = sandbox.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 18 });
-var params_btn = sandbox.rect(280, 35, 120, 50, 12)
-    .attr({ "font-size": 12, "stroke": "white", "fill": "white", "opacity": 0.5 })
+var slider = Slider(sandbox, 100, 460, 430, maxTime, drag, on, off);
+slider.label = sandbox.text(slider.sliderX, (slider.sliderY - 20), "0 sec").attr({ "font-size": 16, "fill": "white" });
+var params_btn_base = sandbox.rect(60, 25, 120, 50, 12)
+    .attr({ "font-size": 12, "stroke": "white", "fill": "#ff4f71", "stroke-width": 2 })
+var params_btn_txt = sandbox.text(120, 50, "Change \n Parameters").attr({ fill: "white", "font-size": 18 })
+var params_btn = sandbox.set()
+    .push(params_btn_base)
+    .push(params_btn_txt)
     .click(function () {
         makeScreen2();
     })
@@ -165,13 +170,13 @@ var params_btn = sandbox.rect(280, 35, 120, 50, 12)
         $("body").css({ cursor: "default" });
     })
 
-
 makeScreen2();
 function makeScreen2() {
     var param_offset_y = 160;
-    var timetext = sandbox.text(130, 455, "Time:").attr({ "font-size": 18 });
+    var axis_label1 = sandbox.text(300, 410, "metres").attr({ "font-size": 18, "fill": "white" });
+    var axis_label2 = sandbox.text(30, 240, "metres").attr({ "font-size": 18, "fill": "white" }).rotate(-90)
     var screen2 = Raphael(0, 10, 600, 600);
-    var mask = screen2.rect(10, 0, 580, 510, 15).attr({ "fill": "white", "stroke": "white", "opacity": 0.7 })
+    var mask = screen2.rect(10, 0, 580, 510).attr({ "fill": "white", "stroke": "white", "opacity": 0.7 })
     var params = screen2.rect(50, 100, 490, 340, 15).attr({ stroke: "none", fill: "#ff4f71" });
     var angletext = screen2.text(240, param_offset_y, "Angle").attr({ "font-size": 18 });
     var heighttext = screen2.text(240, (param_offset_y + 80), "Height").attr({ "font-size": 18 });
@@ -201,18 +206,18 @@ function makeScreen2() {
     var drag_height = function () {
         this.label.attr({ text: height_slider.sliderPoint + " m" });
         height = height_slider.sliderPoint;
-        starty = 350 - (height * mtopxl);
+        starty = ground - (height * mtopxl);
     };
     var angle_slider = Slider(screen2, 90, param_offset_y + 40, 300, 180, drag_angle, on, off);
-    angle_slider.label = screen2.text(sliderX, (sliderY - 20), parameters.angle + ' degs').attr({ "font-size": 14 });
+    angle_slider.label = screen2.text(angle_slider.sliderX, (angle_slider.sliderY - 20), parameters.angle + ' degs').attr({ "font-size": 14 });
     angle_slider.setSlider(parameters.angle);
     arrow.rotate(parameters.angle, cx, (csize / 2));
     arrow.angle = parameters.angle;
     var height_slider = Slider(screen2, 90, (param_offset_y + 120), 300, 100, drag_height, on, off);
-    height_slider.label = screen2.text(sliderX, (sliderY - 20), parameters.height + " m").attr({ "font-size": 14 });
+    height_slider.label = screen2.text(height_slider.sliderX, (height_slider.sliderY - 20), parameters.height + " m").attr({ "font-size": 14 });
     height_slider.setSlider(parameters.height);
     var speed_slider = Slider(screen2, 90, (param_offset_y + 200), 300, 40, drag_speed, on, off);
-    speed_slider.label = screen2.text(sliderX, (sliderY - 20), parameters.speed + " m/s").attr({ "font-size": 14 });
+    speed_slider.label = screen2.text(speed_slider.sliderX, (speed_slider.sliderY - 20), parameters.speed + " m/s").attr({ "font-size": 14 });
     speed_slider.setSlider(parameters.speed);
     var close_circle = screen2.circle(515, 125, 15).attr({ fill: "white", opacity: 0.5, stroke: "none" });
     var close_btn = screen2.path(["M", 505, 115, "l", 20, 20, "M", 525, 115, "l", -20, 20])

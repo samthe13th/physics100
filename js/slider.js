@@ -2,26 +2,19 @@ var sliderWidth = 10
 var sliderRoundness = 8;
 var dragging = { o: null };
 
-var sliderX, sliderY, sliderLength;
+var sliderX, sliderY;
 
 var Slider = function (stage, x, y, l, m, drag, on, off) {
     var bar, rtnSlider, label;
     var snap = m;
     var snapTo = [];
-    var makeSnapPoints = function () {
-        for (var i = 0; i < snap; i++) {
-            var point = sliderX + ((i + 1) * (sliderLength / snap));
-            snapTo.push(Math.round(point));
-        }
-    }
-    sliderX = x;
-    sliderY = y;
-    sliderLength = l;
-    makeSnapPoints();
-    bar = stage.rect(sliderX, sliderY, sliderLength, sliderWidth, sliderRoundness).attr({ fill: "white", opacity: 0.5, stroke: "none" });
-    rtnSlider = stage.rect(sliderX, sliderY - (sliderWidth / 2), 10, 20).attr({ fill: "white", stroke: "none" })
+    bar = stage.rect(x, y, l, sliderWidth, sliderRoundness).attr({ fill: "white", opacity: 0.5, stroke: "none" });
+    rtnSlider = stage.rect(x, y - (sliderWidth / 2), 10, 20).attr({ fill: "white", stroke: "none" })
         .drag(drag, on, off);
-    rtnSlider.xabs = sliderX;
+    rtnSlider.sliderX = x;
+    rtnSlider.sliderY = y;
+    rtnSlider.sliderLength = l;
+    rtnSlider.xabs = rtnSlider.sliderX;
     rtnSlider.setColor = function (c) {
         bar.attr({ fill: c });
     }
@@ -29,14 +22,14 @@ var Slider = function (stage, x, y, l, m, drag, on, off) {
         rtnSlider.snap = s;
     }
     rtnSlider.label = function (l) {
-        rtnSlider.label = stage.text(sliderX, (sliderY - 20), "0 " + l).attr({ "font-size": 20 });
+        rtnSlider.label = stage.text(rtnSlider.sliderX, (rtnSlider.sliderY - 20), "0 " + l).attr({ "font-size": 20 });
     }
     rtnSlider.hideSlider = function () {
         bar.hide();
         this.hide();
     }
     rtnSlider.setSlider = function (p) {
-        var div = (sliderLength - 10) / rtnSlider.snap;
+        var div = (rtnSlider.sliderLength - 10) / rtnSlider.snap;
         rtnSlider.xabs += p * div;
         rtnSlider.translate((p * div), 0);
         rtnSlider.label.translate((p * div), 0);
@@ -53,10 +46,10 @@ document.onmousemove = function (e) {
     if (dragging.o !== null) {
         xdiff = e.pageX - o.xabs;
         moveTo = o.xabs + xdiff;
-        endPoint = sliderX + sliderLength - 10;
-        if (e.pageX <= sliderX) {
-            trans = sliderX - o.xabs;
-            o.xabs = sliderX;
+        endPoint = o.sliderX + o.sliderLength - 10;
+        if (e.pageX <= o.sliderX) {
+            trans = o.sliderX - o.xabs;
+            o.xabs = o.sliderX;
         } else if (moveTo >= endPoint) {
             trans = endPoint - o.xabs;
             o.xabs = endPoint;
@@ -66,6 +59,6 @@ document.onmousemove = function (e) {
         }
         o.translate(trans, 0);
         o.label.translate(trans, 0);
-        o.sliderPoint = Math.round(((o.xabs - sliderX) / ((sliderLength - 10) / o.snap)));
+        o.sliderPoint = Math.round(((o.xabs - o.sliderX) / ((o.sliderLength - 10) / o.snap)));
     }
 }
