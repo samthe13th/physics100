@@ -1,30 +1,45 @@
 var sandbox = Raphael(0, 10, 600, 600);
+var parameters = {
+    "angle": 5,
+    "height": 10,
+    "speed": 25
+}
 var drag = function () {
-    this.label.attr({ text: (sliderPoint / 10) + " sec" });
+    this.label.attr({ text: (slider.sliderPoint / 10) + " sec" });
     var currentSpeed, newpos;
-    if (sliderPoint === maxTime) {
-        console.log("end of slider");
+    if (slider.sliderPoint === maxTime) {
         currentSpeed = endSpeed;
-        newpos = calcPosition((pxltom * startx), (pxltom * starty), vx, vy, (sliderPoint / 10), a);
+        newpos = calcPosition((pxltom * startx), (pxltom * starty), vx, vy, (slider.sliderPoint / 10), a);
         newpos.y = 350;
     } else {
-        currentSpeed = Math.round(10 * getSpeed(speed(vx, vy), 9.81, ball.dy)) / 10;
-        newpos = calcPosition((pxltom * startx), (pxltom * starty), vx, vy, (sliderPoint / 10), a);
+        var cVy = Math.round(100 * (-1 * getVy(vy, 9.81, (slider.sliderPoint / 10)))) / 100;
+        currentSpeed = Math.round(10 * Math.sqrt(Math.pow(cVy, 2) + Math.pow(vx, 2))) / 10;
+        newpos = calcPosition((pxltom * startx), (pxltom * starty), vx, vy, (slider.sliderPoint / 10), a);
     }
-    ball.translate((newpos.x - ball.x), (newpos.y - ball.y));
+    var newdx = newpos.x - ball.x;
+    var newdy = newpos.y - ball.y;
+    ball.translate(newdx, newdy);
+    coords.translate(newdx, newdy);
+    coords.x += newdx;
+    coords.y += newdy;
     yline.translate((ball.x - yline.x), 0);
     yline.x = ball.x
     ball.h = Math.round(100 * (height + pxltom * (ball.starty - ball.y))) / 100;
     ball.dy = Math.abs(ball.h - height);
     speedTxt.attr({
-        text: "ball.y: " + ball.y + " Speed: " + currentSpeed + " m/s"
+        text: " Speed: " + currentSpeed + " m/s"
     });
     vyTxt.attr({
-        text: " Vy: " + Math.round(100 * (-1 * getVy(vy, 9.81, (sliderPoint / 10)))) / 100 + " m/s"
+        text: " Vy: " + Math.round(100 * (-1 * getVy(vy, 9.81, (slider.sliderPoint / 10)))) / 100 + " m/s"
     });
     vxTxt.attr({
-        text: " Vx: " + vx
+        text: " Vx: " + vx + " m/s"
     })
+    coords.attr({
+        text: "(" + Math.round(current_dx + (newdx * pxltom)) + "," + Math.round(current_height - (newdy * pxltom)) + ")"
+    })
+    current_height -= (newdy * pxltom);
+    current_dx += (newdx * pxltom);
     ball.x = newpos.x;
     ball.y = newpos.y;
 };
@@ -37,19 +52,24 @@ var off = function () {
 var border, slider;
 var border = sandbox.rect(10, 0, 580, 510, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
 var startx = 50;
-var starty; 
-var height = 100;
-var v = 0;
-setAngle(-Math.PI / 6);
+var starty;
+var height = parameters.height;
+var current_height = height;
+var current_dx = 0;
+var v = 20;
+setAngle(-Math.PI / 4);
 var vx;
 var vy;
 var a = 9.81;
 var mtopxl = 200 / 100;
 var pxltom = 100 / 200;
 starty = 350 - (height * mtopxl);
-var ball = sandbox.circle(startx, starty, 10).attr({ stroke: "#ffffff" });
+var ball = sandbox.circle(startx, starty, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
 var axis = sandbox.path(["M", 50, 80, "l", 0, 280, "l", 500, 0]).attr({ stroke: "#ffffff" });
-var yline = sandbox.path(["M", startx, starty, "l", 0, 200]).attr({ stroke: "none" })
+var yline = sandbox.path(["M", startx, starty, "l", 0, 200]).attr({ stroke: "none" });
+var coords = sandbox.text(startx + 40, starty - 20, "(0,100)").attr({ "fill": "white", "font-size": 16 });
+coords.x = startx + 30;
+coords.y = starty - 20;
 yline.y = starty;
 yline.x = startx * mtopxl;
 var endSpeed;
@@ -57,12 +77,10 @@ function setEndSpeed() {
     endSpeed = Math.round(10 * getSpeed(speed(vx, vy), a, height)) / 10;
 }
 setEndSpeed();
-//var endy = calcPosition(startx, starty, vx, vy, timeAtGround(endSpeed, v, a), a);
 ball.x = startx;
 ball.y = starty;
 ball.startx = ball.x;
 ball.starty = starty * mtopxl;
-//ball.endy = ball.y + (height * mtopxl);
 function calcPosition(x0, y0, vx, vy, t, a) {
     var pos = {};
     pos.x = (x0 + (vx * t)) * mtopxl;
@@ -86,15 +104,11 @@ function getVy(v0, a, t) {
 var maxTime;
 var setMaxTime = function () {
     maxTime = Math.round(timeAtGround(getSpeed(vy, a, height), vy, a) * 10)
-    console.log("max time: " + maxTime)
 }
 setMaxTime();
-var speedTxt = sandbox.text(500, 80, "Speed: 0 m/s").attr({ "font-size": 20 }).attr({ fill: "#ffffff" });
-var vxTxt = sandbox.text(500, 110, "Vx: " + vx + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
-var vyTxt = sandbox.text(500, 130, "Vy: " + (-1 * vy) + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
-// AP.create("svgstage", 200, "red", 75, function () {
-//     console.log("do something");
-// })
+var speedTxt = sandbox.text(500, 40, "Speed:" + parameters.speed + " m/s").attr({ "font-size": 20 }).attr({ fill: "#ffffff" });
+var vxTxt = sandbox.text(500, 60, "Vx: " + vx + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
+var vyTxt = sandbox.text(500, 80, "Vy: " + (-1 * vy) + " m/s").attr({ "font-size": 14 }).attr({ fill: "#ffffff" });
 function setAngle(x) {
     angle = x;
     setVxVy();
@@ -139,75 +153,87 @@ function drawRuler(id, x, y) {
 }
 var slider = Slider(sandbox, 180, 450, 300, maxTime, drag, on, off);
 slider.label = sandbox.text(sliderX, (sliderY - 20), "0 sec").attr({ "font-size": 18 });
-var timetext = sandbox.text(130, 455, "Time:").attr({ "font-size": 18 });
-
-var screen2 = Raphael(0, 10, 600, 500);
-var params = screen2.rect(10, 0, 580, 410, 15).attr({ stroke: "#ffffff", fill: "#7c83cd" });
-var angletext = screen2.text(120, 200, "Angle:").attr({ "font-size": 18 });
-var heighttext = screen2.text(120, 260, "Height:").attr({ "font-size": 18 });
-var speedtext = screen2.text(120, 320, "Speed:").attr({ "font-size": 18 });
-var ballAngle = 0;
-var aHead = 12;
-var cx = 80;
-// rotateAxis(45);
-var csize = 160;
-var arrow = screen2.path("M" + cx + " " + cx + " " + "L" + cx + " " + (aHead + 5) + " l" + (-aHead / 2) + " 0 l" + (aHead / 2) + " " + (-aHead) + "l" + (aHead / 2) + " " + aHead + "l" + (-aHead / 2) + " 0 Z")
-    .attr({ "stroke": "white", "stroke-width": 4, "fill": "white" })
-    .translate(100, 20);
-arrow.angle = 0;
-var ball2 = screen2.circle(180, 100, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
-ball2.y;
-var drag_angle = function () {
-    this.label.attr({ text: sliderPoint + " degs" });
-    var da = sliderPoint - arrow.angle;
-    arrow.rotate(da, cx, (csize / 2));
-    arrow.angle = sliderPoint;
-};
-var drag_speed = function () {
-    this.label.attr({ text: (1 + sliderPoint) + " m/s" });
-    v = sliderPoint + 1;
-    console.log("v: " + v);
-};
-var drag_height = function () {
-    this.label.attr({ text: sliderPoint + " m" });
-    height = sliderPoint;
-    starty = 350 - (height * mtopxl);
-};
-
-var angle_slider = Slider(screen2, 180, 200, 300, 180, drag_angle, on, off);
-angle_slider.label = screen2.text(sliderX, (sliderY - 20), "0" + ' degs').attr({ "font-size": 14 });
-var height_slider = Slider(screen2, 180, 260, 300, 100, drag_height, on, off);
-height_slider.label = screen2.text(sliderX, (sliderY - 20), "0 m").attr({ "font-size": 14 });
-var speed_slider = Slider(screen2, 180, 320, 300, 39, drag_speed, on, off);
-speed_slider.label = screen2.text(sliderX, (sliderY - 20), "1 m/s").attr({ "font-size": 14 });
-var go_btn = screen2.rect(320, 50, 120, 50, 12)
+var params_btn = sandbox.rect(280, 35, 120, 50, 12)
     .attr({ "font-size": 12, "stroke": "white", "fill": "white", "opacity": 0.5 })
     .click(function () {
-        console.log("clicked go");
-        setAngle(arrow.angle * (Math.PI / 180) - (Math.PI / 2));
-        setVxVy();
-        setMaxTime();
-        slider.setSnap(maxTime);
-        setEndSpeed();
-        ball.translate(0,(starty - ball.y));
-        ball.y = starty;
-        // speedTxt.attr({
-        //     text: " Speed: " + v + " m/s"
-        // });
-        // vyTxt.attr({
-        //     text: " Vy: " + Math.round(100 * (-1 * getVy(vy, 9.81, (sliderPoint / 10)))) / 100 + " m/s"
-        // });
-        // vxTxt.attr({
-        //     text: " Vx: " + vx
-        // })
-        screen2.remove();
+        makeScreen2();
     })
     .mouseover(function () {
-        console.log("over go");
         $("body").css({ cursor: "pointer" });
     })
     .mouseout(function () {
-        console.log("out go");
         $("body").css({ cursor: "default" });
     })
-//sandbox.rect(0,0,600,500).attr({fill: "red"});
+
+
+makeScreen2();
+function makeScreen2() {
+    var param_offset_y = 160;
+    var timetext = sandbox.text(130, 455, "Time:").attr({ "font-size": 18 });
+    var screen2 = Raphael(0, 10, 600, 600);
+    var mask = screen2.rect(10, 0, 580, 510, 15).attr({ "fill": "white", "stroke": "white", "opacity": 0.5 })
+    var params = screen2.rect(40, 100, 520, 340, 15).attr({ stroke: "#ffffff", "stroke-width": 2, fill: "#ff4f71" });
+    var angletext = screen2.text(240, param_offset_y, "Angle").attr({ "font-size": 18 });
+    var heighttext = screen2.text(240, (param_offset_y + 80), "Height").attr({ "font-size": 18 });
+    var speedtext = screen2.text(240, (param_offset_y + 160), "Speed").attr({ "font-size": 18 });
+    var ballAngle = 0;
+    var aHead = 12;
+    var cx = 80;
+    var csize = 160;
+    var arrow = screen2.path("M" + cx + " " + cx + " " + "L" + cx + " " + (aHead + 5) + " l" + (-aHead / 2) + " 0 l" + (aHead / 2) + " " + (-aHead) + "l" + (aHead / 2) + " " + aHead + "l" + (-aHead / 2) + " 0 Z")
+        .attr({ "stroke": "white", "stroke-width": 4, "fill": "white" })
+        .translate(350, 200);
+    //arrow.angle = 0;
+    var ball2 = screen2.circle(430, 280, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
+    ball2.y;
+    var drag_angle = function () {
+        this.label.attr({ text: angle_slider.sliderPoint + " degs" });
+        var da = angle_slider.sliderPoint - arrow.angle;
+        arrow.rotate(da, cx, (csize / 2));
+        arrow.angle = angle_slider.sliderPoint;
+        parameters.angle = arrow.angle;
+    };
+    var drag_speed = function () {
+        this.label.attr({ text: (speed_slider.sliderPoint) + " m/s" });
+        v = speed_slider.sliderPoint;
+        parameters.speed = v;
+    };
+    var drag_height = function () {
+        this.label.attr({ text: height_slider.sliderPoint + " m" });
+        height = height_slider.sliderPoint;
+        starty = 350 - (height * mtopxl);
+    };
+    var angle_slider = Slider(screen2, 90, param_offset_y + 40, 300, 180, drag_angle, on, off);
+    angle_slider.label = screen2.text(sliderX, (sliderY - 20), parameters.angle + ' degs').attr({ "font-size": 14 });
+    angle_slider.setSlider(parameters.angle);
+    arrow.rotate(parameters.angle, cx, (csize / 2));
+    arrow.angle = parameters.angle;
+    var height_slider = Slider(screen2, 90, (param_offset_y + 120), 300, 100, drag_height, on, off);
+    height_slider.label = screen2.text(sliderX, (sliderY - 20), parameters.height + " m").attr({ "font-size": 14 });
+    height_slider.setSlider(parameters.height);
+    var speed_slider = Slider(screen2, 90, (param_offset_y + 200), 300, 40, drag_speed, on, off);
+    speed_slider.label = screen2.text(sliderX, (sliderY - 20), parameters.speed + " m/s").attr({ "font-size": 14 });
+    speed_slider.setSlider(parameters.speed);
+    var go_btn = screen2.rect(320, 50, 120, 50, 12)
+        .attr({ "font-size": 12, "stroke": "white", "fill": "white", "opacity": 0.5 })
+        .click(function () {
+            setAngle(arrow.angle * (Math.PI / 180) - (Math.PI / 2));
+            setVxVy();
+            setMaxTime();
+            slider.setSnap(maxTime);
+            setEndSpeed();
+            ball.translate(0, (starty - ball.y));
+            current_height = height;
+            coords.attr({ text: "(0," + current_height + ")" })
+            coords.translate(0, (starty - ball.y));
+            ball.y = starty;
+            screen2.remove();
+        })
+        .mouseover(function () {
+            $("body").css({ cursor: "pointer" });
+        })
+        .mouseout(function () {
+            $("body").css({ cursor: "default" });
+        })
+    v = 20;
+}
