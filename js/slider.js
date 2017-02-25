@@ -1,9 +1,6 @@
 var sliderWidth = 10
 var sliderRoundness = 8;
 var dragging = { o: null };
-
-var sliderX, sliderY;
-
 var Slider = function (stage, x, y, l, m, drag, on, off) {
     var bar, rtnSlider, label;
     var snap = m;
@@ -15,6 +12,7 @@ var Slider = function (stage, x, y, l, m, drag, on, off) {
     rtnSlider.sliderY = y;
     rtnSlider.sliderLength = l;
     rtnSlider.xabs = rtnSlider.sliderX;
+    rtnSlider.sliderPoint = 0;
     rtnSlider.setColor = function (c) {
         bar.attr({ fill: c });
     }
