@@ -2,11 +2,12 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="css/lity.min.css">
+    <link rel="stylesheet" href="../stylesheets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../stylesheets/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../stylesheets/css/lity.min.css">
     <title>UBC Physics 100 Dashboard</title>
 </head>
+
 <style type="text/css">
     .bs-example {
         margin: 20px;
@@ -14,11 +15,11 @@
 </style>
 
 <body>
-    <div class="centered">
-        <hr>
+    <div class="centered samseg">
+        <hr class="white-hr">
         <h1>UBC Physics 100</h1>
         <h4>Content by Sam MacKinnon</h4>
-        <hr><br>
+        <hr class="white-hr"><br>
     </div>
     <div id="bus" style="background:#fff" class="lity-hide">
         <div class="ivideo">
@@ -35,14 +36,14 @@
             <iframe src="https://h5p.org/h5p/embed/61362" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
+    <div class="container samseg">
+        <div class="row lighttheme">
             <a href="#bus" data-lity>
-                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container lighttheme">
+                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
                     <img class='vid-thumbnail' src="img/thumbnails/bus.jpg" alt="">
                 </div>
             </a>
-            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container lighttheme">
+            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
                     <h4>Embed Code:</h4>
@@ -50,17 +51,20 @@
                 <textarea readonly="true" id="busvideo-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/13521" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt
                         </textarea>
                 <div class="floatleft">
-                    <button onclick="copytxt('#busvideo-em')">Copy</button>
+                    <button class='smallbtn' onclick="copytxt('#busvideo-em')">Copy</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container darktheme">
-                <img class='vid-thumbnail' src="img/thumbnails/catpig.jpg" alt="">
-            </div>
-            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container darktheme">
+    <br>
+    <div class="container samseg">
+        <div class="row lighttheme">
+            <a href="#catpig" data-lity>
+                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
+                    <img class='vid-thumbnail' src="img/thumbnails/catpig.jpg" alt="">
+                </div>
+            </a>
+            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
                     <h4>Embed Code:</h4>
@@ -68,24 +72,47 @@
                 <textarea readonly="true" id="catpigvideo-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/18409" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt
                         </textarea>
                 <div class="floatleft">
-                    <button onclick="copytxt('#catpigvideo-em')">Copy</button>
+                    <button class="smallbtn" onclick="copytxt('#catpigvideo-em')">Copy</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container lighttheme">
-                <img class='vid-thumbnail' src="img/thumbnails/ballfall.jpg" alt="">
+    <br>
+    <div class="container samseg">
+        <div class="row darktheme">
+            <a href="../exercises/all.html">
+                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
+                    <img class='vid-thumbnail' src="img/thumbnails/freebody.jpg" alt="">
+                </div>
+            </a>
+            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
+                <h3>Javascript App</h3>
+                <div class="floatleft">
+                    <h4>Embed Code:</h4>
+                </div>
+                <textarea readonly="true" id="ballfallvideo-em" class="embedcode">embedcode</textarea>
+                <div class="floatleft">
+                    <button class="smallbtn" onclick="copytxt('#ballfallvideo-em')">Copy</button>
+                </div>
             </div>
-            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container lighttheme">
+        </div>
+    </div>
+    <br>
+    <div class="container">
+        <div class="row lighttheme">
+            <a href="#bus" data-lity>
+                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
+                    <img class='vid-thumbnail' src="img/thumbnails/ballfall.jpg" alt="">
+                </div>
+            </a>
+            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
                     <h4>Embed Code:</h4>
                 </div>
                 <textarea readonly="true" id="ballfallvideo-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/61362" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt</textarea>
                 <div class="floatleft">
-                    <button onclick="copytxt('#ballfallvideo-em')">Copy</button>
+                    <button class="smallbtn" onclick="copytxt('#ballfallvideo-em')">Copy</button>
                 </div>
             </div>
         </div>
@@ -153,10 +180,10 @@
 
 </html>
 
-<script src="js/vender/jquery.min.js"></script>
-<script src="js/vender/bootstrap.min.js"></script>
+<script src="../js/vender/jquery.min.js"></script>
+<script src="../js/vender/bootstrap.min.js"></script>
 <script src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"></script>
-<script src="js/vender/lity.min.js"></script>
+<script src="../js/vender/lity.min.js"></script>
 
 <script>
                                      function copytxt(id) {
@@ -175,6 +202,15 @@
 </script>
 
 <style>
+    .smallbtn {
+        background-color: white;
+        border-style: none;
+        color: dimgrey;
+    }
+    .white-hr {
+        color: white;
+    }
+    
     .floatleft {
         display: block;
         float: left;
@@ -189,11 +225,12 @@
     }
     
     .darktheme {
-        background-color: #adc8dd;
-    }
+        background-color: #9585c9;
+        color: white;
+     }
     
     .samapp-container {
-        padding: 10px;
+        padding: 20px;
         border-style: none;
         height: 300px;
         text-align: center;
