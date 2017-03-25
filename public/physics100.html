@@ -31,6 +31,9 @@
             <iframe src="https://h5p.org/h5p/embed/18409" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
         </div>
     </div>
+    <div id="freebody" style="background:#fff" class="lity-hide">
+        <iframe src="https://www.veryscience.com/exercises/all.html" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"></iframe>
+    </div>
     <div id="ballfall" style="background:#fff" class="lity-hide">
         <div class="ivideo">
             <iframe src="https://h5p.org/h5p/embed/61362" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
@@ -39,11 +42,12 @@
     <div class="container samseg">
         <div class="row lighttheme">
             <a href="#bus" data-lity>
-                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
+                <div class="col-xs-12 col-sm-6 col-lg-4 samapp-container">
+                    <h4 class="black">"Running for a Bus"</h4>
                     <img class='vid-thumbnail' src="img/thumbnails/bus.jpg" alt="">
                 </div>
             </a>
-            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
+            <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
                     <h4>Embed Code:</h4>
@@ -60,11 +64,12 @@
     <div class="container samseg">
         <div class="row lighttheme">
             <a href="#catpig" data-lity>
-                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
+                <div class="col-xs-12 col-sm-6 col-lg-4 samapp-container">
+                    <h4 class="black">"Cats and Pigs"</h4>
                     <img class='vid-thumbnail' src="img/thumbnails/catpig.jpg" alt="">
                 </div>
             </a>
-            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
+            <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
                     <h4>Embed Code:</h4>
@@ -80,17 +85,18 @@
     <br>
     <div class="container samseg">
         <div class="row darktheme">
-            <a href="exercises/all.html">
-                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
+            <a href="#freebody" data-lity>
+                <div class="col-xs-12 col-sm-6 col-lg-4 samapp-container">
+                    <h4 class="white">Freebody Diagram Tool</h4>
                     <img class='vid-thumbnail' src="img/thumbnails/freebody.jpg" alt="">
                 </div>
             </a>
-            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
+            <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Javascript App</h3>
                 <div class="floatleft">
                     <h4>Embed Code:</h4>
                 </div>
-                <textarea readonly="true" id="ballfallvideo-em" class="embedcode">embedcode</textarea>
+                <textarea readonly="true" id="ballfallvideo-em" class="embedcode">&ltiframe src="https://www.veryscience.com/exercises/all.html" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt&lt/iframe&gt</textarea>
                 <div class="floatleft">
                     <button class="smallbtn" onclick="copytxt('#ballfallvideo-em')">Copy</button>
                 </div>
@@ -101,11 +107,12 @@
     <div class="container">
         <div class="row lighttheme">
             <a href="#bus" data-lity>
-                <div class="col-xs-12 col-sm-6 col-lg-5 samapp-container">
+                <div class="col-xs-12 col-sm-6 col-lg-4 samapp-container">
+                    <h4 class="black">"Bass toss"</h4>
                     <img class='vid-thumbnail' src="img/thumbnails/ballfall.jpg" alt="">
                 </div>
             </a>
-            <div class="col-xs-12 col-sm-6 col-lg-7 samapp-container">
+            <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
                     <h4>Embed Code:</h4>
@@ -186,29 +193,42 @@
 <script src="js/vender/lity.min.js"></script>
 
 <script>
-                                     function copytxt(id) {
-                                         console.log("copy text: " + id);
-                                         var txtarea = $(id);
-                                         txtarea.select();
-                                         try {
-                                             var successful = document.execCommand('copy');
-                                             var msg = successful ? 'successful' : 'unsuccessful';
-                                             console.log('Copying text command was ' + msg);
-                                         } catch (err) {
-                                             console.log('Oops, unable to copy');
-                                         }
-                                     }
+                                                      function copytxt(id) {
+                                                          console.log("copy text: " + id);
+                                                          var txtarea = $(id);
+                                                          txtarea.select();
+                                                          try {
+                                                              var successful = document.execCommand('copy');
+                                                              var msg = successful ? 'successful' : 'unsuccessful';
+                                                              console.log('Copying text command was ' + msg);
+                                                          } catch (err) {
+                                                              console.log('Oops, unable to copy');
+                                                          }
+                                                      }
 
 </script>
 
 <style>
+    .black {
+        color: black;
+    }
+    
+    .white {
+        color: white;
+    }
+    
     .smallbtn {
         background-color: white;
         border-style: none;
         color: dimgrey;
     }
+    
     .white-hr {
         color: white;
+    }
+    
+    .videotitle {
+        font-size: 20px;
     }
     
     .floatleft {
@@ -227,7 +247,7 @@
     .darktheme {
         background-color: #9585c9;
         color: white;
-     }
+    }
     
     .samapp-container {
         padding: 20px;
@@ -247,9 +267,9 @@
     .vid-thumbnail {
         margin: 10px;
         border-radius: 10px;
-        width: 90%;
+        height: 80%;
         max-width: 350px;
-        max-height: 90%;
+        max-height: 80%;
         text-align: center;
     }
     
