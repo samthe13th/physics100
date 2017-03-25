@@ -1,0 +1,55 @@
+<script> var exercises = [0,1,2,3,4,5,6,7,8,9,10] </script>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Free Body Diagrams</title>
+    <link type="text/css" rel="stylesheet" href="../stylesheets/less/physics.less">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/less/modal.less">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/css/menu.css">
+    <script type="text/javascript" src="../js/phaser.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.1/less.min.js"></script>
+</head>
+
+<body>
+    <div id="feedback" class="modal2">
+        <div class="modal-content" id="feedback-content">
+            <div id="feedback-header">
+                <span class="close" id="fb-close">×</span>
+                <h2 id="percent">%</h2>
+            </div>
+            <div id="feedback-body"></div>
+            <div id="hint"></div>
+            <div id="debug-output"></div>
+        </div>
+    </div>
+    <div class="appWrap">
+        <div class="topMiddle">
+            <h1 id="pTitle"></h1>
+        </div>
+        <div class="topPanel" id="testFeedback"></div>
+
+        <button onclick="toggleMenu('Main')" class="dropbtn" id="exs-menu" title="Menu">
+                    <img src="../assets/freebody/menuBtn.png" id="menu-btn"></img>
+                </button>
+
+        <div id="dropdownMain" class="dropdown-content"></div>
+        <hr>
+        <div class="instructions">
+            <h3>Instructions</h3>
+            <img id="pImg"></img>
+            <div id="instr"></div>
+            <img id="pGif"></img>
+            <br>
+        </div>
+        <div id="interactive">
+            <div id="container"></div>
+        </div>
+    </div>
+    <script src="../js/freeBody.js"></script>
+    <script src="../js/marker.js"></script>
+</body>
+
+</html>
