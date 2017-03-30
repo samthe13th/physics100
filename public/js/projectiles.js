@@ -105,10 +105,6 @@
     function eventTimer() {
         setInterval(function () {
             position = positions[slider.sliderPoint];
-            speedTxt.attr("text", "Speed: " + position.speed + " m/s");
-            if (tooltip !== undefined) {
-                tooltip.remove();
-            }
             ball.transform(getTransString(position.pos.x, positions[slider.sliderPoint].pos.y));
             coords.attr("text", "(" + position.dist + "," + position.height + ")");
             coords.transform(getTransString((position.pos.x + parameters.coords.offx), (positions[slider.sliderPoint].pos.y) + parameters.coords.offy));
@@ -272,9 +268,9 @@
     var position;
     function drag() {
         // position = positions[slider.sliderPoint];
-        // if (tooltip !== undefined) {
-        //     tooltip.remove();
-        // }
+        if (tooltip !== undefined) {
+            tooltip.remove();
+        }
         // ball.transform(getTransString(position.pos.x, positions[slider.sliderPoint].pos.y));
         // coords.attr("text", "(" + position.dist + "," + position.height + ")");
         // coords.transform(getTransString((position.pos.x + parameters.coords.offx), (positions[slider.sliderPoint].pos.y) + parameters.coords.offy));
