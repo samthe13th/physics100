@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="stylesheets/css/bootstrap.min.css">
     <link rel="stylesheet" href="stylesheets/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="stylesheets/css/lity.min.css">
+    <link rel="stylesheet" href="stylesheets/css/physics100/custom.css">
     <title>UBC Physics 100 Dashboard</title>
 </head>
 
@@ -21,6 +22,11 @@
         <h4>Content by Sam MacKinnon</h4>
         <hr class="white-hr"><br>
     </div>
+    <div id="track" style="background:#fff" class="lity-hide">
+        <div class="ivideo">
+            <iframe src="https://h5p.org/h5p/embed/61355" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+        </div>
+    </div>
     <div id="bus" style="background:#fff" class="lity-hide">
         <div class="ivideo">
             <iframe src="https://h5p.org/h5p/embed/13521" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
@@ -32,13 +38,41 @@
         </div>
     </div>
     <div id="freebody" style="background:#fff" class="lity-hide">
-        <iframe src="https://www.veryscience.com/apps.freebody.html" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"></iframe>
+        <iframe src="https://www.veryscience.com/apps/freebody.html" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"></iframe>
     </div>
-    <div id="ballfall" style="background:#fff" class="lity-hide">
+    <div id="balltoss" style="background:#fff" class="lity-hide">
         <div class="ivideo">
             <iframe src="https://h5p.org/h5p/embed/61362" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
         </div>
     </div>
+    <div class="container samseg">
+        <div class="row lighttheme">
+            <a href="#track" data-lity>
+                <div class="col-xs-12 col-sm-6 col-lg-4 samapp-container">
+                    <h4 class="black">"400m Sprint"</h4>
+                    <img class='vid-thumbnail' src="img/thumbnails/track.jpg" alt="">
+                </div>
+            </a>
+            <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
+                <h3>Interactive Video</h3>
+                <div class="floatleft">
+                    <h4>Embed Code:</h4>
+                </div>
+                <div class="floatleft">
+                    <button class='smallbtn' onclick="copytxt('#track-em')">Copy</button>
+                </div>
+                <textarea readonly="true" id="track-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/61355" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt
+                        </textarea>
+                <div class="floatleft">
+                    <h4>Subjects:</h4>
+                </div>
+                <ul>
+                    <li class='tag floatleft'>Kinematics</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br>
     <div class="container samseg">
         <div class="row lighttheme">
             <a href="#bus" data-lity>
@@ -50,13 +84,19 @@
             <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
-                    <h4>Embed Code:</h4>
+                    <h4>Embed Code</h4>
+                </div>
+                <div class="floatleft">
+                    <button class='smallbtn' onclick="copytxt('#busvideo-em')">Copy</button>
                 </div>
                 <textarea readonly="true" id="busvideo-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/13521" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt
                         </textarea>
                 <div class="floatleft">
-                    <button class='smallbtn' onclick="copytxt('#busvideo-em')">Copy</button>
+                    <h4>Subjects:</h4>
                 </div>
+                <ul>
+                    <li class='tag floatleft'>Kinematics</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -72,13 +112,20 @@
             <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
-                    <h4>Embed Code:</h4>
+                    <h4>Embed Code</h4>
+                </div>
+                <div class="floatleft">
+                    <button class="smallbtn" onclick="copytxt('#catpigvideo-em')">Copy</button>
                 </div>
                 <textarea readonly="true" id="catpigvideo-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/18409" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt
                         </textarea>
                 <div class="floatleft">
-                    <button class="smallbtn" onclick="copytxt('#catpigvideo-em')">Copy</button>
+                    <h4>Subjects:</h4>
                 </div>
+                <ul>
+                    <li class='tag floatleft'>Newton's Laws</li>
+                    <li class='tag floatleft'>Forces</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -94,19 +141,26 @@
             <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Javascript App</h3>
                 <div class="floatleft">
-                    <h4>Embed Code:</h4>
+                    <h4>Embed Code</h4>
                 </div>
-                <textarea readonly="true" id="freebody-em" class="embedcode">&ltiframe src="https://www.veryscience.com/exercises/all.html" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt&lt/iframe&gt</textarea>
                 <div class="floatleft">
                     <button class="smallbtn" onclick="copytxt('#freebody-em')">Copy</button>
                 </div>
+                <textarea readonly="true" id="freebody-em" class="embedcode">&ltiframe src="https://www.veryscience.com/exercises/all.html" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen"&gt&lt/iframe&gt</textarea>
+                <div class="floatleft">
+                    <h4>Subjects:</h4>
+                </div>
+                <ul>
+                    <li class='tag floatleft'>Newton's Laws</li>
+                    <li class='tag floatleft'>Forces</li>
+                </ul>
             </div>
         </div>
     </div>
     <br>
-    <div class="container">
+    <div class="container samseg">
         <div class="row lighttheme">
-            <a href="#bus" data-lity>
+            <a href="#balltoss" data-lity>
                 <div class="col-xs-12 col-sm-6 col-lg-4 samapp-container">
                     <h4 class="black">"Bass toss"</h4>
                     <img class='vid-thumbnail' src="img/thumbnails/ballfall.jpg" alt="">
@@ -115,74 +169,23 @@
             <div class="col-xs-12 col-sm-6 col-lg-8 samapp-container">
                 <h3>Interactive Video</h3>
                 <div class="floatleft">
-                    <h4>Embed Code:</h4>
+                    <h4>Embed Code</h4>
                 </div>
-                <textarea readonly="true" id="ballfallvideo-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/61362" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt</textarea>
                 <div class="floatleft">
                     <button class="smallbtn" onclick="copytxt('#ballfallvideo-em')">Copy</button>
                 </div>
+                <textarea readonly="true" id="ballfallvideo-em" class="embedcode">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt &ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/61362" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt</textarea>
+                <div class="floatleft">
+                    <h4>Subjects:</h4>
+                </div>
+                <ul>
+                    <li class='tag floatleft'>Kinematics</li>
+                    <li class='tag floatleft'>Conservation of Energy</li>
+                </ul>
             </div>
         </div>
     </div>
-
-    <!--
-    <div class="bs-example">
-        <div class="panel-group" id="testgrp">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Kinematics</a>
-                    </h4>
-                </div>
-                <div id="collapseOne" class="panel-collapse collapse in">
-                    <h2>Running for a bus!</h2>
-                    <hr>
-                    <div class="samapp-container">
-                        <a href="#bus" data-lity>
-                            <img src="img/thumbnails/bus.jpg" class="vid-thumbnail">
-                        </a>
-                        <div class="embedbox">
-                            <h5>Embed code</h5>
-                            <textarea class="embedcode" id="busvideo-em">&ltscript src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"&gt&lt/script&gt&ltdiv style="width: 800px"&gt&ltiframe src="https://h5p.org/h5p/embed/13521" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"&gt &lt/iframe&gt&lt/div&gt
-                        </textarea>
-                            <button class="js-textareacopybtn">Copy</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Rigid body Problems</a>
-                    </h4>
-                </div>
-                <div id="collapseTwo" class="panel-collapse collapse">
-                    <a href="#catpig" data-lity><img src="img/thumbnails/catpig.jpg" class="vid-thumbnail"></a>
-                    <div id="catpig" style="background:#fff" class="lity-hide">
-                        <div class="ivideo">
-                            <iframe src="https://h5p.org/h5p/embed/18409" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div><br>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Conservation of Energy</a>
-                    </h4>
-                </div>
-                <div id="collapseThree" class="panel-collapse collapse">
-                    <a href="#ballfall" data-lity><img src="img/thumbnails/ballfall.jpg" class="vid-thumbnail"></a>
-                    <div id="ballfall" style="background:#fff" class="lity-hide">
-                        <div class="ivideo">
-                            <iframe src="https://h5p.org/h5p/embed/61362" width="1090" height="674" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>-->
+    <br><br>
 </body>
 
 </html>
@@ -191,97 +194,4 @@
 <script src="js/vender/bootstrap.min.js"></script>
 <script src="https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js" charset="UTF-8"></script>
 <script src="js/vender/lity.min.js"></script>
-
-<script>
-                                                      function copytxt(id) {
-                                                          console.log("copy text: " + id);
-                                                          var txtarea = $(id);
-                                                          txtarea.select();
-                                                          try {
-                                                              var successful = document.execCommand('copy');
-                                                              var msg = successful ? 'successful' : 'unsuccessful';
-                                                              console.log('Copying text command was ' + msg);
-                                                          } catch (err) {
-                                                              console.log('Oops, unable to copy');
-                                                          }
-                                                      }
-
-</script>
-
-<style>
-    .black {
-        color: black;
-    }
-    
-    .white {
-        color: white;
-    }
-    
-    .smallbtn {
-        background-color: white;
-        border-style: none;
-        color: dimgrey;
-    }
-    
-    .white-hr {
-        color: white;
-    }
-    
-    .videotitle {
-        font-size: 20px;
-    }
-    
-    .floatleft {
-        display: block;
-        float: left;
-    }
-    
-    .centered {
-        text-align: center;
-    }
-    
-    .lighttheme {
-        background-color: #efefef;
-    }
-    
-    .darktheme {
-        background-color: #9585c9;
-        color: white;
-    }
-    
-    .samapp-container {
-        padding: 20px;
-        border-style: none;
-        height: 300px;
-        text-align: center;
-    }
-    
-    .ivideo {
-        width: 800px;
-    }
-    
-    #testgrp {
-        width: 70%
-    }
-    
-    .vid-thumbnail {
-        margin: 10px;
-        border-radius: 10px;
-        height: 80%;
-        max-width: 350px;
-        max-height: 80%;
-        text-align: center;
-    }
-    
-    .embedcode {
-        padding: 10px;
-        font-size: 16px;
-        color: dimgrey;
-        border-style: none;
-        width: 100%;
-        height: 40%;
-        margin: 10px;
-        margin-left: 0px;
-        resize: none;
-    }
-</style>
+<script src="js/physics100/copy.js"></script>

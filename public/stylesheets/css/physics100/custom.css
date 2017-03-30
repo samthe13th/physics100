@@ -1,0 +1,91 @@
+ .tag {
+        background-color: #5cadd6;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        border-style: solid;
+        border-width: 1px;
+        font-size: 16px;
+        margin: 4px;
+        border-radius: 10px;
+        color: white;
+    }
+    
+    .black {
+        color: black;
+    }
+    
+    .white {
+        color: white;
+    }
+    
+    .smallbtn {
+        font-size: 14px;
+        background-color: white;
+        border-style: none;
+        color: dimgrey;
+        margin: 8px;
+    }
+    
+    .white-hr {
+        color: white;
+    }
+    
+    .videotitle {
+        font-size: 20px;
+    }
+    
+    .floatleft {
+        display: block;
+        float: left;
+    }
+    
+    .centered {
+        text-align: center;
+    }
+    
+    .lighttheme {
+        background-color: #efefef;
+    }
+    
+    .darktheme {
+        background-color: #9585c9;
+        color: white;
+    }
+    
+    .samapp-container {
+        padding: 20px;
+        border-style: none;
+        height: 300px;
+        text-align: center;
+    }
+    
+    .ivideo {
+        width: 800px;
+    }
+    
+    #testgrp {
+        width: 70%
+    }
+    
+    .vid-thumbnail {
+        margin: 10px;
+        border-radius: 10px;
+        height: 80%;
+        max-width: 350px;
+        max-height: 80%;
+        text-align: center;
+    }
+    
+    .embedcode {
+        padding: 10px;
+        font-size: 16px;
+        color: dimgrey;
+        border-style: none;
+        width: 100%;
+        height: 40%;
+        margin: 10px;
+        margin-left: 0px;
+        resize: none;
+    }
