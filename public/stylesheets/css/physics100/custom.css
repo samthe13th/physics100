@@ -72,6 +72,9 @@
     .vid-thumbnail {
         margin: 10px;
         border-radius: 10px;
+        border-style: solid;
+        border-color: white;
+        border-width: 1px;
         height: 80%;
         max-width: 350px;
         max-height: 80%;

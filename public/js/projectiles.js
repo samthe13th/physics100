@@ -102,7 +102,7 @@
         }, 100)
     }
 
-    function timer() {
+    function eventTimer() {
         setInterval(function () {
             position = positions[slider.sliderPoint];
             speedTxt.attr("text", "Speed: " + position.speed + " m/s");
@@ -120,10 +120,10 @@
                     width: ebar_params.w * (PE / totalEnergy)
                 })
             }
-        }, 50)
+        }, 100)
     }
 
-    timer();
+    eventTimer();
 
     function makeBall() {
         ball = sandbox.circle(0, 0, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
