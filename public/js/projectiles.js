@@ -101,14 +101,15 @@
                 })
         }, 100)
     }
-
-    function eventTimer() {
-        setInterval(function () {
+    var eventList = [];
+    function updatePosition() {
+        if (positions[slider.sliderPoint]) {
             position = positions[slider.sliderPoint];
             ball.transform(getTransString(position.pos.x, positions[slider.sliderPoint].pos.y));
             coords.attr("text", "(" + position.dist + "," + position.height + ")");
             coords.transform(getTransString((position.pos.x + parameters.coords.offx), (positions[slider.sliderPoint].pos.y) + parameters.coords.offy));
             vyTxt.attr("text", "Vy: " + position.vy + " m/s");
+            speedTxt.attr("text", "Speed: " + position.speed + " m/s");
             PE = (9.81 * position.height);
             KE = (0.5 * Math.pow(position.speed, 2));
             if (totalEnergy > 0) {
@@ -116,9 +117,18 @@
                     width: ebar_params.w * (PE / totalEnergy)
                 })
             }
+        }
+    }
+    function eventTimer() {
+        setInterval(function () {
+            updatePosition();
+            if (eventList.length > 0) {
+                for (var i = 0, ii = eventList.length; i < ii; i++) {
+                    eventList[i]();
+                }
+            }
         }, 100)
     }
-
     eventTimer();
 
     function makeBall() {
@@ -307,6 +317,7 @@
             var aHead = 12;
             var cx = 80;
             var csize = 160;
+            var da;
             var arrow = paramsScreen.path("M" + cx + " " + cx + " " + "L" + cx + " " + (aHead + 5) + " l" + (-aHead / 2) + " 0 l" + (aHead / 2) + " " + (-aHead) + "l" + (aHead / 2) + " " + aHead + "l" + (-aHead / 2) + " 0 Z")
                 .attr({ "stroke": "white", "stroke-width": 4, "fill": "white" })
                 .translate(350, 185);
@@ -314,11 +325,16 @@
             ball2.y;
             var drag_angle = function () {
                 //this.label.attr({ text: angle_slider.sliderPoint + " degs" });
-                var da = angle_slider.sliderPoint - arrow.angle;
-                arrow.rotate(da, cx, (csize / 2));
-                arrow.angle = angle_slider.sliderPoint;
-                parameters.angle = arrow.angle;
+                da = angle_slider.sliderPoint - arrow.angle;
+                // rot_arrow();
             };
+            var rot_arrow = function () {
+                if (arrow.angle !== angle_slider.sliderPoint) {
+                    arrow.rotate(da, cx, (csize / 2));
+                    arrow.angle = angle_slider.sliderPoint;
+                    parameters.angle = arrow.angle;
+                }
+            }
             var drag_speed = function () {
                 //   this.label.attr({ text: (speed_slider.sliderPoint) + " m/s" });
                 v = speed_slider.sliderPoint;
@@ -331,6 +347,8 @@
                 parameters.height = height;
             };
             var angle_slider = Slider(paramsScreen, 90, param_offset_y + 40, 300, 180, drag_angle, function () { });
+            eventList = [];
+            eventList.push(rot_arrow);
             // angle_slider.label = paramsScreen.text(angle_slider.sliderX, (angle_slider.sliderY - 20), parameters.angle + ' degs').attr({ "font-size": 14 });
             angle_slider.setLabel("degs");
             angle_slider.setSlider(parameters.angle);
@@ -391,6 +409,8 @@
                     drawPath();
                     preload();
                     slider.setSlider(0);
+                    eventList = [];
+                    eventList.push(updatePosition);
                 })
                 .mouseover(function () {
                     $("body").css({ cursor: "pointer" });
