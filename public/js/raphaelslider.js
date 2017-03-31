@@ -2,7 +2,8 @@
 "use strict";
 window.$_dragging = { o: null, id: null };
 window.Slider = function (stage, x, y, l, m, drag, up) {
-    var bar, rtnSlider, label
+    var bar, rtnSlider, label;
+    var xdiff, moveTo, endPoint, o;
     var sliderWidth = 10
     var sliderRoundness = 8;
     var step = m;
@@ -27,6 +28,8 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
     rtnSlider.sliderX = x + rtnSlider.xoffset;
     rtnSlider.sliderY = y;
     rtnSlider.sliderLength = l;
+    rtnSlider.step = step;
+    rtnSlider.stepLength = l / step;
     rtnSlider.sliderPoint = 0;
     rtnSlider.units = "";
     rtnSlider.div = 1;
@@ -89,7 +92,12 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
     }
     rtnSlider.setSlider = function (p) {
         //     console.log("set slider. label = " + rtnSlider.label)
-        var toPoint = p;
+        var toPoint;
+        if (p <= 0) {
+            toPoint = 0;
+        } else {
+            toPoint = p * rtnSlider.stepLength - rtnSlider.width;
+        }
         var trans = "T" + toPoint + ",0";
         if (p < 0) {
             toPoint = 0;
@@ -101,7 +109,7 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
         var div = (rtnSlider.sliderLength - 10) / rtnSlider.step;
         // rtnSlider.translate((dSP * div), 0);
         rtnSlider.transform(trans);
-        rtnSlider.sliderPoint = toPoint;
+        rtnSlider.sliderPoint = p;
         if (rtnSlider.label) {
             //        console.log("translate label " + rtnSlider.label.x);
             //     rtnSlider.label.translate((toPoint * div), 0);
@@ -128,8 +136,7 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
         rtnSlider.xoffset = rtnSlider.stage.canvas.parentNode.offsetLeft;
         rtnSlider.sliderX = rtnSlider.xoffset;
     }
-    rtnSlider.step = step;
-    var xdiff, moveTo, endPoint, o;
+
     $(stage.canvas).mousemove(function (e) {
         o = $_dragging.o;
         if ($_dragging.o !== null) {

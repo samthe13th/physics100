@@ -1,5 +1,5 @@
 
-(function () {
+// (function () {
     "use strict";
     var angle, ground, newdx, newdy, sandbox, positions, parameters, stage, slider;
     var startx, starty, height, current_height, current_dx, v, vx, vy, a;
@@ -15,7 +15,7 @@
         "speed": 20,
         "coords": { offx: 40, offy: -20 }
     }
-    stage = sandbox.rect(10, 0, 580, 510).attr({ stroke: "#ffffff", fill: "#5cadd6" });
+    stage = sandbox.rect(10, 0, 580, 510).attr({ stroke: "#ffffff", fill: "#65b2d8" });
     setParams();
     axis = sandbox.path(["M", startx, 100, "l", 0, 280, "l", 500, 0]).attr({ stroke: "#ffffff" });
     setEndSpeed();
@@ -62,7 +62,7 @@
         KEtxt.translate(400, 85);
         ebar_params = {
             x: 270,
-            y: 65,
+            y: 72,
             h: 20,
             w: 100,
             thickness: 5
@@ -82,7 +82,7 @@
     }
     function makeParamsBtn() {
         params_btn_base = sandbox.rect(60, 25, 120, 50, 12)
-            .attr({ "font-size": 12, "stroke": "white", "fill": "#5ccb58", "stroke-width": 2 });
+            .attr({ "font-size": 12, "stroke": "white", "fill": "#72d177", "stroke-width": 2 });
         //x = 120, y = 50
         setTimeout(function () {
             params_btn_txt = sandbox.text(120, 50, "Change \n Parameters").attr({ fill: "white", "font-size": 18 });
@@ -127,7 +127,7 @@
                     eventList[i]();
                 }
             }
-        }, 100)
+        }, 20)
     }
     eventTimer();
 
@@ -297,7 +297,7 @@
     function setMaxTime() {
         maxTime = Math.round(timeAtGround(getSpeed(vy, a, height), vy, a) * 10)
     }
-
+    var angle_slider, speed_slider, height_slider;
     function makeSetParamsScreen() {
         var param_offset_y = 140;
         var axis_label1 = sandbox.text(300, 410, "metres").attr({ "font-size": 18, "fill": "white", "stroke-width": 1 });
@@ -306,7 +306,7 @@
         var mask = paramsScreen.rect(10, 0, 580, 510).attr({ "fill": "white", "stroke": "white", "opacity": 0.7 })
         setTimeout(function () {
             var params = paramsScreen.rect(50, 100, 490, 300, 15).attr({
-                stroke: "none", fill: "#85d582"
+                stroke: "none", fill: "#72d177"
             });
             // console.log("param_offset_y = " + param_offset_y);
             var angletext;
@@ -346,7 +346,7 @@
                 starty = ground - (height * mtopxl);
                 parameters.height = height;
             };
-            var angle_slider = Slider(paramsScreen, 90, param_offset_y + 40, 300, 180, drag_angle, function () { });
+            angle_slider = Slider(paramsScreen, 90, param_offset_y + 40, 300, 180, drag_angle, function () { });
             eventList = [];
             eventList.push(rot_arrow);
             // angle_slider.label = paramsScreen.text(angle_slider.sliderX, (angle_slider.sliderY - 20), parameters.angle + ' degs').attr({ "font-size": 14 });
@@ -355,12 +355,12 @@
             angle_slider.setColor("rgba(255, 255, 255, 0.5)");
             arrow.rotate(parameters.angle, cx, (csize / 2));
             arrow.angle = parameters.angle;
-            var height_slider = Slider(paramsScreen, 90, (param_offset_y + 120), 300, 100, drag_height, function () { });
+            height_slider = Slider(paramsScreen, 90, (param_offset_y + 120), 300, 100, drag_height, function () { });
             height_slider.setLabel("m");
             // height_slider.label = paramsScreen.text(height_slider.sliderX, (height_slider.sliderY - 20), parameters.height + " m").attr({ "font-size": 14 });
             height_slider.setSlider(parameters.height);
             height_slider.setColor("rgba(255, 255, 255, 0.5)");
-            var speed_slider = Slider(paramsScreen, 90, (param_offset_y + 200), 300, 40, drag_speed, function () { });
+            speed_slider = Slider(paramsScreen, 90, (param_offset_y + 200), 300, 40, drag_speed, function () { });
             // speed_slider.label = paramsScreen.text(speed_slider.sliderX, (speed_slider.sliderY - 20), parameters.speed + " m/s").attr({ "font-size": 14 });
             speed_slider.setLabel("m/s");
             speed_slider.setSlider(parameters.speed);
@@ -420,4 +420,4 @@
                 })
         }, 10);
     }
-})()
+// })()
