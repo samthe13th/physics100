@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <div id="stage"></div>
+</head>
+
+<body>
+</body>
+
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type='text/javascript' src="../../js/raphael.min.js"></script>
+<script>
+    Debugger = function () {
+        var variables = [];
+        $("body").append("<div id='DebugModal'><div id='DebugHeader'>Debug Console</div><div id='DebugBody'></div><div>")
+        db = {};
+        db.track = function (name, value) {
+            var setval;
+            if (value === undefined) {
+                setval = "undefined";
+            } else {
+                setval = value;
+            }
+            var newvar = { n: name, v: setval };
+            variables.push(newvar);
+            $("#DebugBody").append("<div id='name_" + name + "'><strong>" + name + ": </strong><span class='DebugVal' id='value_" + name + "'></span></div>")
+        };
+        setInterval(function () {
+            for (var i = 0, ii = variables.length; i < ii; i++) {
+                //   console.log("window." + variables[i].n + " = " + window[variables[i].n])
+                // console.log("V: " + JSON.stringify(variables[i].v));
+                var parsed_val;
+                if (window[variables[i].n] === null) {
+                    parsed_val = "null"
+                } else if (window[variables[i].n] === undefined) {
+                    parsed_val = "undefined";
+                } else if (typeof (window[variables[i].n] === "object")) {
+                    parsed_val = JSON.stringify(window[variables[i].n]);
+                } else {
+                    parsed_val = window[variables[i].n];
+                }
+                // console.log("parsed: " + parsed_val)
+                $("#value_" + variables[i].n).text(parsed_val);
+            }
+        }, 100);
+        return db;
+    };
+
+</script>
+<style>
+    .DebugVal {
+        font-size: 20px;
+    }
+    #DebugHeader {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        background-color: lightseagreen;
+        color: white;
+        padding: 10px;
+    } 
+    #DebugModal {
+        width: 400px;
+        height: 400px;
+        border-style: solid;
+        border-color: lightseagreen;
+        border-width: 4px;
+        margin: 20px;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
+        font-size: 30px;
+        font-family: Helvetica, sans-serif;
+    }
+    #DebugBody {
+        padding: 10px;
+        overflow: scroll;
+    }
+</style>
+<script>
+    "use strict"
+    var $stage = Raphael("stage", 850, 700);
+    var $graph_c = { x: 50, y: 100, width: 550, height: 550 };
+    var $icon = { x: 100, y: 100 };
+    var $graph = $stage.rect($graph_c.x, $graph_c.y, $graph_c.width, $graph_c.height);
+    $graph.attr({
+        "stroke": "none"
+    })
+    var $axis = $stage.path("M" + $graph_c.x + "," + $graph_c.y + ",l0," + $graph_c.height + ",l" + $graph_c.width + ",0");
+    $axis.attr({
+        "stroke-width": "5px"
+    })
+    var $anchor_size = 5;
+    var $linePoint_size = 8;
+    var $points = { x: 20, y: 20 };
+    var $space = { x: ($graph_c.width / $points.x), y: ($graph_c.height / $points.y) };
+    var app = {
+        rbody: { name: "", color: "lightgrey" },
+        lines: {}
+    };
+    var dbg = Debugger();
+    dbg.track("app", app);
+    var line, a1, a2;
+    //dbg.track("a1", a1);
+    //dbg.track("line", line);
+    function makeGraphCanvas() {
+        for (var j = 0; j < 4; j++) {
+            var x, y, dir;
+            if (j === 0) {
+                y = $graph_c.y;
+                x = $graph_c.x;
+                dir = "right";
+            } else if (j === 2) {
+                y = $graph_c.y + ($space.y * $points.y);
+                x = $graph_c.x + $space.x;
+                dir = "right";
+            } else if (j === 1) {
+                y = $graph_c.y;
+                x = $graph_c.x + ($space.x * $points.x);
+                dir = "down";
+            } else {
+                y = $graph_c.y + $space.y;
+                x = $graph_c.x;
+                dir = "down";
+            }
+            for (var i = 0; i < $points.x; i++) {
+                var id = "anchor_" + i;
+                var anchor = Anchor(x, y, id);
+                if (dir === "right") {
+                    if (j === 0) {
+                        gridLine((x + $space.x), y, (x + $space.x), (y + $graph_c.height));
+                    }
+                    x += $space.x;
+                } else {
+                    if (j === 3) {
+                        gridLine(x, y, (x + $graph_c.width), y);
+                    }
+                    y += $space.y;
+                }
+            }
+        }
+    }
+    function gridLine(x1, y1, x2, y2) {
+        var pathtxt = "M" + x1 + "," + y1 + ",L" + x2 + "," + y2;
+        var path = $stage.path(pathtxt);
+        path.attr({
+            "stroke-width": "1px",
+            "stroke": "black",
+            "opacity": "0.2"
+        });
+    }
+    function Anchor(x, y, id) {
+        var a = $stage.circle(x, y, $anchor_size);
+        a.attr({ "fill": "lightgrey", "stroke": "none", "opacity": "0" });
+        a.x = (x + $anchor_size / 2);
+        a.y = (y + $anchor_size / 2);
+        a.mouseover(function () {
+            $("body").css("cursor", "pointer");
+            a.attr({ "opacity": "1", "fill": app.rbody.color, "r": $linePoint_size });
+        });
+        a.mouseout(function () {
+            $("body").css("cursor", "default");
+            a.attr({ "fill": "lightgrey", "r": $anchor_size, "opacity": "0" });
+        })
+        a.mousedown(function () {
+            if (app.lines[app.rbody.name] !== undefined) {
+                if (!app.lines[app.rbody.name].a1) {
+                    drawLine(a);
+                    a1 = linePoint(a);
+                    app.lines[app.rbody.name].a1 = { x: linePoint(a).x, y: linePoint(a).y };
+                    // a1.attr("r", $anchor_size);
+                }
+                else if (!app.lines[app.rbody.name].a2 && a !== app.lines[app.rbody.name].a1) {
+                    var tpath = "M" + a1.x + "," + a1.y + ",L" + a.x + "," + a.y;
+                    a2 = linePoint(a);
+                    app.lines[app.rbody.name].a2 = { x: linePoint(a).x, y: linePoint(a).y };
+                }
+            }
+        })
+        return a;
+    }
+    function linePoint(a) {
+        var p = $stage.circle((a.x - ($anchor_size / 2)), (a.y - ($anchor_size / 2)), $linePoint_size);
+        p.attr({ "fill": app.rbody.color, "stroke": "none" });
+        p.x = a.x - ($anchor_size / 2);
+        p.y = a.y - ($anchor_size / 2);
+        return p;
+    }
+    function drawLine(a) {
+        var path = "M" + a.x + "," + a.y + ",l0,0";
+        line = $stage.path(path);
+        line.attr({
+            "stroke-width": "4px",
+            "stroke": app.rbody.color
+        });
+        line.mouseover(function () {
+            console.log('over line')
+        });
+    }
+    $($stage.canvas).mousemove(function (e) {
+        if (line) {
+            var mouse = {};
+            var tpath;
+            var gap = 10;
+            if (app.rbody && app.lines[app.rbody.name].a1) {
+                var _a1 = app.lines[app.rbody.name].a1;
+                if (!app.lines[app.rbody.name].a1 || !app.lines[app.rbody.name].a2) {
+                    var dx = e.pageX - _a1.x;
+                    var dy = e.pageY - _a1.y;
+                    if (dx > 0) {
+                        mouse.x = e.pageX - gap;
+                    } else if (dx < 0) {
+                        mouse.x = e.pageX + gap;
+                    }
+                    if (dy > 0) {
+                        mouse.y = e.pageY - gap;
+                    } else if (dy < 0) {
+                        mouse.y = e.pageY + gap;
+                    }
+                    //tpath = "M" + _a1.x + "," + _a1.y + ",L" + mouse.x + "," + mouse.y;
+                    tpath = getCurvePath(_a1.x, _a1.y, mouse.x, mouse.y, (10/9), "acc");
+                } else {
+                    var _a2 = app.lines[app.rbody.name].a2;
+                    console.log("_a2 - " + _a2)
+                    tpath = "M" + _a1.x + "," + _a1.y + ",L" + _a2.x + "," + _a2.y;
+                }
+                line.attr("path", tpath);
+            }
+        }
+    })
+    function DecCurve(x1, y1, x2, y2, slope, color) {
+        var C, curve, slope;
+        slope = 1 - slope;
+        C = { x: x1 };
+        C.y = y1 - (slope * (x2 - C.x));
+        //   var control = $stage.circle(C.x, C.y, 10).attr({ fill: "lightblue" });
+        curve = $stage.path(['M', x1, y1, 'Q', C.x, C.y, x2, y2]);
+        curve.attr({ "stroke": color, "stroke-width": "5px" });
+        console.log("C.y = " + C.y);
+        return curve;
+    }
+    function getCurvePath(x1, y1, x2, y2, slope, type) {
+        var C;
+        if (type === "acc") {
+            C = { y: y1 };
+            C.x = x2 - ((C.y - y2) / slope);
+        } else {
+            slope = 1 - slope;
+            C = { x: x1 };
+            C.y = y1 - (slope * (x2 - C.x));
+        }
+        return (["M", x1, y1, "Q", C.x, C.y, x2, y2]);
+    }
+    function AccCurve(x1, y1, x2, y2, slope, color) {
+        console.log("new curve: " + x1 + " " + y1 + " " + x2 + " " + y2);
+        var C, curve, slope;
+        C = { y: y1 };
+        C.x = x2 - ((C.y - y2) / slope);
+        // var control = $stage.circle(C.x, C.y, 10).attr({ fill: "lightblue" });
+        curve = $stage.path(getCurvePath(x1, y1, x2, y2, slope, "acc"));
+        curve.attr({ "stroke": color, "stroke-width": "5px" });
+        return curve;
+    }
+    function lineIcon(parent, x, y, color, id) {
+        var iconline;
+        var btnid = color + "_" + id;
+        $(parent).append("<div class='linebtn' + id='" + btnid + "'></div>");
+        $("#" + btnid).css({ "top": (y + "px"), "left": (x + "px"), "border-color": color });
+        var iconline = $stage.path(["M", (x + 3), (y + 36), "l", 30, -30]);
+        iconline.attr({ "stroke": color, "stroke-width": 5 });
+    }
+    function accIcon(parent, x, y, color, id) {
+        var btnid = color + "_" + id;
+        $(parent).append("<div class='linebtn' + id='" + btnid + "'></div>");
+        $("#" + btnid).css({ "top": (y + "px"), "left": (x + "px"), "border-color": color });
+    }
+    function decIcon(parent, x, y, color, id) {
+        var btnid = color + "_" + id;
+        $(parent).append("<div class='linebtn' + id='" + btnid + "'></div>");
+        $("#" + btnid).css({ "top": (y + "px"), "left": (x + "px"), "border-color": color });
+
+    }
+    function SvgButton() {
+        var btn = { test: "hello" };
+        return btn;
+    }
+    function Icon(x, y, color, id, group) {
+        var btnid = color + "_" + id;
+        var offcolor = "lightgrey";
+        var newbtn = $stage.set();
+        var btn1 = $stage.rect(x, y, 50, 50)
+            .attr({ "fill": "white" });
+        var btn2;
+        newbtn.id = btnid;
+        newbtn.group = group;
+        console.log("group: " + newbtn.group);
+        newbtn.push(btn1);
+        switch (id) {
+            case "line":
+                btn2 = $stage.path(["M", (x + 10), (y + 40), "l", 30, -30]);
+                break;
+            case "acc":
+                btn2 = new AccCurve((x + 10), (y + 40), (x + 40), (y + 10), (5), color);
+                break;
+            case "dec":
+                btn2 = new DecCurve((x + 10), (y + 40), (x + 40), (y + 10), (1 / 5), color);
+                break;
+        }
+        newbtn.push(btn2);
+        newbtn.attr({ "stroke": offcolor, "stroke-width": 5 });
+        newbtn.state = "default";
+        newbtn.select = false;
+        newbtn.mouseover(function () {
+            $("body").css("cursor", "pointer");
+            newbtn.attr("stroke", color);
+            newbtn.state = "up";
+        });
+        newbtn.mouseout(function () {
+            $("body").css("cursor", "default");
+            if (newbtn.state === "down") {
+                newbtn.scale(1.1, 1.1);
+            };
+            if (newbtn.select === false) {
+                newbtn.attr("stroke", offcolor);
+            }
+            newbtn.state = "default";
+        });
+        newbtn.click(function () {
+            setTimeout(function () {
+                newbtn.scale(1.1, 1.1);
+            }, 60);
+            newbtn.scale((1 / 1.1), (1 / 1.1));
+            newbtn.selectThis();
+        });
+        newbtn.selectThis = function () {
+            newbtn.group.forEach(function (e) {
+                if (e.id === newbtn.id) {
+                    console.log("this is " + e.id);
+                    newbtn.attr("stroke", color);
+                    newbtn.select = true;
+                    app.rbody = newbtn.group.rbody
+                    app.lines[newbtn.group.rbody.name] = { a1: undefined, a2: undefined };
+                } else {
+                    e.attr("stroke", offcolor);
+                    e.select = false;
+                }
+            });
+        }
+        return newbtn;
+    }
+    function addBody(x, y, name, icon, color) {
+        $("body").append("<div class='rbody' id='name" + "_" + color + "'></div>");
+    }
+    function ButtonSet(x, y, color, name) {
+        var bset = $stage.set();
+        var olinebtn = new Icon(x, y, color, "line", bset);
+        var oaccbtn = new Icon((x + 60), y, color, "acc", bset);
+        var odecbtn = new Icon((x + 120), y, color, "dec", bset);
+        bset.rbody = { "name": name, "color": color };
+        bset.push(olinebtn);
+        bset.push(oaccbtn);
+        bset.push(odecbtn);
+        return bset;
+    }
+    makeGraphCanvas();
+    addBody(1, 1, "test", "test", "orange");
+    var oset = ButtonSet(650, 300, "orange", "runner1");
+    var bset = ButtonSet(650, 500, "green", "runner2");
+
+</script>
+<style>
+    .linebtn {
+        position: absolute;
+        border-style: solid;
+        border-color: lightgrey;
+        width: 50px;
+        height: 50px;
+    }
+</style>

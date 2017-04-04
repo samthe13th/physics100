@@ -1,5 +1,5 @@
 
-// (function () {
+(function () {
     "use strict";
     var angle, ground, newdx, newdy, sandbox, positions, parameters, stage, slider;
     var startx, starty, height, current_height, current_dx, v, vx, vy, a;
@@ -7,6 +7,9 @@
     var speedTxt, vxTxt, vyTxt, PE, KE, totalEnergy, PEtxt, KEtxt;
     var ebar_params, energyBar, KEbar, PEbar;
     var slider, params_btn_base, params_btn_txt, params_btn, path, tooltip;
+    var position, angle_slider, speed_slider, height_slider;
+    var eventList = [];
+
     sandbox = Raphael(0, 10, 600, 600);
     positions = {};
     parameters = {
@@ -28,7 +31,6 @@
     slider.setColor("rgba(255, 255, 255, 0.5)");
     slider.setLabel("secs");
     slider.setDiv(10);
-    //slider.label = sandbox.text(slider.sliderX, (slider.sliderY - 20), "0 sec").attr({ "font-size": 16, "fill": "white" });
     makeParamsBtn();
     path = sandbox.set();
     drawPath();
@@ -41,9 +43,8 @@
         var tooltip_txt = sandbox.text(350, 190, "Drag the time \n slider to move \n the projectile");
         tooltip.push(tooltip_txt).attr({ "font-size": 30 });
     });
+    eventTimer();
 
-    //tooltip_txt.translate(350, 190);
-    //350,200
     function getTransString(x, y) { return ("T" + x + "," + y) }
     function makeTxtDisplays() {
         setTimeout(function () {
@@ -83,10 +84,8 @@
     function makeParamsBtn() {
         params_btn_base = sandbox.rect(60, 25, 120, 50, 12)
             .attr({ "font-size": 12, "stroke": "white", "fill": "#72d177", "stroke-width": 2 });
-        //x = 120, y = 50
         setTimeout(function () {
             params_btn_txt = sandbox.text(120, 50, "Change \n Parameters").attr({ fill: "white", "font-size": 18 });
-            //   params_btn_txt.translate(120, 50);
             params_btn = sandbox.set()
                 .push(params_btn_base)
                 .push(params_btn_txt)
@@ -101,7 +100,6 @@
                 })
         }, 100)
     }
-    var eventList = [];
     function updatePosition() {
         if (positions[slider.sliderPoint]) {
             position = positions[slider.sliderPoint];
@@ -129,8 +127,6 @@
             }
         }, 20)
     }
-    eventTimer();
-
     function makeBall() {
         ball = sandbox.circle(0, 0, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
         ball.transform(getTransString(startx, starty));
@@ -143,7 +139,6 @@
         ball.startx = ball.x;
         ball.starty = starty * mtopxl;
     }
-
     function setParams() {
         height = parameters.height;
         current_height = height;
@@ -157,11 +152,9 @@
         startx = 60;
         starty = ground - (height * mtopxl);
     }
-
     function setEndSpeed() {
         endSpeed = Math.round(10 * getSpeed(speed(vx, vy), a, height)) / 10;
     }
-
     function calcPosition(x0, y0, vx, vy, t, a) {
         var pos = {};
         pos.x = (x0 + (vx * t)) * mtopxl;
@@ -275,29 +268,14 @@
             }
         });
     }
-    var position;
     function drag() {
-        // position = positions[slider.sliderPoint];
         if (tooltip !== undefined) {
             tooltip.remove();
         }
-        // ball.transform(getTransString(position.pos.x, positions[slider.sliderPoint].pos.y));
-        // coords.attr("text", "(" + position.dist + "," + position.height + ")");
-        // coords.transform(getTransString((position.pos.x + parameters.coords.offx), (positions[slider.sliderPoint].pos.y) + parameters.coords.offy));
-        // //speedTxt.attr("text", "Speed: " + position.speed + " m/s");
-        // vyTxt.attr("text", "Vy: " + position.vy + " m/s");
-        // PE = (9.81 * position.height);
-        // KE = (0.5 * Math.pow(position.speed, 2));
-        // if (totalEnergy > 0) {
-        //     PEbar.attr({
-        //         width: ebar_params.w * (PE / totalEnergy)
-        //     })
-        // }
     };
     function setMaxTime() {
         maxTime = Math.round(timeAtGround(getSpeed(vy, a, height), vy, a) * 10)
     }
-    var angle_slider, speed_slider, height_slider;
     function makeSetParamsScreen() {
         var param_offset_y = 140;
         var axis_label1 = sandbox.text(300, 410, "metres").attr({ "font-size": 18, "fill": "white", "stroke-width": 1 });
@@ -308,7 +286,6 @@
             var params = paramsScreen.rect(50, 100, 490, 300, 15).attr({
                 stroke: "none", fill: "#72d177"
             });
-            // console.log("param_offset_y = " + param_offset_y);
             var angletext;
             var angletext = paramsScreen.text(240, param_offset_y, "Angle").attr({ "font-size": 18 })
             var heighttext = paramsScreen.text(240, (param_offset_y + 80), "Height").attr({ "font-size": 18 });
@@ -324,9 +301,7 @@
             var ball2 = paramsScreen.circle(430, 265, 10).attr({ stroke: "#ffffff", "stroke-width": 2 });
             ball2.y;
             var drag_angle = function () {
-                //this.label.attr({ text: angle_slider.sliderPoint + " degs" });
                 da = angle_slider.sliderPoint - arrow.angle;
-                // rot_arrow();
             };
             var rot_arrow = function () {
                 if (arrow.angle !== angle_slider.sliderPoint) {
@@ -336,12 +311,10 @@
                 }
             }
             var drag_speed = function () {
-                //   this.label.attr({ text: (speed_slider.sliderPoint) + " m/s" });
                 v = speed_slider.sliderPoint;
                 parameters.speed = v;
             };
             var drag_height = function () {
-                //  this.label.attr({ text: height_slider.sliderPoint + " m" });
                 height = height_slider.sliderPoint;
                 starty = ground - (height * mtopxl);
                 parameters.height = height;
@@ -349,7 +322,6 @@
             angle_slider = Slider(paramsScreen, 90, param_offset_y + 40, 300, 180, drag_angle, function () { });
             eventList = [];
             eventList.push(rot_arrow);
-            // angle_slider.label = paramsScreen.text(angle_slider.sliderX, (angle_slider.sliderY - 20), parameters.angle + ' degs').attr({ "font-size": 14 });
             angle_slider.setLabel("degs");
             angle_slider.setSlider(parameters.angle);
             angle_slider.setColor("rgba(255, 255, 255, 0.5)");
@@ -357,11 +329,9 @@
             arrow.angle = parameters.angle;
             height_slider = Slider(paramsScreen, 90, (param_offset_y + 120), 300, 100, drag_height, function () { });
             height_slider.setLabel("m");
-            // height_slider.label = paramsScreen.text(height_slider.sliderX, (height_slider.sliderY - 20), parameters.height + " m").attr({ "font-size": 14 });
             height_slider.setSlider(parameters.height);
             height_slider.setColor("rgba(255, 255, 255, 0.5)");
             speed_slider = Slider(paramsScreen, 90, (param_offset_y + 200), 300, 40, drag_speed, function () { });
-            // speed_slider.label = paramsScreen.text(speed_slider.sliderX, (speed_slider.sliderY - 20), parameters.speed + " m/s").attr({ "font-size": 14 });
             speed_slider.setLabel("m/s");
             speed_slider.setSlider(parameters.speed);
             speed_slider.setColor("rgba(255, 255, 255, 0.5)");
@@ -420,4 +390,4 @@
                 })
         }, 10);
     }
-// })()
+})();
