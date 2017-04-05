@@ -53,13 +53,15 @@
     .DebugVal {
         font-size: 20px;
     }
+    
     #DebugHeader {
         font-family: Arial, Helvetica, sans-serif;
         text-align: center;
         background-color: lightseagreen;
         color: white;
         padding: 10px;
-    } 
+    }
+    
     #DebugModal {
         width: 400px;
         height: 400px;
@@ -74,6 +76,7 @@
         font-size: 30px;
         font-family: Helvetica, sans-serif;
     }
+    
     #DebugBody {
         padding: 10px;
         overflow: scroll;
@@ -83,7 +86,7 @@
     "use strict"
     var $stage = Raphael("stage", 850, 700);
     var $graph_c = { x: 50, y: 100, width: 550, height: 550 };
-    var $icon = { x: 100, y: 100 };
+    var $LineTypeButton = { x: 100, y: 100 };
     var $graph = $stage.rect($graph_c.x, $graph_c.y, $graph_c.width, $graph_c.height);
     $graph.attr({
         "stroke": "none"
@@ -220,7 +223,7 @@
                         mouse.y = e.pageY + gap;
                     }
                     //tpath = "M" + _a1.x + "," + _a1.y + ",L" + mouse.x + "," + mouse.y;
-                    tpath = getCurvePath(_a1.x, _a1.y, mouse.x, mouse.y, (10/9), "acc");
+                    tpath = getCurvePath(_a1.x, _a1.y, mouse.x, mouse.y, (10 / 9), "acc");
                 } else {
                     var _a2 = app.lines[app.rbody.name].a2;
                     console.log("_a2 - " + _a2)
@@ -238,7 +241,6 @@
         //   var control = $stage.circle(C.x, C.y, 10).attr({ fill: "lightblue" });
         curve = $stage.path(['M', x1, y1, 'Q', C.x, C.y, x2, y2]);
         curve.attr({ "stroke": color, "stroke-width": "5px" });
-        console.log("C.y = " + C.y);
         return curve;
     }
     function getCurvePath(x1, y1, x2, y2, slope, type) {
@@ -254,7 +256,6 @@
         return (["M", x1, y1, "Q", C.x, C.y, x2, y2]);
     }
     function AccCurve(x1, y1, x2, y2, slope, color) {
-        console.log("new curve: " + x1 + " " + y1 + " " + x2 + " " + y2);
         var C, curve, slope;
         C = { y: y1 };
         C.x = x2 - ((C.y - y2) / slope);
@@ -286,7 +287,7 @@
         var btn = { test: "hello" };
         return btn;
     }
-    function Icon(x, y, color, id, group) {
+    function LineTypeButton(x, y, color, id, group) {
         var btnid = color + "_" + id;
         var offcolor = "lightgrey";
         var newbtn = $stage.set();
@@ -350,14 +351,22 @@
         }
         return newbtn;
     }
-    function addBody(x, y, name, icon, color) {
-        $("body").append("<div class='rbody' id='name" + "_" + color + "'></div>");
+    function addRidgidBody(x, y, color, name, imgsrc) {
+        var image_width = 120;
+        var image_offset = 40;
+        $("body").append("<img class='rbody' id='name" + "_" + color + "'"
+            + "style='top: " + (y - image_width) + "px; "
+            + "width: " + image_width + "px; "
+            + "height: " + image_width + "px; "
+            + "left: " + (x + image_offset) + "px' src='" + imgsrc + "'>"
+            + "</img>");
+        var oset = ButtonSet(x, y, color, name);
     }
     function ButtonSet(x, y, color, name) {
         var bset = $stage.set();
-        var olinebtn = new Icon(x, y, color, "line", bset);
-        var oaccbtn = new Icon((x + 60), y, color, "acc", bset);
-        var odecbtn = new Icon((x + 120), y, color, "dec", bset);
+        var olinebtn = new LineTypeButton(x, y, color, "line", bset);
+        var oaccbtn = new LineTypeButton((x + 60), y, color, "acc", bset);
+        var odecbtn = new LineTypeButton((x + 120), y, color, "dec", bset);
         bset.rbody = { "name": name, "color": color };
         bset.push(olinebtn);
         bset.push(oaccbtn);
@@ -365,9 +374,8 @@
         return bset;
     }
     makeGraphCanvas();
-    addBody(1, 1, "test", "test", "orange");
-    var oset = ButtonSet(650, 300, "orange", "runner1");
-    var bset = ButtonSet(650, 500, "green", "runner2");
+    addRidgidBody(650, 300, "#fccb04", "runner1", "../../img/runner2.jpg");
+    addRidgidBody(650, 600, "#246b8e", "runner2", "../../img/runner1.jpg");
 
 </script>
 <style>
@@ -377,5 +385,9 @@
         border-color: lightgrey;
         width: 50px;
         height: 50px;
+    }
+    
+    .rbody {
+        position: absolute;
     }
 </style>
