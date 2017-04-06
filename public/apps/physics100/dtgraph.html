@@ -2,81 +2,23 @@
 <html>
 
 <head>
-    <div id="stage"></div>
+    <link type="stylesheet/css" href="../../stylesheets/css/debugger.css" />
 </head>
 
 <body>
+    <div id="stage"></div>
 </body>
 
 </html>
-<script src="../../js/jquery.min.js"></script>
+<script type='text/javascript' src="../../js/jquery.min.js"></script>
 <script type='text/javascript' src="../../js/raphael.min.js"></script>
-<script>
-    Debugger = function () {
-        $("body").append("<div id='DebugModal'><div id='DebugHeader'>Debug Console</div><div id='DebugBody'></div><div>")
-        db = {};
-        db.variables = [];
-        db.track = function (ref) {
-            console.log("this: " + JSON.stringify(ref));
-            db.variables.push(ref)
-            $("#DebugBody").append("<div id='name_" + ref + "'><strong>" + ref + ": </strong><span class='DebugVal' id='value" + (db.variables.length - 1) + "'></span></div>")
-        };
-        setInterval(function () {
-            for (var i = 0, ii = db.variables.length; i < ii; i++) {
-                var displayvar = eval(db.variables[i]);
-                if (typeof (displayvar) === "object") {
-                    displayvar = JSON.stringify(displayvar);
-                }
-                $("#value" + i).text(displayvar);
-            }
-        }, 100);
-        return db;
-    };
-
-</script>
-<style>
-    .DebugVal {
-        font-size: 20px;
-    }
-    
-    #DebugHeader {
-        font-family: Arial, Helvetica, sans-serif;
-        text-align: center;
-        background-color: lightseagreen;
-        color: white;
-        padding: 10px;
-    }
-    
-    #DebugModal {
-        width: 400px;
-        height: 600px;
-        border-style: solid;
-        border-color: lightseagreen;
-        border-width: 4px;
-        margin: 20px;
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 999;
-        font-size: 30px;
-        font-family: Helvetica, sans-serif;
-    }
-    
-    #DebugBody {
-        padding: 10px;
-        overflow-y: scroll;
-        height: 80%;
-        background-color: white;
-        fill-opacity: 0.5;
-    }
-</style>
+<script type='text/javascript' src="../../js/debugger.js"></script>
 <script>
     "use strict"
     var $stage = Raphael("stage", 850, 700);
     var $graph_c = { x: 50, y: 100, width: 550, height: 550 };
     var $LineButton = { x: 100, y: 100 };
     var $graph = $stage.rect($graph_c.x, $graph_c.y, $graph_c.width, $graph_c.height);
-    //var mousex, mousey;
     var mousex = 5;
     var mousey = 5;
     $graph.attr({
@@ -96,27 +38,14 @@
         rbody: { name: "", color: "lightgrey" },
         lines: {}
     };
-    var testapp = {};
-    testapp.var = undefined;
-
-    var reflist = [testapp.var];
-    var debugvar;
-
-    function updateRefs() {
-        if (reflist.length > 0) {
-            debugvar = reflist[0];
-        }
-    }
     var dbg = Debugger();
     var line, a1, a2;
-    // console.log("mx: " + mousex);
     dbg.track("mousex");
     dbg.track("mousey");
     dbg.track("app.lines.runner1");
     dbg.track("app.lines.runner2");
     dbg.track("app.rbody");
     dbg.track("app.over");
-    // dbg.track("app", app);
     function makeGraphCanvas() {
         for (var edge = 0; edge < 4; edge++) {
             var x, y, dir;
@@ -172,39 +101,22 @@
         });
         spoint.mouseout(function () {
             $("body").css("cursor", "default");
-            //spoint.attr({ "fill": "lightgrey", "r": $anchor_size, "opacity": "0" });
             app.over = null;
-
             spoint.attr("opacity", 0);
-
         })
         spoint.mousedown(function () {
             spoint.selected = true;
             spoint.attr({ "fill": app.rbody.color, "opacity": 0 });
             if (app.lines[app.rbody.name] !== undefined) {
                 if (!app.lines[app.rbody.name].a1) {
-                    //  spoint.attr({ "fill": app.rbody.color, "opacity": 1 });
                     app.lines[app.rbody.name].a1 = { id: spoint.id, x: spoint.x, y: spoint.y };
                     drawLine(spoint);
-                    // a1 = spoint;
-                    // //a1 = LinePoint(spoint);
-                    // var newLinePoint = LinePoint(spoint);
-                    // //app.lines[app.rbody.name].a1 = { x: LinePoint(spoint).x, y: LinePoint(spoint).y };
-                    // app.lines[app.rbody.name].a1 = { x: newLinePoint.x, y: newLinePoint.y };
-                    // // a1.attr("r", $anchor_size);
                 } else {
                     if (spoint.id === app.lines[app.rbody.name].a1.id) {
-                        console.log("point " + spoint.id + " can be dragged ");
                         app.dragging = true;
-                    } else {
-                        console.log("not draggable");
                     }
                     if (app.lines[app.rbody.name].a1 && !app.lines[app.rbody.name].a2) {
-                        //     var newLinePoint2 = LinePoint(spoint);
                         var tpath = "M" + app.lines[app.rbody.name].a1.x + "," + app.lines[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
-                        //     a2 = spoint;
-                        //     //a2 = LinePoint(spoint);
-                        //     // app.lines[app.rbody.name].a2 = { x: LinePoint(spoint).x, y: LinePoint(spoint).y };
                         app.lines[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
                     }
                 }
@@ -231,37 +143,6 @@
         line.mouseover(function () {
             console.log('over line')
         });
-    }
-    function LinePoint(spoint) {
-        var p = $stage.circle((spoint.x - ($anchor_size / 2)), (spoint.y - ($anchor_size / 2)), $linePoint_size);
-        p.x = spoint.x;
-        p.y = spoint.y;
-        p.attr({ "fill": "red", "stroke": "none" });
-        //p.attr({ "fill": app.rbody.color, "stroke": "none" });
-        p.x = spoint.x - ($anchor_size / 2);
-        p.y = spoint.y - ($anchor_size / 2);
-        p.mousedown(function () {
-            console.log("this.x, this.y : " + this.x, this.y);
-        });
-        p.drag(
-            function () {
-                console.log("dragging...");
-            },
-            function () {
-                console.log("down");
-                app.dragging = true;
-            },
-            function () {
-                console.log("up");
-                if (app.over) {
-                    console.log("drop at " + app.over.x + " " + app.over.y);
-                    app.lines[app.rbody.name].a1.x = app.over.x;
-                    app.lines[app.rbody.name].a1.y = app.over.y;
-                }
-                app.dragging = false;
-            }
-        )
-        return p;
     }
     function DecCurve(x1, y1, x2, y2, slope, color) {
         var C, curve, slope;
@@ -407,23 +288,21 @@
     });
     $($stage.canvas).mousemove(function (e) {
         if (line) {
-            //console.log(e.pageX);
             mousex = e.pageX;
             mousey = e.pageY;
             var mouse = {};
             var tpath;
             var gap = 10;
             if (app.dragging) {
-                console.log("DRAGGING");
                 $('body').css("cursor", "crosshair");
-                //app.dragging.transform("T" + (mousex - app.dragging.x - $stage.canvas.parentNode.offsetLeft) + "," + (mousey - app.dragging.y - $stage.canvas.parentNode.offsetTop));
-                //app.dragging.attr("opacity", 0);
-                //app.dragging.x = mousex;
-                //app.dragging.y = mousey;
-                //  app.lines[app.rbody.name].a1 = app.dragging;
-                tpath = getUpdatedLinePath((mousex - $stage.canvas.parentNode.offsetLeft + 50), (mousey - $stage.canvas.parentNode.offsetTop), app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+                var stopAt;
+                if (app.over) {
+                    stopAt = getStopPoint(app.over.x, app.over.y, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+                } else {
+                    stopAt = getStopPoint((mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop), app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+                }
+                tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
                 line.attr("path", tpath);
-                //  console.log("dragging object: " + app.dragging.x + " " + app.dragging.y);
             } else if (app.rbody && app.lines[app.rbody.name].a1) {
                 var _a1 = app.lines[app.rbody.name].a1;
                 if (!app.lines[app.rbody.name].a1 || !app.lines[app.rbody.name].a2) {
@@ -439,7 +318,6 @@
                     } else if (dy < 0) {
                         mouse.y = e.pageY;
                     }
-                    //updateLine(_a1.x, _a1.y, mouse.x, mouse.y);
                     var stopAt;
                     if (!app.over) {
                         stopAt = getStopPoint(_a1.x, _a1.y, (mouse.x - $stage.canvas.parentNode.offsetLeft), (mouse.y - $stage.canvas.parentNode.offsetTop));
@@ -449,26 +327,25 @@
                     tpath = getUpdatedLinePath(_a1.x, _a1.y, stopAt.x, stopAt.y);
                 } else {
                     var _a2 = app.lines[app.rbody.name].a2;
-                    console.log("_a2 - " + _a2)
                     tpath = getUpdatedLinePath(_a1.x, _a1.y, _a2.x, _a2.y);
                     var stopAt = getStopPoint(_a1.x, _a1.y, _a2.x, _a2.y);
-                    // $stage.circle(stopAt.x, stopAt.y, 5).attr({ "fill": "green" });
-                    // tpath = "M" + _a1.x + "," + _a1.y + ",L" + _a2.x + "," + _a2.y;
+                    //  $stage.circle(stopAt.x, stopAt.y, 5).attr({ "fill": "green" });
+                    //  $stage.circle(stopAt.x1, stopAt.y1, 5).attr({ "fill": "red" });
                 }
                 line.attr("path", tpath);
             }
         }
     });
     function getStopPoint(x1, y1, x2, y2) {
-        var slope = ((y1 - y2) / (x2 - x1));
         var xdiff = (x2 - x1);
         var ydiff = (y1 - y2);
         var hypot = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
         var offset = 10;
         var angle = Math.atan(ydiff / xdiff);
-        console.log("slope: " + slope);
-        console.log("hyp: " + hypot + " dx: " + xdiff + " dy: " + ydiff + " angle: " + angle);
-        return { x: (x2 - offset * Math.cos(angle)), y: (y2 + offset * Math.sin(angle)) };
+        return {
+            x: (x2 - offset * Math.cos(angle)), y: (y2 + offset * Math.sin(angle)),
+            x1: (x1 + offset * Math.cos(angle)), y1: (y1 - offset * Math.sin(angle))
+        };
     }
     makeGraphCanvas();
     addRidgidBody(650, 300, "#fccb04", "runner1", "../../img/runner2.jpg");
