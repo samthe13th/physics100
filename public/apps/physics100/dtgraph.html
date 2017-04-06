@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <link type="stylesheet/css" href="../../stylesheets/css/debugger.css" />
+    <link rel="stylesheet" href="../../stylesheets/css/debugger.css" />
 </head>
 
 <body>
@@ -19,8 +19,7 @@
     var $graph_c = { x: 50, y: 100, width: 550, height: 550 };
     var $LineButton = { x: 100, y: 100 };
     var $graph = $stage.rect($graph_c.x, $graph_c.y, $graph_c.width, $graph_c.height);
-    var mousex = 5;
-    var mousey = 5;
+    var mousex, mousey, line;
     $graph.attr({
         "stroke": "none"
     })
@@ -39,7 +38,6 @@
         lines: {}
     };
     var dbg = Debugger();
-    var line, a1, a2;
     dbg.track("mousex");
     dbg.track("mousey");
     dbg.track("app.lines.runner1");
@@ -290,52 +288,40 @@
         if (line) {
             mousex = e.pageX;
             mousey = e.pageY;
-            var mouse = {};
-            var tpath;
-            var gap = 10;
             if (app.dragging) {
-                $('body').css("cursor", "crosshair");
-                var stopAt;
-                if (app.over) {
-                    stopAt = getStopPoint(app.over.x, app.over.y, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
-                } else {
-                    stopAt = getStopPoint((mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop), app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
-                }
-                tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
-                line.attr("path", tpath);
-            } else if (app.rbody && app.lines[app.rbody.name].a1) {
-                var _a1 = app.lines[app.rbody.name].a1;
-                if (!app.lines[app.rbody.name].a1 || !app.lines[app.rbody.name].a2) {
-                    var dx = e.pageX - _a1.x;
-                    var dy = e.pageY - _a1.y;
-                    if (dx > 0) {
-                        mouse.x = e.pageX;
-                    } else if (dx < 0) {
-                        mouse.x = e.pageX;
-                    }
-                    if (dy > 0) {
-                        mouse.y = e.pageY;
-                    } else if (dy < 0) {
-                        mouse.y = e.pageY;
-                    }
-                    var stopAt;
-                    if (!app.over) {
-                        stopAt = getStopPoint(_a1.x, _a1.y, (mouse.x - $stage.canvas.parentNode.offsetLeft), (mouse.y - $stage.canvas.parentNode.offsetTop));
-                    } else {
-                        stopAt = getStopPoint(_a1.x, _a1.y, app.over.x, app.over.y);
-                    }
-                    tpath = getUpdatedLinePath(_a1.x, _a1.y, stopAt.x, stopAt.y);
-                } else {
-                    var _a2 = app.lines[app.rbody.name].a2;
-                    tpath = getUpdatedLinePath(_a1.x, _a1.y, _a2.x, _a2.y);
-                    var stopAt = getStopPoint(_a1.x, _a1.y, _a2.x, _a2.y);
-                    //  $stage.circle(stopAt.x, stopAt.y, 5).attr({ "fill": "green" });
-                    //  $stage.circle(stopAt.x1, stopAt.y1, 5).attr({ "fill": "red" });
-                }
-                line.attr("path", tpath);
+                dragHandler();
+            } else if (app.lines[app.rbody.name].a1) {
+                updateLine();
             }
         }
     });
+    function updateLine() {
+        var _a1 = app.lines[app.rbody.name].a1;
+        var tpath, stopAt;
+        if (!app.lines[app.rbody.name].a2) {
+            if (!app.over) {
+                stopAt = getStopPoint(_a1.x, _a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
+            } else {
+                stopAt = getStopPoint(_a1.x, _a1.y, app.over.x, app.over.y);
+            }
+            tpath = getUpdatedLinePath(_a1.x, _a1.y, stopAt.x, stopAt.y);
+        } else {
+            var _a2 = app.lines[app.rbody.name].a2;
+            tpath = getUpdatedLinePath(_a1.x, _a1.y, _a2.x, _a2.y);
+        }
+        line.attr("path", tpath);
+    }
+    function dragHandler() {
+        var tpath, stopAt;
+        $('body').css("cursor", "crosshair");
+        if (app.over) {
+            stopAt = getStopPoint(app.over.x, app.over.y, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+        } else {
+            stopAt = getStopPoint((mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop), app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+        }
+        tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+        line.attr("path", tpath);
+    }
     function getStopPoint(x1, y1, x2, y2) {
         var xdiff = (x2 - x1);
         var ydiff = (y1 - y2);
