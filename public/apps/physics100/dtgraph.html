@@ -31,7 +31,7 @@
     })
     var $anchor_size = 10;
     var $linePoint_size = 10;
-    var $points = { x: 20, y: 20 };
+    var $points = { x: 10, y: 10 };
     var $space = { x: ($graph_c.width / $points.x), y: ($graph_c.height / $points.y) };
     var app = {
         over: null,
@@ -313,9 +313,9 @@
         }
         return newbtn;
     }
-    function getUpdatedLinePath(x, y, mx, my) {
+    function getUpdatedLinePath(name, x, y, mx, my) {
         var newpath;
-        switch (elements[app.rbody.name].linetype) {
+        switch (elements[name].linetype) {
             case "line":
                 newpath = ["M", x, y, "L", mx, my];
                 break;
@@ -353,6 +353,7 @@
             } else if (elements[app.rbody.name].a1) {
                 updateLine(app.rbody.name);
             }
+          // updateLines();
         }
     });
     function updateLine(name) {
@@ -364,10 +365,10 @@
             } else {
                 stopAt = getStopPoint(_a1.x, _a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
             }
-            tpath = getUpdatedLinePath(_a1.x, _a1.y, stopAt.x, stopAt.y);
+            tpath = getUpdatedLinePath(name, _a1.x, _a1.y, stopAt.x, stopAt.y);
         } else {
             var _a2 = elements[name].a2;
-            tpath = getUpdatedLinePath(_a1.x, _a1.y, _a2.x, _a2.y);
+            tpath = getUpdatedLinePath(name, _a1.x, _a1.y, _a2.x, _a2.y);
         }
         lines[name].attr("path", tpath);
         // console.log("update line for " + line.belongsTo);
@@ -394,10 +395,10 @@
         }
         if (app.dragging.anchor === "a1") {
             // console.log("drag point 1");
-            tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
+            tpath = getUpdatedLinePath(app.dragging.name, stopAt.x1, stopAt.y1, elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
         } else {
             // console.log("drag point 2");
-            tpath = getUpdatedLinePath(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
+            tpath = getUpdatedLinePath(app.dragging.name, elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
         }
         elements[app.dragging.name].line.attr("path", tpath);
     }
