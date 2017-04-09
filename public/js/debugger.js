@@ -12,12 +12,17 @@ Debugger = function () {
             var displayvar;
             try {
                 displayvar = eval(db.variables[i]);
-            } 
+            }
             catch (e) {
                 displayvar = "undefined"
             }
             if (typeof (displayvar) === "object") {
-                displayvar = JSON.stringify(displayvar);
+                try {
+                    displayvar = JSON.stringify(displayvar);
+                }
+                catch (e){
+                    displayvar = ">>cannot stringify this object"
+                }
             }
             $("#value" + i).text(displayvar);
         }
