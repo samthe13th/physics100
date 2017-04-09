@@ -9,7 +9,13 @@ Debugger = function () {
     };
     setInterval(function () {
         for (var i = 0, ii = db.variables.length; i < ii; i++) {
-            var displayvar = eval(db.variables[i]);
+            var displayvar;
+            try {
+                displayvar = eval(db.variables[i]);
+            } 
+            catch (e) {
+                displayvar = "undefined"
+            }
             if (typeof (displayvar) === "object") {
                 displayvar = JSON.stringify(displayvar);
             }
