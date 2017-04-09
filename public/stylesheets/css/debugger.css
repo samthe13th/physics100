@@ -8,10 +8,9 @@
         color: white;
         padding: 10px;
     }
-    
     #DebugModal {
         width: 400px;
-        height: 600px;
+        height: 700px;
         border-style: solid;
         border-color: lightseagreen;
         border-width: 4px;
@@ -23,11 +22,10 @@
         font-size: 30px;
         font-family: Helvetica, sans-serif;
     }
-    
     #DebugBody {
         padding: 10px;
         overflow-y: scroll;
-        height: 80%;
+        height: 85%;
         background-color: white;
         fill-opacity: 0.5;
     }

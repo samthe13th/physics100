@@ -44,6 +44,7 @@
     dbg.track("app.lines.runner2");
     dbg.track("app.rbody");
     dbg.track("app.over");
+    dbg.track("app.dragging");
     function makeGraphCanvas() {
         for (var edge = 0; edge < 4; edge++) {
             var x, y, dir;
@@ -86,6 +87,15 @@
         }
         points.push(newpoint);
     }
+    function getAnchor(name, id) {
+        if (name) {
+            if (app.lines[name].a1.id === id) {
+                return "a1";
+            }
+            return "a2"
+        }
+        return null;
+    }
     function SelectablePoint(x, y, id) {
         var spoint = $stage.circle(x, y, $anchor_size);
         spoint.attr({ "fill": "lightgrey", "stroke": "none", "opacity": "0" });
@@ -95,8 +105,26 @@
         spoint.selected = false;
         spoint.mouseover(function () {
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": app.rbody.color, "r": $linePoint_size });
-            app.over = { id: spoint.id, x: (spoint.x), y: spoint.y };
+            app.over = { name: spoint.isLinePoint(), anchor: getAnchor(spoint.isLinePoint(), id), id: spoint.id, x: (spoint.x), y: spoint.y };
+            if (spoint.isLinePoint()) {
+                // app.rbody.name = spoint.isLinePoint();
+            }
         });
+        spoint.isLinePoint = function () {
+            for (var line in app.lines) {
+                if ((app.lines[line].a1 !== undefined) && (app.lines[line].a2 !== undefined)) {
+                    console.log("a1.id: " + app.lines[line].a1.id);
+                    if (app.lines[line].a1.id === spoint.id) {
+                        return line;
+                    };
+                    console.log("a2.id: " + app.lines[line].a2.id);
+                    if (app.lines[line].a2.id === spoint.id) {
+                        return line;
+                    }
+                }
+            }
+            return false;
+        }
         spoint.mouseout(function () {
             $("body").css("cursor", "default");
             app.over = null;
@@ -109,14 +137,11 @@
                 if (!app.lines[app.rbody.name].a1) {
                     app.lines[app.rbody.name].a1 = { id: spoint.id, x: spoint.x, y: spoint.y };
                     drawLine(spoint);
-                } else {
-                    if (spoint.id === app.lines[app.rbody.name].a1.id) {
-                        app.dragging = true;
-                    }
-                    if (app.lines[app.rbody.name].a1 && !app.lines[app.rbody.name].a2) {
-                        var tpath = "M" + app.lines[app.rbody.name].a1.x + "," + app.lines[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
-                        app.lines[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
-                    }
+                } else if (app.lines[app.rbody.name].a1 && !app.lines[app.rbody.name].a2) {
+                    var tpath = "M" + app.lines[app.rbody.name].a1.x + "," + app.lines[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
+                    app.lines[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
+                } else if (app.over) {
+                    app.dragging = app.over;
                 }
             }
         })
@@ -278,9 +303,9 @@
     $($stage.canvas).mouseup(function (e) {
         if (app.over && app.dragging) {
             console.log("drop at " + app.over.x + " " + app.over.y);
-            app.lines[app.rbody.name].a1.x = app.over.x;
-            app.lines[app.rbody.name].a1.y = app.over.y;
-            app.lines[app.rbody.name].a1.id = app.over.id;
+            app.lines[app.dragging.name][app.dragging.anchor].x = app.over.x;
+            app.lines[app.dragging.name][app.dragging.anchor].y = app.over.y;
+            app.lines[app.dragging.name][app.dragging.anchor].id = app.over.id;
         }
         app.dragging = false;
     });
@@ -299,10 +324,10 @@
         var _a1 = app.lines[app.rbody.name].a1;
         var tpath, stopAt;
         if (!app.lines[app.rbody.name].a2) {
-            if (!app.over) {
-                stopAt = getStopPoint(_a1.x, _a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
-            } else {
+            if (app.over) {
                 stopAt = getStopPoint(_a1.x, _a1.y, app.over.x, app.over.y);
+            } else {
+                stopAt = getStopPoint(_a1.x, _a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
             }
             tpath = getUpdatedLinePath(_a1.x, _a1.y, stopAt.x, stopAt.y);
         } else {
@@ -319,7 +344,13 @@
         } else {
             stopAt = getStopPoint((mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop), app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
         }
-        tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+        if (app.dragging.anchor === "a1") {
+            console.log("drag point 1");
+            tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+        } else {
+            console.log("drag point 2");
+            tpath = getUpdatedLinePath(app.lines[app.rbody.name].a1.x, app.lines[app.rbody.name].a1.y, stopAt.x1, stopAt.y1);
+        }
         line.attr("path", tpath);
     }
     function getStopPoint(x1, y1, x2, y2) {
