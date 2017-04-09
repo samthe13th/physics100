@@ -20,6 +20,7 @@
     var $LineButton = { x: 100, y: 100 };
     var $graph = $stage.rect($graph_c.x, $graph_c.y, $graph_c.width, $graph_c.height);
     var mousex, mousey, line;
+    var lines = {};
     $graph.attr({
         "stroke": "none"
     })
@@ -35,13 +36,13 @@
         over: null,
         dragging: false,
         rbody: { name: "", color: "lightgrey" },
-        lines: {}
+        elements: {}
     };
     var dbg = Debugger();
     dbg.track("mousex");
     dbg.track("mousey");
-    dbg.track("app.lines.runner1");
-    dbg.track("app.lines.runner2");
+    dbg.track("app.elements.runner1");
+    dbg.track("app.elements.runner2");
     dbg.track("app.rbody");
     dbg.track("app.over");
     dbg.track("app.dragging");
@@ -89,7 +90,7 @@
     }
     function getAnchor(name, id) {
         if (name) {
-            if (app.lines[name].a1.id === id) {
+            if (app.elements[name].a1.id === id) {
                 return "a1";
             }
             return "a2"
@@ -103,28 +104,28 @@
         spoint.y = y;
         spoint.id = id;
         spoint.selected = false;
+        spoint.over = false;
         spoint.mouseover(function () {
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": app.rbody.color, "r": $linePoint_size });
-            app.over = { name: spoint.isLinePoint(), anchor: getAnchor(spoint.isLinePoint(), id), id: spoint.id, x: (spoint.x), y: spoint.y };
-            if (spoint.isLinePoint()) {
-                // app.rbody.name = spoint.isLinePoint();
-            }
+            app.over = { name: spoint.belongsTo(), anchor: getAnchor(spoint.belongsTo(), id), id: spoint.id, x: (spoint.x), y: spoint.y };
+            spoint.over = true;
         });
-        spoint.isLinePoint = function () {
-            for (var line in app.lines) {
-                if ((app.lines[line].a1 !== undefined) && (app.lines[line].a2 !== undefined)) {
-                    console.log("a1.id: " + app.lines[line].a1.id);
-                    if (app.lines[line].a1.id === spoint.id) {
-                        return line;
+        spoint.belongsTo = function () {
+            for (var e in app.elements) {
+                if ((app.elements[e].a1 !== undefined) && (app.elements[e].a2 !== undefined)) {
+                    //console.log("a1.id: " + app.elements[line].a1.id);
+                    if (app.elements[e].a1.id === spoint.id) {
+                        return e
                     };
-                    console.log("a2.id: " + app.lines[line].a2.id);
-                    if (app.lines[line].a2.id === spoint.id) {
-                        return line;
+                    //console.log("a2.id: " + app.elements[line].a2.id);
+                    if (app.elements[e].a2.id === spoint.id) {
+                        return e;
                     }
                 }
             }
             return false;
         }
+        spoint.name = spoint.belongsTo();
         spoint.mouseout(function () {
             $("body").css("cursor", "default");
             app.over = null;
@@ -133,13 +134,13 @@
         spoint.mousedown(function () {
             spoint.selected = true;
             spoint.attr({ "fill": app.rbody.color, "opacity": 0 });
-            if (app.lines[app.rbody.name] !== undefined) {
-                if (!app.lines[app.rbody.name].a1) {
-                    app.lines[app.rbody.name].a1 = { id: spoint.id, x: spoint.x, y: spoint.y };
+            if (app.elements[app.rbody.name] !== undefined) {
+                if (!app.elements[app.rbody.name].a1) {
+                    app.elements[app.rbody.name].a1 = { id: spoint.id, x: spoint.x, y: spoint.y };
                     drawLine(spoint);
-                } else if (app.lines[app.rbody.name].a1 && !app.lines[app.rbody.name].a2) {
-                    var tpath = "M" + app.lines[app.rbody.name].a1.x + "," + app.lines[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
-                    app.lines[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
+                } else if (app.elements[app.rbody.name].a1 && !app.elements[app.rbody.name].a2) {
+                    var tpath = "M" + app.elements[app.rbody.name].a1.x + "," + app.elements[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
+                    app.elements[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
                 } else if (app.over) {
                     app.dragging = app.over;
                 }
@@ -159,13 +160,17 @@
     function drawLine(spoint) {
         var path = "M" + spoint.x + "," + spoint.y + ",l0,0";
         line = $stage.path(path);
+        line.belongsTo = app.rbody.name;
         line.attr({
             "stroke-width": "6px",
             "stroke": app.rbody.color
         });
         line.mouseover(function () {
-            console.log('over line')
+            //console.log('over line')
         });
+        lines[app.rbody.name] = line;
+        console.log("draw line for " + line.belongsTo);
+        console.log("LINES: " + lines);
     }
     function DecCurve(x1, y1, x2, y2, slope, color) {
         var C, curve, slope;
@@ -269,13 +274,19 @@
             newbtn.selectLine();
         });
         newbtn.selectLine = function () {
+            console.log("selectLine");
+            app.rbody = newbtn.group.rbody;
             newbtn.group.forEach(function (e) {
                 if (e.id === newbtn.id) {
                     newbtn.attr("stroke", color);
                     newbtn.select = true;
                     app.rbody = newbtn.group.rbody;
-                    if (!app.lines[newbtn.group.rbody.name]) {
-                        app.lines[newbtn.group.rbody.name] = { linetype: newbtn.type, a1: undefined, a2: undefined };
+                    if (!app.elements[newbtn.group.rbody.name]) {
+                        console.log("NEW LINE");
+                        app.elements[newbtn.group.rbody.name] = { linetype: newbtn.type, a1: undefined, a2: undefined };
+                    } else {
+                        console.log("CHANGE LINE TYPE OF EXISTING LINE");
+                        app.elements[newbtn.group.rbody.name].linetype = newbtn.type;
                     }
                 } else {
                     e.attr("stroke", offcolor);
@@ -287,7 +298,7 @@
     }
     function getUpdatedLinePath(x, y, mx, my) {
         var newpath;
-        switch (app.lines[app.rbody.name].linetype) {
+        switch (app.elements[app.rbody.name].linetype) {
             case "line":
                 newpath = ["M", x, y, "L", mx, my];
                 break;
@@ -303,9 +314,9 @@
     $($stage.canvas).mouseup(function (e) {
         if (app.over && app.dragging) {
             console.log("drop at " + app.over.x + " " + app.over.y);
-            app.lines[app.dragging.name][app.dragging.anchor].x = app.over.x;
-            app.lines[app.dragging.name][app.dragging.anchor].y = app.over.y;
-            app.lines[app.dragging.name][app.dragging.anchor].id = app.over.id;
+            app.elements[app.dragging.name][app.dragging.anchor].x = app.over.x;
+            app.elements[app.dragging.name][app.dragging.anchor].y = app.over.y;
+            app.elements[app.dragging.name][app.dragging.anchor].id = app.over.id;
         }
         app.dragging = false;
     });
@@ -315,15 +326,15 @@
             mousey = e.pageY;
             if (app.dragging) {
                 dragHandler();
-            } else if (app.lines[app.rbody.name].a1) {
+            } else if (app.elements[app.rbody.name].a1) {
                 updateLine();
             }
         }
     });
     function updateLine() {
-        var _a1 = app.lines[app.rbody.name].a1;
+        var _a1 = app.elements[app.rbody.name].a1;
         var tpath, stopAt;
-        if (!app.lines[app.rbody.name].a2) {
+        if (!app.elements[app.rbody.name].a2) {
             if (app.over) {
                 stopAt = getStopPoint(_a1.x, _a1.y, app.over.x, app.over.y);
             } else {
@@ -331,32 +342,44 @@
             }
             tpath = getUpdatedLinePath(_a1.x, _a1.y, stopAt.x, stopAt.y);
         } else {
-            var _a2 = app.lines[app.rbody.name].a2;
+            var _a2 = app.elements[app.rbody.name].a2;
             tpath = getUpdatedLinePath(_a1.x, _a1.y, _a2.x, _a2.y);
         }
-        line.attr("path", tpath);
+        lines[app.rbody.name].attr("path", tpath);
+        console.log("update line for " + line.belongsTo);
+        console.log("LINES: " + lines);
     }
     function dragHandler() {
         var tpath, stopAt;
         $('body').css("cursor", "crosshair");
         if (app.over) {
-            stopAt = getStopPoint(app.over.x, app.over.y, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+            if (app.dragging.anchor === "a1") {
+                // console.log("get SP for a1")
+                stopAt = getStopPoint(app.over.x, app.over.y, app.elements[app.dragging.name].a2.x, app.elements[app.dragging.name].a2.y);
+            } else if (app.dragging.anchor === "a2") {
+                // console.log("get SP for a2");
+                stopAt = getStopPoint(app.elements[app.dragging.name].a1.x, app.elements[app.dragging.name].a1.y, app.over.x, app.over.y);
+            }
         } else {
-            stopAt = getStopPoint((mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop), app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+            if (app.dragging.anchor === "a1") {
+                stopAt = getStopPoint((mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop), app.elements[app.dragging.name].a2.x, app.elements[app.dragging.name].a2.y);
+            } else {
+                stopAt = getStopPoint(app.elements[app.dragging.name].a1.x, app.elements[app.dragging.name].a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
+            }
         }
         if (app.dragging.anchor === "a1") {
-            console.log("drag point 1");
-            tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, app.lines[app.rbody.name].a2.x, app.lines[app.rbody.name].a2.y);
+            // console.log("drag point 1");
+            tpath = getUpdatedLinePath(stopAt.x1, stopAt.y1, app.elements[app.dragging.name].a2.x, app.elements[app.dragging.name].a2.y);
         } else {
-            console.log("drag point 2");
-            tpath = getUpdatedLinePath(app.lines[app.rbody.name].a1.x, app.lines[app.rbody.name].a1.y, stopAt.x1, stopAt.y1);
+            // console.log("drag point 2");
+            tpath = getUpdatedLinePath(app.elements[app.dragging.name].a1.x, app.elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
         }
         line.attr("path", tpath);
     }
     function getStopPoint(x1, y1, x2, y2) {
         var xdiff = (x2 - x1);
         var ydiff = (y1 - y2);
-        var hypot = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
+        // var hypot = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
         var offset = 10;
         var angle = Math.atan(ydiff / xdiff);
         return {
