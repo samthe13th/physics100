@@ -111,16 +111,6 @@
         spoint.id = id;
         spoint.selected = false;
         spoint.over = false;
-        spoint.mouseover(function () {
-            console.log("over")
-            spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": app.rbody.color, "r": $linePoint_size });
-            app.over = { name: spoint.belongsTo(), anchor: getAnchor(spoint.belongsTo(), id), id: spoint.id, x: (spoint.x), y: spoint.y };
-            spoint.over = true;
-            if (spoint.belongsTo() !== false) {
-                console.log("over line point")
-                $("body").css("cursor", "move");
-            }
-        });
         spoint.belongsTo = function () {
             for (var e in elements) {
                 if ((elements[e].a1 !== undefined) && (elements[e].a2 !== undefined)) {
@@ -137,6 +127,21 @@
             return false;
         }
         spoint.name = spoint.belongsTo();
+        spoint.mouseover(function () {
+            var stroke_color = app.rbody.color;
+            app.over = { name: spoint.belongsTo(), anchor: getAnchor(spoint.belongsTo(), id), id: spoint.id, x: (spoint.x), y: spoint.y };
+            if (spoint.belongsTo() !== false) {
+                $("body").css("cursor", "move");
+                console.log("spoint.name: " + app.over.name);
+                console.log("elements[spoint.name]: " + elements[app.over.name]);
+                stroke_color = elements[app.over.name].color;
+            }
+            if (app.dragging){
+                stroke_color = elements[app.dragging.name].color;
+            }
+            spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": stroke_color, "r": $linePoint_size });
+            spoint.over = true;
+        });
         spoint.mouseout(function () {
             $("body").css("cursor", "default");
             app.over = null;
@@ -228,7 +233,7 @@
             + "</img>");
         var oset = ButtonSet(x, y, color, name);
         console.log("add body: " + app.rbody.name)
-        elements[name] = {};
+        elements[name] = { color: color };
         console.log("elements: " + elements);
     }
     function ButtonSet(x, y, color, name) {
@@ -339,8 +344,8 @@
         updateLines();
         app.dragging = false;
     });
-    function updateLines(){
-        for (var e in elements){
+    function updateLines() {
+        for (var e in elements) {
             updateLine(e);
         }
     }
@@ -353,7 +358,7 @@
             } else if (elements[app.rbody.name].a1) {
                 updateLine(app.rbody.name);
             }
-          // updateLines();
+            // updateLines();
         }
     });
     function updateLine(name) {
