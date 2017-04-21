@@ -13,8 +13,6 @@ function addTip(text, x, y, dir, background, fontcolor) {
     timeline.push({ text: text, x: x, y: y, dir: dir, background: background, fontcolor: fontcolor });
 }
 function nextTip() {
-    console.log("next tip");
-    console.log("current: " + Tip.current + " timeline.length - 1: " + (timeline.length - 1));
     if (Tip.current < (timeline.length - 1)) {
         if (Tip.current !== -1) {
             _tip.remove();
@@ -22,7 +20,6 @@ function nextTip() {
         showTip(Tip.current + 1);
         Tip.current++;
     } else if (Tip.current === (timeline.length - 1)) {
-        console.log("remove final tip")
         _tip.remove();
         Tip.current++;
     }
@@ -64,8 +61,6 @@ function showTip(i) {
     tipbubble.attr({ "width": (tiptext.getBBox().width + pointerlength), "height": (tiptext.getBBox().height + pointerlength) });
     tiptext.attr({ "x": ((tipbubble.getBBox().width / 2) + pointerlength), "y": ((tipbubble.getBBox().height / 2) + pointerlength) });
     tp = tipPointer(dir);
-    // var tippointer = paper.path(["M", tiptext.attr("x"), (tipbubble.attr("height") + (2 * pointerlength)), "l", -30, (-(pointerlength) - 5), "l", 60, 0, "Z"]).attr({ "stroke": "none", "fill": "#6f819b" });
-    // var tippointer2 = paper.path(["M", 0, ((tipbubble.attr("height") / 2) + pointerlength), "l", (5 + pointerlength), -30, "l", 0, 60, "Z"]).attr({ "stroke": "none", "fill": "#6f819b" });
     tip.push(tipbubble);
     tip.push(tiptext);
     tip.push(tp);
@@ -85,12 +80,6 @@ function showTip(i) {
         tipleft = x - (2 * pointerlength) - tipbubble.attr("width");
     }
     tip.transform(["T", tipleft, tiptop]);
-    // $("#tooltip").css({
-    //     "left": tipleft + "px",
-    //     "top": tiptop + "px",
-    //     "width": (tipbubble.attr("width") + (pointerlength * 2)) + "px",
-    //     "height": (tipbubble.attr("height") + (pointerlength * 2)) + "px"
-    // });
     _tip = tip;
 }
 function parseTextArray(text) {

@@ -3,7 +3,6 @@ Debugger = function () {
     db = {};
     db.variables = [];
     db.track = function (ref) {
-        console.log("this: " + JSON.stringify(ref));
         db.variables.push(ref)
         $("#DebugBody").append("<div id='name_" + ref + "'><strong>" + ref + ": </strong><span class='DebugVal' id='value" + (db.variables.length - 1) + "'></span></div>")
     };

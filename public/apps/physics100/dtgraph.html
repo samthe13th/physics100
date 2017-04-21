@@ -90,11 +90,13 @@
             if (dir === "right") {
                 if (edge === 0) {
                     drawGridLine((x + $space.x), y, (x + $space.x), (y + $graph_c.height));
+                    Tick(x,($graph_c.height + y),i,"x-axis");
                 }
                 x += $space.x;
             } else {
                 if (edge === 3) {
                     drawGridLine(x, y, (x + $graph_c.width), y);
+                    Tick(x, y, i, "y-axis");
                 }
                 y += $space.y;
             }
@@ -102,6 +104,28 @@
             points[newpoint.id] = newpoint;
             snap_points[edge].push({ id: newpoint.id, x: newpoint.x, y: newpoint.y });
         }
+        AxisLabel("x", 10, 360);
+        AxisLabel("t", 320, 680);
+    }
+    function Tick(x, y, val, axis) {
+        var size = 10;
+        var tick;
+        if (axis === "y-axis") {
+            tick = $stage.path(["M", x, y, "l", (-1 * size), 0]);
+        } else {
+            tick = $stage.path(["M", x, y, "l", 0, size]);
+        }
+        tick.attr({
+            "stroke-width": "4px",
+            "stroke": "black"
+        })
+    }
+    function AxisLabel(label, x, y) {
+        $stage.text(x, y, label).attr({
+            "font-size": "30px",
+            "font-family": "Arial",
+            "fill": "black"
+        })
     }
     function getAnchor(name, id) {
         if (name) {
@@ -143,11 +167,12 @@
         });
         spoint.show = function () {
             spoint.stroke_color = app.rbody.color;
-            if (spoint.belongsTo() !== false) {
+            if (spoint.belongsTo() !== false && app.over.name) {
                 spoint.stroke_color = elements[app.over.name].color;
-            }
-            if (app.dragging) {
+            } else if (app.dragging) {
                 spoint.stroke_color = elements[app.dragging.name].color;
+            } else if (current_point) {
+                spoint.stroke_color = elements[current_point].color;
             }
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": spoint.stroke_color, "r": $linePoint_size });
         }
@@ -370,7 +395,9 @@
         }
         updateLines();
         app.dragging = false;
-        points[current_point].hidePoint();
+        if (current_point) {
+            points[current_point].hidePoint();
+        }
     });
     function updateLines() {
         for (var e in elements) {
