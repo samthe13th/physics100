@@ -45,6 +45,10 @@
     };
     var positive_cp = false;
     var dbg = Debugger();
+    var nearest_point;
+    var current_point;
+    dbg.track("nearest_point");
+    dbg.track("current_point");
     // dbg.track("mousex");
     // dbg.track("mousey");
     // //dbg.track("elements.runner1");
@@ -52,17 +56,6 @@
     // // dbg.track("app.rbody");
     dbg.track("app.over");
     dbg.track("app.dragging");
-    // dbg.track("snapto");
-    // // dbg.track("points.point_1_0.id");
-    // // dbg.track("points.point_1_0.x");
-    // // dbg.track("points.point_1_0.y");
-    // dbg.track("elements.runner1.a1.id");
-    // dbg.track("elements.runner1.a1.x");
-    // dbg.track("elements.runner2.a1.id");
-    // dbg.track("elements.runner2.a1.x");
-    // dbg.track("positive_cp");
-    //    dbg.track("apoint");
-    //    dbg.track("cpoint");
     function makeGraphCanvas() {
         for (var edge = 0; edge < 4; edge++) {
             var x, y, dir;
@@ -130,11 +123,9 @@
         spoint.belongsTo = function () {
             for (var e in elements) {
                 if ((elements[e].a1 !== undefined) && (elements[e].a2 !== undefined)) {
-                    //console.log("a1.id: " + elements[line].a1.id);
                     if (elements[e].a1.id === spoint.id) {
                         return e
                     };
-                    //console.log("a2.id: " + elements[line].a2.id);
                     if (elements[e].a2.id === spoint.id) {
                         return e;
                     }
@@ -151,16 +142,11 @@
             // spoint.toFront();
         });
         spoint.show = function () {
-            //   console.log("Show")
             spoint.stroke_color = app.rbody.color;
             if (spoint.belongsTo() !== false) {
-                //     console.log("spoint.name: " + app.over.name);
-                // console.log("elements[spoint.name]: " + elements[app.over.name]);
-                //   console.log("COLOR: " + elements[app.over.name].color);
                 spoint.stroke_color = elements[app.over.name].color;
             }
             if (app.dragging) {
-                //console.log("COLOR: " + elements[app.dragging.name].color);
                 spoint.stroke_color = elements[app.dragging.name].color;
             }
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": spoint.stroke_color, "r": $linePoint_size });
@@ -204,7 +190,6 @@
         return spoint;
     }
     function bindToPoint(point) {
-        console.log("bind to point")
         return { name: point.belongsTo(), anchor: getAnchor(point.belongsTo(), point.id), id: point.id, x: point.x, y: point.y, edge: point.edge };
     }
     function drawGridLine(x1, y1, x2, y2) {
@@ -224,20 +209,14 @@
             "stroke-width": "6px",
             "stroke": app.rbody.color
         });
-        line.mouseover(function () {
-            //console.log('over line')
-        });
         lines[app.rbody.name] = line;
         elements[app.rbody.name].line = line;
-        //console.log("draw line for " + line.belongsTo);
-        //console.log("LINES: " + lines);
     }
     function DecCurve(x1, y1, x2, y2, slope, color) {
         var C, curve, slope;
         slope = 1 - slope;
         C = { x: x1 };
         C.y = y1 - (slope * (x2 - C.x));
-        // var control = $stage.circle(C.x, C.y, 10).attr({ fill: "lightblue" });
         curve = $stage.path(['M', x1, y1, 'Q', C.x, C.y, x2, y2]);
         curve.attr({ "stroke": color, "stroke-width": "5px" });
         return curve;
@@ -285,9 +264,7 @@
             + "left: " + (x + image_offset) + "px' src='" + imgsrc + "'>"
             + "</img>");
         var oset = ButtonSet(x, y, color, name);
-        //  console.log("add body: " + app.rbody.name)
         elements[name] = { color: color };
-        // console.log("elements: " + elements);
     }
     function ButtonSet(x, y, color, name) {
         var bset = $stage.set();
@@ -343,7 +320,6 @@
             newbtn.state = "default";
         });
         newbtn.click(function () {
-            // console.log("runner: " + newbtn.group.name);
             if ((Tip.current === 0 && (newbtn.group.name === "runner1")) || (Tip.current === 3 && (newbtn.group.name === "runner2"))) {
                 nextTip();
             }
@@ -354,7 +330,6 @@
             newbtn.selectLine();
         });
         newbtn.selectLine = function () {
-            //       console.log("selectLine");
             app.rbody = newbtn.group.rbody;
             newbtn.group.forEach(function (e) {
                 if (e.id === newbtn.id) {
@@ -362,10 +337,8 @@
                     newbtn.select = true;
                     app.rbody = newbtn.group.rbody;
                     if (!elements[newbtn.group.rbody.name]) {
-                        console.log("NEW LINE");
                         elements[newbtn.group.rbody.name] = { linetype: newbtn.type, a1: undefined, a2: undefined };
                     }
-                    console.log("CHANGE LINE TYPE OF EXISTING LINE");
                     elements[newbtn.group.rbody.name].linetype = newbtn.type;
                     elements[newbtn.group.rbody.name].linetype = newbtn.type;
                 } else {
@@ -400,16 +373,13 @@
         points[current_point].hidePoint();
     });
     function updateLines() {
-        console.log('update lines');
         for (var e in elements) {
-            console.log(e + " a1 = " + elements[e].a1);
             if (elements[e].a1) {
                 updateLine(e);
             }
         }
     }
     $($stage.canvas).mousemove(function (e) {
-        // snapToY(3);
         if (line) {
             mousex = e.pageX;
             mousey = e.pageY;
@@ -418,7 +388,6 @@
             } else if (elements[app.rbody.name].a1) {
                 updateLine(app.rbody.name);
             }
-            // updateLines();
         }
     });
     function updateLine(name) {
@@ -436,28 +405,22 @@
             tpath = getUpdatedLinePath(name, _a1.x, _a1.y, _a2.x, _a2.y);
         }
         lines[name].attr("path", tpath);
-        // console.log("update line for " + line.belongsTo);
-        // console.log("LINES: " + lines);
     }
     function dragHandler() {
         var tpath, stopAt;
         var snap = { x1: 70, x2: 620 };
         var p1x, p1y, p2x, p2y;
         if (app.dragging.anchor === "a1") {
-            stopAt = getStopPoint((snap.x1 - $stage.canvas.parentNode.offsetLeft), snapTest(3), elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
+            stopAt = getStopPoint((snap.x1 - $stage.canvas.parentNode.offsetLeft), snapToY(3), elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
             tpath = getUpdatedLinePath(app.dragging.name, stopAt.x1, stopAt.y1, elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
         } else if (app.dragging.anchor === "a2") {
-            stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (snap.x2 - $stage.canvas.parentNode.offsetLeft), snapTest(1));
+            stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (snap.x2 - $stage.canvas.parentNode.offsetLeft), snapToY(1));
             tpath = getUpdatedLinePath(app.dragging.name, elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
         }
         elements[app.dragging.name].line.attr("path", tpath);
     }
-    var nearest_point;
-    var current_point;
-    dbg.track("nearest_point");
-    dbg.track("current_point");
 
-    function snapTest(edge) {
+    function snapToY(edge) {
         var nearest_point = { id: app.dragging.id };
         var point;
         var diff = $space.y;
@@ -470,39 +433,15 @@
                 diff = Math.abs(mousey - point);
                 nearest_point = snap_points[edge][i];
                 current_point = "point_" + edge + "_" + i;
-                //    console.log("app.dragging.id = " + app.dragging.id)
-                //current_point = snap_points[edge][i];
             }
         }
         points[current_point].show();
         points[current_point].toFront();
-        //app.over = bindToPoint(points[nearest_point.id]);
-        //  console.log("nearest_point.y = " + nearest_point.y);
-        //console.log("adjusted point y = " + (nearest_point.y - $stage.canvas.parentNode.offsetTop));
         return (nearest_point.y);
-    }
-    function snapToY(edge) {
-        nearest_point = { id: app.dragging.id };
-        var point;
-        var diff = $space.y;
-        //alert("snap to :" + JSON.stringify(snap_points[n]));
-        for (var i = 0, ii = snap_points[edge].length; i < ii; i++) {
-            point = snap_points[edge][i].y + $stage.canvas.parentNode.offsetTop;
-            if (Math.abs(mousey - point) < diff) {
-                diff = Math.abs(mousey - point);
-                //  console.log("mousey: " + mousey + " point: " + point + " diff: " + diff);
-                nearest_point = snap_points[edge][i];
-                edge_point = edge + "_" + i;
-            }
-            app.over = bindToPoint(points[nearest_point.id]);
-        }
-        // console.log("snap to: " + nearest_point.y);
-        return nearest_point.y + $stage.canvas.parentNode.offsetTop;
     }
     function getStopPoint(x1, y1, x2, y2) {
         var xdiff = (x2 - x1);
         var ydiff = (y1 - y2);
-        // var hypot = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
         var offset = 10;
         var angle = Math.atan(ydiff / xdiff);
         return {
@@ -520,8 +459,6 @@
     }
     makeGraphCanvas();
     addRidgidBody(650, 300, color1, "runner1", "../../img/runner2.jpg");
-    //  addRidgidBody(650, 600, "#246b8e", "runner2", "../../img/runner1.jpg");
-    //  addRectangle(620, 400, 220, 260, "white", "black");
     Tip.new($stage);
     addTip("Select line type\nfor runner 1\n(linear, accelerating\nor decelerating)", 640, 320, "left", color1, "black");
     addTip("Select a starting\npoint for runner 1\non the y axis", 60, 375, "right", color1, "black");
@@ -530,7 +467,6 @@
     addTip("Select a starting\npoint for runner 2\non the y axis", 60, 375, "right", color2, "white");
     addTip("Select an end\npoint for runner 2\non the right \ny axis", 590, 300, "left", color2, "white");
     nextTip();
-    snapto = snapToY(3);
 
 </script>
 <style>
