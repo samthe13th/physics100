@@ -13,15 +13,19 @@
 <script type='text/javascript' src="../../js/jquery.min.js"></script>
 <script type='text/javascript' src="../../js/raphael.min.js"></script>
 <script type='text/javascript' src="../../js/debugger.js"></script>
+<script type="text/javascript" src="../../js/tooltip.js"></script>
 <script>
     "use strict"
     var $stage = Raphael("stage", 850, 700);
+    var color1 = "#fccb04";
+    var color2 = "#246b8e";
     var $graph_c = { x: 50, y: 100, width: 550, height: 550 };
     var $LineButton = { x: 100, y: 100 };
     var $graph = $stage.rect($graph_c.x, $graph_c.y, $graph_c.width, $graph_c.height);
     var mousex, mousey, line;
     var lines = {};
     var elements = {};
+    var acc_slope = 5;
     $graph.attr({
         "stroke": "none"
     })
@@ -39,19 +43,26 @@
         rbody: { name: "", color: "lightgrey" },
         elements: {}
     };
+    var positive_cp = false;
     var dbg = Debugger();
     // dbg.track("mousex");
     // dbg.track("mousey");
-    // dbg.track("elements.runner1");
-    // dbg.track("elements.runner2");
-    dbg.track("app.rbody");
+    // //dbg.track("elements.runner1");
+    // // dbg.track("elements.runner2");
+    // // dbg.track("app.rbody");
     dbg.track("app.over");
     dbg.track("app.dragging");
-    dbg.track("points.point_1_0.id");
-    dbg.track("points.point_1_0.x");
-    dbg.track("points.point_1_0.y");
-    dbg.track("elements.runner1.a1.id");
-    dbg.track("elements.runner1.a1");
+    // dbg.track("snapto");
+    // // dbg.track("points.point_1_0.id");
+    // // dbg.track("points.point_1_0.x");
+    // // dbg.track("points.point_1_0.y");
+    // dbg.track("elements.runner1.a1.id");
+    // dbg.track("elements.runner1.a1.x");
+    // dbg.track("elements.runner2.a1.id");
+    // dbg.track("elements.runner2.a1.x");
+    // dbg.track("positive_cp");
+    //    dbg.track("apoint");
+    //    dbg.track("cpoint");
     function makeGraphCanvas() {
         for (var edge = 0; edge < 4; edge++) {
             var x, y, dir;
@@ -76,7 +87,10 @@
         }
     }
     var points = {};
+    var snap_points = {};
+    var snapto = null;
     function makeSelectablePoints(edge, x, y, dir) {
+        snap_points[edge.toString()] = [];
         for (var i = 0; i < $points.x; i++) {
             var id = "point_" + + edge + "_" + i;
             var newpoint = Point(x, y, id);
@@ -91,7 +105,9 @@
                 }
                 y += $space.y;
             }
+            newpoint.edge = edge;
             points[newpoint.id] = newpoint;
+            snap_points[edge].push({ id: newpoint.id, x: newpoint.x, y: newpoint.y });
         }
     }
     function getAnchor(name, id) {
@@ -127,29 +143,49 @@
             return false;
         }
         spoint.name = spoint.belongsTo();
+        spoint.stroke_color;
         spoint.mouseover(function () {
-            var stroke_color = app.rbody.color;
-            app.over = { name: spoint.belongsTo(), anchor: getAnchor(spoint.belongsTo(), id), id: spoint.id, x: (spoint.x), y: spoint.y };
-            if (spoint.belongsTo() !== false) {
-                $("body").css("cursor", "move");
-                console.log("spoint.name: " + app.over.name);
-                console.log("elements[spoint.name]: " + elements[app.over.name]);
-                stroke_color = elements[app.over.name].color;
-            }
-            if (app.dragging){
-                stroke_color = elements[app.dragging.name].color;
-            }
-            spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": stroke_color, "r": $linePoint_size });
+            app.over = bindToPoint(spoint);
+            spoint.show();
             spoint.over = true;
+            // spoint.toFront();
         });
+        spoint.show = function () {
+            //   console.log("Show")
+            spoint.stroke_color = app.rbody.color;
+            if (spoint.belongsTo() !== false) {
+                //     console.log("spoint.name: " + app.over.name);
+                // console.log("elements[spoint.name]: " + elements[app.over.name]);
+                //   console.log("COLOR: " + elements[app.over.name].color);
+                spoint.stroke_color = elements[app.over.name].color;
+            }
+            if (app.dragging) {
+                //console.log("COLOR: " + elements[app.dragging.name].color);
+                spoint.stroke_color = elements[app.dragging.name].color;
+            }
+            spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": spoint.stroke_color, "r": $linePoint_size });
+        }
         spoint.mouseout(function () {
             $("body").css("cursor", "default");
             app.over = null;
-            spoint.attr("opacity", 0);
+            spoint.hidePoint();
         })
+        spoint.hidePoint = function () {
+            spoint.attr("opacity", 0);
+        }
         spoint.mousedown(function () {
+            if ((spoint.edge === 3 && Tip.current === 1 && app.rbody.name === "runner1")
+                || (spoint.edge === 1 && Tip.current === 2 && app.rbody.name === "runner1")
+                || (spoint.edge === 3 && Tip.current === 4 && app.rbody.name === "runner2")
+                || (spoint.edge === 1 && Tip.current === 5 && app.rbody.name === "runner2")
+            ) {
+                nextTip();
+                if (Tip.current === 3) {
+                    addRidgidBody(650, 600, color2, "runner2", "../../img/runner1.jpg");
+                }
+            }
             spoint.selected = true;
-            spoint.attr({ "fill": app.rbody.color, "opacity": 0 });
+            //spoint.attr({ "fill": app.rbody.color, "opacity": 0 });
             if (!elements[app.rbody.name].a1) {
                 //  elements[app.rbody.name].a1 = { id: spoint.id, x: spoint.x, y: spoint.y };
                 elements[app.rbody.name].a1 = spoint;
@@ -160,11 +196,16 @@
                 //  elements[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
                 elements[app.rbody.name].a2 = spoint;
                 elements[app.rbody.name][spoint.id] = spoint;
-            } else if (app.over) {
+            }
+            else if (app.over.name !== false) {
                 app.dragging = app.over;
             }
         })
         return spoint;
+    }
+    function bindToPoint(point) {
+        console.log("bind to point")
+        return { name: point.belongsTo(), anchor: getAnchor(point.belongsTo(), point.id), id: point.id, x: point.x, y: point.y, edge: point.edge };
     }
     function drawGridLine(x1, y1, x2, y2) {
         var pathtxt = "M" + x1 + "," + y1 + ",L" + x2 + "," + y2;
@@ -201,6 +242,9 @@
         curve.attr({ "stroke": color, "stroke-width": "5px" });
         return curve;
     }
+    //   var control = $stage.circle(0, 0, 10).attr({ fill: "green" });
+    // var apoint = { x: 0, y: 0 };
+    //var cpoint = { x: 0, y: 0 };
     function CurvedPath(x1, y1, x2, y2, slope, type) {
         var C;
         if (type === "acc") {
@@ -211,6 +255,15 @@
             C = { x: x1 };
             C.y = y1 - (slope * (x2 - C.x));
         }
+        if (C.x < x1) {
+            positive_cp = false;
+            C.x = x1 + Math.abs(C.x);
+        } else {
+            positive_cp = true;
+        }
+        //   control.transform(["T", C.x, C.y]);
+        //   cpoint = { x: C.x, y: C.y };
+        // apoint = { x: x1, y: y1 };
         return (["M", x1, y1, "Q", C.x, C.y, x2, y2]);
     }
     function AccCurve(x1, y1, x2, y2, slope, color) {
@@ -232,9 +285,9 @@
             + "left: " + (x + image_offset) + "px' src='" + imgsrc + "'>"
             + "</img>");
         var oset = ButtonSet(x, y, color, name);
-        console.log("add body: " + app.rbody.name)
+        //  console.log("add body: " + app.rbody.name)
         elements[name] = { color: color };
-        console.log("elements: " + elements);
+        // console.log("elements: " + elements);
     }
     function ButtonSet(x, y, color, name) {
         var bset = $stage.set();
@@ -245,6 +298,7 @@
         bset.push(olinebtn);
         bset.push(oaccbtn);
         bset.push(odecbtn);
+        bset.name = name;
         return bset;
     }
     function LineButton(x, y, color, type, group) {
@@ -263,7 +317,7 @@
                 btn2 = $stage.path(["M", (x + 10), (y + 40), "l", 30, -30]);
                 break;
             case "acc":
-                btn2 = new AccCurve((x + 10), (y + 40), (x + 40), (y + 10), (5), color);
+                btn2 = new AccCurve((x + 10), (y + 40), (x + 40), (y + 10), 5, color);
                 break;
             case "dec":
                 btn2 = new DecCurve((x + 10), (y + 40), (x + 40), (y + 10), (1 / 5), color);
@@ -289,6 +343,10 @@
             newbtn.state = "default";
         });
         newbtn.click(function () {
+            // console.log("runner: " + newbtn.group.name);
+            if ((Tip.current === 0 && (newbtn.group.name === "runner1")) || (Tip.current === 3 && (newbtn.group.name === "runner2"))) {
+                nextTip();
+            }
             setTimeout(function () {
                 newbtn.scale(1.1, 1.1);
             }, 60);
@@ -296,7 +354,7 @@
             newbtn.selectLine();
         });
         newbtn.selectLine = function () {
-            console.log("selectLine");
+            //       console.log("selectLine");
             app.rbody = newbtn.group.rbody;
             newbtn.group.forEach(function (e) {
                 if (e.id === newbtn.id) {
@@ -325,7 +383,7 @@
                 newpath = ["M", x, y, "L", mx, my];
                 break;
             case "acc":
-                newpath = CurvedPath(x, y, mx, my, 1, "acc");
+                newpath = CurvedPath(x, y, mx, my, acc_slope, "acc");
                 break;
             case "dec":
                 newpath = CurvedPath(x, y, mx, my, (3 / 5), "dec");
@@ -334,22 +392,24 @@
         return newpath;
     }
     $($stage.canvas).mouseup(function (e) {
-        if (app.over && app.dragging) {
-            console.log("drop at " + app.over.x + " " + app.over.y);
-            // elements[app.dragging.name][app.dragging.anchor].x = app.over.x;
-            //elements[app.dragging.name][app.dragging.anchor].y = app.over.y;
-            elements[app.dragging.name][app.dragging.anchor] = points[app.over.id];
-            console.log("update line from " + app.dragging.name);
+        if (app.dragging) {
+            elements[app.dragging.name][app.dragging.anchor] = points[current_point];
         }
         updateLines();
         app.dragging = false;
+        points[current_point].hidePoint();
     });
     function updateLines() {
+        console.log('update lines');
         for (var e in elements) {
-            updateLine(e);
+            console.log(e + " a1 = " + elements[e].a1);
+            if (elements[e].a1) {
+                updateLine(e);
+            }
         }
     }
     $($stage.canvas).mousemove(function (e) {
+        // snapToY(3);
         if (line) {
             mousex = e.pageX;
             mousey = e.pageY;
@@ -381,31 +441,63 @@
     }
     function dragHandler() {
         var tpath, stopAt;
-        $('body').css("cursor", "move");
+        var snap = { x1: 70, x2: 620 };
         var p1x, p1y, p2x, p2y;
-        if (app.over) {
-            if (app.dragging.anchor === "a1") {
-                // console.log("get SP for a1")
-                stopAt = getStopPoint(app.over.x, app.over.y, elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
-            } else if (app.dragging.anchor === "a2") {
-                // console.log("get SP for a2");
-                stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, app.over.x, app.over.y);
-            }
-        } else {
-            if (app.dragging.anchor === "a1") {
-                stopAt = getStopPoint((mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop), elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
-            } else {
-                stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
-            }
-        }
         if (app.dragging.anchor === "a1") {
-            // console.log("drag point 1");
+            stopAt = getStopPoint((snap.x1 - $stage.canvas.parentNode.offsetLeft), snapTest(3), elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
             tpath = getUpdatedLinePath(app.dragging.name, stopAt.x1, stopAt.y1, elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
-        } else {
-            // console.log("drag point 2");
+        } else if (app.dragging.anchor === "a2") {
+            stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (snap.x2 - $stage.canvas.parentNode.offsetLeft), snapTest(1));
             tpath = getUpdatedLinePath(app.dragging.name, elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
         }
         elements[app.dragging.name].line.attr("path", tpath);
+    }
+    var nearest_point;
+    var current_point;
+    dbg.track("nearest_point");
+    dbg.track("current_point");
+
+    function snapTest(edge) {
+        var nearest_point = { id: app.dragging.id };
+        var point;
+        var diff = $space.y;
+        for (var i = 0, ii = snap_points[edge].length; i < ii; i++) {
+            point = snap_points[edge][i].y + $stage.canvas.parentNode.offsetTop;
+            if (Math.abs(mousey - point) < diff) {
+                if (current_point) {
+                    points[current_point].hidePoint();
+                }
+                diff = Math.abs(mousey - point);
+                nearest_point = snap_points[edge][i];
+                current_point = "point_" + edge + "_" + i;
+                //    console.log("app.dragging.id = " + app.dragging.id)
+                //current_point = snap_points[edge][i];
+            }
+        }
+        points[current_point].show();
+        points[current_point].toFront();
+        //app.over = bindToPoint(points[nearest_point.id]);
+        //  console.log("nearest_point.y = " + nearest_point.y);
+        //console.log("adjusted point y = " + (nearest_point.y - $stage.canvas.parentNode.offsetTop));
+        return (nearest_point.y);
+    }
+    function snapToY(edge) {
+        nearest_point = { id: app.dragging.id };
+        var point;
+        var diff = $space.y;
+        //alert("snap to :" + JSON.stringify(snap_points[n]));
+        for (var i = 0, ii = snap_points[edge].length; i < ii; i++) {
+            point = snap_points[edge][i].y + $stage.canvas.parentNode.offsetTop;
+            if (Math.abs(mousey - point) < diff) {
+                diff = Math.abs(mousey - point);
+                //  console.log("mousey: " + mousey + " point: " + point + " diff: " + diff);
+                nearest_point = snap_points[edge][i];
+                edge_point = edge + "_" + i;
+            }
+            app.over = bindToPoint(points[nearest_point.id]);
+        }
+        // console.log("snap to: " + nearest_point.y);
+        return nearest_point.y + $stage.canvas.parentNode.offsetTop;
     }
     function getStopPoint(x1, y1, x2, y2) {
         var xdiff = (x2 - x1);
@@ -418,9 +510,27 @@
             x1: (x1 + offset * Math.cos(angle)), y1: (y1 - offset * Math.sin(angle))
         };
     }
+    function addRectangle(x, y, w, h, fill, stroke) {
+        var r = $stage.rect(x, y, w, h);
+        r.attr({
+            "fill": fill,
+            "stroke": stroke
+        });
+        r.toFront();
+    }
     makeGraphCanvas();
-    addRidgidBody(650, 300, "#fccb04", "runner1", "../../img/runner2.jpg");
-    addRidgidBody(650, 600, "#246b8e", "runner2", "../../img/runner1.jpg");
+    addRidgidBody(650, 300, color1, "runner1", "../../img/runner2.jpg");
+    //  addRidgidBody(650, 600, "#246b8e", "runner2", "../../img/runner1.jpg");
+    //  addRectangle(620, 400, 220, 260, "white", "black");
+    Tip.new($stage);
+    addTip("Select line type\nfor runner 1\n(linear, accelerating\nor decelerating)", 640, 320, "left", color1, "black");
+    addTip("Select a starting\npoint for runner 1\non the y axis", 60, 375, "right", color1, "black");
+    addTip("Select an end\npoint for runner 1\non the right \ny axis", 590, 300, "left", color1, "black");
+    addTip("Select line type\nfor runner 2\n(linear, accelerating\nor decelerating)", 640, 620, "left", color2, "white");
+    addTip("Select a starting\npoint for runner 2\non the y axis", 60, 375, "right", color2, "white");
+    addTip("Select an end\npoint for runner 2\non the right \ny axis", 590, 300, "left", color2, "white");
+    nextTip();
+    snapto = snapToY(3);
 
 </script>
 <style>
@@ -440,5 +550,19 @@
         position: absolute;
         left: 20px;
         top: 30px;
+    }
+</style>
+<style>
+    #textbox {
+        padding: 10px;
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif;
+        border-style: solid;
+    }
+    
+    #textformat {
+        border-style: solid;
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif
     }
 </style>
