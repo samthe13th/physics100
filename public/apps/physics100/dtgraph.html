@@ -27,8 +27,8 @@
             <h3 class="title">Problem</h3>
             <div id="dt-instructions">
                 A track team is practicing for a 4 x 100m relay race. The first runner, <strong>Linda</strong>, is running
-                at a constant speed of 8.6 m/s. The next runner, <strong><span style="color: '" + color1 + "'">Jenny</span></strong>,
-                will be starting from rest at the 80 m mark. She has an acceleration of 1.0 m/s<sup>2</sup> .
+                at a constant speed of 8.6 m/s. The next runner, <strong>Jenny</strong>, will be starting from rest at the
+                80 m mark. She has an acceleration of 1.0 m/s<sup>2</sup> .
                 <br><br> Ideally the two runners meet at the 100m mark to hand over the baton. At this point, <strong>Jenny</strong>                is still accelerating.
             </div>
             <h2>Directions</h2>
@@ -37,7 +37,8 @@
             </div>
         </div>
         <div id="buttons">
-            <button class="custombutton" id="dt-submit" onclick="checkAnswer()">Check Answer</button>
+            <button class="custombutton" id="dt-submit" onclick="checkAnswer()">Check Answer</button><br>
+            <button id="dt-reset" onclick="reset()">Reset</button>
             <!-- <button class="custombutton" id="reset">Reset</button> -->
         </div>
     </div>
@@ -53,9 +54,9 @@
 <script type="text/javascript" src="../../js/tooltip.js"></script>
 <script type="text/javascript" src="../../js/Marker.js"></script>
 <script>
-    $("#fb-close").click(function (event) {
-        feedback.style.display = "none";
-    });
+                                           $("#fb-close").click(function (event) {
+                                               feedback.style.display = "none";
+                                           });
 
 </script>
 <script>
@@ -249,8 +250,8 @@
                 y += $space.y;
             }
         }
-        AxisLabel("x", 20, 160);
-        AxisLabel("t", 350, 460);
+        AxisLabel("x", 10, 310);
+        AxisLabel("t", 350, 620);
     }
     function Tick(x, y, val, axis) {
         var size = 10;
@@ -273,7 +274,7 @@
         })
     }
     function AxisLabel(label, x, y) {
-        $stage.text((x + $stage.canvas.parentNode.offsetLeft), (y + $stage.canvas.parentNode.offsetTop), label).attr({
+        $stage.text((x + $stage.canvas.parentNode.offsetLeft), y, label).attr({
             "font-size": "35px",
             "font-family": "Arial",
             "fill": "black"
@@ -349,6 +350,7 @@
                 }
                 if (Tip.current === 6) {
                     $("#dt-submit").css("visibility", "visible");
+                    $("#dt-reset").css("visibility", "visible");
                 }
             }
             spoint.selected = true;
@@ -451,7 +453,7 @@
             "fill": color
         });
         var oset = ButtonSet(x, (y + 50), color, name);
-        elements[name] = { color: color };
+        elements[name] = { color: color, bset: oset };
     }
     function ButtonSet(x, y, color, name) {
         var bset = $stage.set();
@@ -648,6 +650,17 @@
         });
         r.toFront();
     }
+    function reset() {
+        for (var l in lines) {
+            for (var i = 0; i < elements[l].bset.length; i++) {
+                elements[l].bset[i].attr({
+                    "stroke": "lightgrey"
+                })
+            }
+            lines[l].remove();
+        }
+        elements = {};
+    }
     makeGraphCanvas();
     setTimeout(function () {
         addRidgidBody(580, 130, color1, "Linda", "../../img/runner2.jpg");
@@ -731,6 +744,10 @@
         padding: 20px;
     }
     
+    #dt-reset {
+        visibility: hidden;
+    }
+    
     #left {
         width: 400px;
         height: 650px;
@@ -751,6 +768,11 @@
     
     #dt-submit {
         visibility: hidden;
+    }
+    
+    text {
+        -moz-user-select: none;
+        -webkit-user-select: none
     }
 </style>
 <style>

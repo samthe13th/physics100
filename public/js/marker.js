@@ -75,9 +75,9 @@ var Marker = function () {
                 }
                 for (var a in ans) {
                     ansValues[ans[a]] = a;
-                   console.log("ans[" + a + "] = " + ans[a]);
-                console.log("soln[" + a + "] = " + soln[a]);
-                console.log("equal? " + (soln[a] === ans[a]));
+                //    console.log("ans[" + a + "] = " + ans[a]);
+                // console.log("soln[" + a + "] = " + soln[a]);
+                // console.log("equal? " + (soln[a] === ans[a]));
                     if (soln.hasOwnProperty(a)) {
                         if (soln[a] === ans[a]) {
                             feedback.details[a] = soln[a];
@@ -94,7 +94,7 @@ var Marker = function () {
                 }
                 feedback.percent.total = Math.round((feedback.percent.keys + feedback.percent.kv) / 2);
             }
-           console.log("details: " + JSON.stringify(feedback.details));
+          /// console.log("details: " + JSON.stringify(feedback.details));
             return feedback;
         },
         mark_array_of_objs: function (ans, soln) {
