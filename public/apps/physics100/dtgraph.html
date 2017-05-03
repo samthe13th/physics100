@@ -70,6 +70,7 @@
     var mousex, mousey, line;
     var lines = {};
     var elements = {};
+    var mode = "create";
     var acc_slope = 0.9;
     $graph.attr({
         "stroke": "none"
@@ -89,7 +90,7 @@
         elements: {}
     };
     var positive_cp = false;
-    //var dbg = Debugger();
+    var dbg = Debugger();
     var nearest_point;
     var current_point;
     var answer = [];
@@ -110,7 +111,7 @@
         }
     ]
     // dbg.track("nearest_point");
-    // dbg.track("current_point");
+    dbg.track("current_point");
     // dbg.track("mousex");
     // dbg.track("mousey");
     // //dbg.track("elements.Linda");
@@ -182,7 +183,7 @@
     function getAnswerPosition(e1, e2, point, abs) {
         if (elements[e1] && elements[e2]) {
             if (abs) {
-                console.log("abs " + (100 - (10 * (elements[e1][point].y - 30) / $space.y) + 10));
+                //   console.log("abs " + (100 - (10 * (elements[e1][point].y - 30) / $space.y) + 10));
                 return ((100 - (10 * (elements[e1][point].y - 30) / $space.y) + 10))
             }
             if (elements[e1][point].y > elements[e2][point].y) {
@@ -313,7 +314,6 @@
         spoint.name = spoint.belongsTo();
         spoint.stroke_color;
         spoint.mouseover(function () {
-            console.log("over " + spoint.id);
             app.over = bindToPoint(spoint);
             spoint.show();
             spoint.over = true;
@@ -325,7 +325,7 @@
                 spoint.stroke_color = elements[app.over.name].color;
             } else if (app.dragging) {
                 spoint.stroke_color = elements[app.dragging.name].color;
-            } else if (current_point && elements[current_point].color) {
+            } else if (current_point && elements[current_point]) {
                 spoint.stroke_color = elements[current_point].color;
             }
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": spoint.stroke_color, "r": $linePoint_size });
@@ -349,8 +349,6 @@
                     addRidgidBody(580, 450, color2, "Jenny", "../../img/runner1.jpg");
                 }
                 if (Tip.current === 6) {
-                    $("#dt-submit").css("visibility", "visible");
-                    $("#dt-reset").css("visibility", "visible");
                 }
             }
             spoint.selected = true;
@@ -361,16 +359,35 @@
                 elements[app.rbody.name][spoint.id] = spoint;
                 drawLine(spoint);
             } else if (elements[app.rbody.name].a1 && !elements[app.rbody.name].a2) {
+                if (pointCount() === 3) {
+                    $("#dt-submit").css("visibility", "visible");
+                    $("#dt-reset").css("visibility", "visible");
+                }
                 var tpath = "M" + elements[app.rbody.name].a1.x + "," + elements[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
                 //  elements[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
                 elements[app.rbody.name].a2 = spoint;
                 elements[app.rbody.name][spoint.id] = spoint;
+                console.log("point count: " + pointCount());
             }
             else if (app.over.name !== false) {
                 app.dragging = app.over;
             }
         })
         return spoint;
+    }
+    function pointCount() {
+        var count = 0;
+        if (elements !== {}) {
+            for (var e in elements) {
+                if (elements[e].a1) {
+                    count++
+                };
+                if (elements[e].a2) {
+                    count++
+                }
+            }
+        }
+        return count;
     }
     function bindToPoint(point) {
         return { name: point.belongsTo(), anchor: getAnchor(point.belongsTo(), point.id), id: point.id, x: point.x, y: point.y, edge: point.edge };
@@ -453,7 +470,7 @@
             "fill": color
         });
         var oset = ButtonSet(x, (y + 50), color, name);
-        elements[name] = { color: color, bset: oset };
+        //        elements[name] = { color: color, bset: oset };
     }
     function ButtonSet(x, y, color, name) {
         var bset = $stage.set();
@@ -478,6 +495,7 @@
         var btn2;
         newbtn.id = btnid;
         newbtn.type = type;
+        newbtn.color = color;
         newbtn.group = group;
         newbtn.push(btn1);
         switch (type) {
@@ -511,6 +529,7 @@
             newbtn.state = "default";
         });
         newbtn.click(function () {
+
             if ((Tip.current === 0 && (newbtn.group.name === "Linda")) || (Tip.current === 3 && (newbtn.group.name === "Jenny"))) {
                 nextTip();
             }
@@ -528,7 +547,7 @@
                     newbtn.select = true;
                     app.rbody = newbtn.group.rbody;
                     if (!elements[newbtn.group.rbody.name]) {
-                        elements[newbtn.group.rbody.name] = { linetype: newbtn.type, a1: undefined, a2: undefined };
+                        elements[newbtn.group.rbody.name] = { color: newbtn.color, bset: newbtn.group, linetype: newbtn.type, a1: undefined, a2: undefined };
                     }
                     elements[newbtn.group.rbody.name].linetype = newbtn.type;
                     elements[newbtn.group.rbody.name].linetype = newbtn.type;
@@ -578,7 +597,7 @@
             mousey = e.pageY;
             if (app.dragging) {
                 dragHandler();
-            } else if (elements[app.rbody.name].a1) {
+            } else if (elements[app.rbody.name] && elements[app.rbody.name].a1) {
                 updateLine(app.rbody.name);
             }
         }
@@ -660,6 +679,9 @@
             lines[l].remove();
         }
         elements = {};
+
+        $("#dt-submit").css("visibility", "hidden");
+        $("#dt-reset").css("visibility", "hidden");
     }
     makeGraphCanvas();
     setTimeout(function () {
