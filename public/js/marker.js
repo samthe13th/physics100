@@ -32,7 +32,7 @@ var Marker = function () {
                     if (ans.hasOwnProperty(k)) {
                         if (ans[k][properties[p]] == soln[k][properties[p]]) {
                             feedback.percent[properties[p]] += feedback.worth;
-                        } 
+                        }
                     }
                 }
                 for (var a in ans) {
@@ -50,12 +50,14 @@ var Marker = function () {
             return feedback;
         },
         mark_simple_obj: function (ans, soln) {
+           // console.log("ANSWER: " + JSON.stringify(ans) + " SOLUTION: " + JSON.stringify(soln));
             //Marks simple object. eg { key1: param1, key2: param2 }
             var solnValues = {};
             var ansValues = {};
             feedback.percent.keys = 0;
             feedback.percent.values = 0;
             feedback.percent.kv = 0;
+            feedback.details = {};
             feedback.worth = (1 / (Object.keys(soln).length) * 100);
             if ($.isEmptyObject(ans)) {
                 feedback.percent.total = 0;
@@ -64,7 +66,7 @@ var Marker = function () {
                     solnValues[soln[s]] = s;
                     if (ans.hasOwnProperty(s)) {
                         feedback.percent.keys += feedback.worth;
-                    } 
+                    }
                 }
                 if (feedback.percent.keys <= 0) {
                     feedback.percent.keys = 0;
@@ -73,41 +75,40 @@ var Marker = function () {
                 }
                 for (var a in ans) {
                     ansValues[ans[a]] = a;
+                   console.log("ans[" + a + "] = " + ans[a]);
+                console.log("soln[" + a + "] = " + soln[a]);
+                console.log("equal? " + (soln[a] === ans[a]));
                     if (soln.hasOwnProperty(a)) {
                         if (soln[a] === ans[a]) {
+                            feedback.details[a] = soln[a];
                             feedback.percent.kv += feedback.worth;
-                        } 
+                        } else {
+                            feedback.details[a] = false;
+                        }
                     }
                 }
-                for (var angle in ansValues){
-                    if (!solnValues.hasOwnProperty(angle)){
+                for (var angle in ansValues) {
+                    if (!solnValues.hasOwnProperty(angle)) {
                         feedback.percent.kv -= feedback.worth;
                     }
                 }
-                feedback.percent.total = Math.round((feedback.percent.keys + feedback.percent.kv)/2);
+                feedback.percent.total = Math.round((feedback.percent.keys + feedback.percent.kv) / 2);
             }
+           console.log("details: " + JSON.stringify(feedback.details));
             return feedback;
         },
-        mark_array_of_objs: function (ans, soln, properties) {
+        mark_array_of_objs: function (ans, soln) {
             //Marks an array of simple objects. eg [ { key1: param1, key2: param2 },{...}, ... ]
             percents = [];
             feedback.percent = {};
-            for (var p = 0; p < properties.length; p++) {
-                feedback.percent[properties[p]] = 100;
+            feedback.percent.all = [];
+            feedback.detailslist = [];
+            for (var i = 0, l = ans.length; i < l; i++) {
+                var fb = Marker.mark_simple_obj(ans[i], soln[i])
+                feedback.percent.all.push(fb.percent.total);
+                feedback.detailslist.push(fb.details);
             }
-            for (var i = 0; i < ans.length; i++) {
-                for (var j = 0; j < properties.length; j++) {
-                    if (ans[i][properties[j]] != soln[i][properties[j]]) {
-                        var jWorth = ans.length;
-                        allCorrect = false;
-                        feedback.percent[properties[j]] -= jWorth;
-                    };
-                    if (j == (properties.length - 1)) {
-                        percents.push(feedback.percent[properties[j]]);
-                    }
-                }
-            };
-            feedback.percent.total = avgPercent(percents);
+            feedback.percent.total = avgPercent(feedback.percent.all);
             return feedback;
         },
     }
@@ -126,4 +127,4 @@ var Marker = function () {
         return total;
     }
     return Marker;
-} ();
+}();

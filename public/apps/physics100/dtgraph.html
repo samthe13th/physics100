@@ -1,12 +1,49 @@
-<!DOCTYPE html>
 <html>
 
 <head>
+    <link type="text/css" rel="stylesheet" href="../../stylesheets/less/physics.less">
     <link rel="stylesheet" href="../../stylesheets/css/debugger.css" />
 </head>
 
 <body>
-    <div id="stage"></div>
+    <div id="feedback" class="modal2">
+        <div class="modal-content" id="feedback-content">
+            <div id="feedback-header">
+                <span class="close" id="fb-close">x</span>
+                <h2 id="percent">%</h2>
+            </div>
+            <div id="feedback-body" style="height: 300px">
+                <img src="../assets/freebody/checkboxB.png" />
+            </div>
+            <!--<div class="centered">
+                <button onclick="showAnswer()">Show Answer</button>
+            </div>-->
+            <div id="hint"></div>
+            <div id="debug-output"></div>
+        </div>
+    </div>
+    <div id="left">
+        <div id="question">
+            <h3 class="title">Problem</h3>
+            <div id="dt-instructions">
+                A track team is practicing for a 4 x 100m relay race. The first runner, <strong>Linda</strong>, is running
+                at a constant speed of 8.6 m/s. The next runner, <strong><span style="color: '" + color1 + "'">Jenny</span></strong>,
+                will be starting from rest at the 80 m mark. She has an acceleration of 1.0 m/s<sup>2</sup> .
+                <br><br> Ideally the two runners meet at the 100m mark to hand over the baton. At this point, <strong>Jenny</strong>                is still accelerating.
+            </div>
+            <h2>Directions</h2>
+            <div id="dt-instructions">
+                Plot a rough position vs time graph for both runners.
+            </div>
+        </div>
+        <div id="buttons">
+            <button class="custombutton" id="dt-submit" onclick="checkAnswer()">Check Answer</button>
+            <!-- <button class="custombutton" id="reset">Reset</button> -->
+        </div>
+    </div>
+    <div id="right">
+        <div id="stage"></div>
+    </div>
 </body>
 
 </html>
@@ -14,18 +51,25 @@
 <script type='text/javascript' src="../../js/raphael.min.js"></script>
 <script type='text/javascript' src="../../js/debugger.js"></script>
 <script type="text/javascript" src="../../js/tooltip.js"></script>
+<script type="text/javascript" src="../../js/Marker.js"></script>
+<script>
+    $("#fb-close").click(function (event) {
+        feedback.style.display = "none";
+    });
+
+</script>
 <script>
     "use strict"
-    var $stage = Raphael("stage", 850, 700);
+    var $stage = Raphael("stage", 870, 650);
     var color1 = "#fccb04";
     var color2 = "#246b8e";
-    var $graph_c = { x: 50, y: 100, width: 550, height: 550 };
+    var $graph_c = { x: 90, y: 30, width: 550, height: 550 };
     var $LineButton = { x: 100, y: 100 };
     var $graph = $stage.rect($graph_c.x, $graph_c.y, $graph_c.width, $graph_c.height);
     var mousex, mousey, line;
     var lines = {};
     var elements = {};
-    var acc_slope = 5;
+    var acc_slope = 0.9;
     $graph.attr({
         "stroke": "none"
     })
@@ -35,7 +79,7 @@
     })
     var $anchor_size = 10;
     var $linePoint_size = 10;
-    var $points = { x: 8, y: 8 };
+    var $points = { x: 11, y: 11 };
     var $space = { x: ($graph_c.width / $points.x), y: ($graph_c.height / $points.y) };
     var app = {
         over: null,
@@ -44,18 +88,114 @@
         elements: {}
     };
     var positive_cp = false;
-    var dbg = Debugger();
+    //var dbg = Debugger();
     var nearest_point;
     var current_point;
-    dbg.track("nearest_point");
-    dbg.track("current_point");
+    var answer = [];
+    var solution = [
+        {
+            name: "Linda",
+            linetype: "line",
+            startposition: 0,
+            endposition: 100,
+            slope: "+"
+        },
+        {
+            name: "Jenny",
+            linetype: "acc",
+            startposition: 80,
+            endposition: 100,
+            slope: "+"
+        }
+    ]
+    // dbg.track("nearest_point");
+    // dbg.track("current_point");
     // dbg.track("mousex");
     // dbg.track("mousey");
-    // //dbg.track("elements.runner1");
-    // // dbg.track("elements.runner2");
+    // //dbg.track("elements.Linda");
+    // // dbg.track("elements.Jenny");
     // // dbg.track("app.rbody");
-    dbg.track("app.over");
-    dbg.track("app.dragging");
+    // dbg.track("app.over");
+    // dbg.track("app.dragging");
+    function showAnswer() {
+        $("#feedback-body").html(
+            "<br><div class='centered'><img src='../assets/dtgraph/relayAnswer.jpg' width='400px'></div>"
+        )
+    }
+    function makeAnswer() {
+        answer = [];
+        var relative_positions = {
+            "Linda": {
+                start: getAnswerPosition("Linda", "Jenny", "a1", true),
+                end: getAnswerPosition("Linda", "Jenny", "a2", true)
+            },
+            "Jenny": {
+                start: getAnswerPosition("Jenny", "Linda", "a1", true),
+                end: getAnswerPosition("Jenny", "Linda", "a2", true)
+            }
+        }
+        for (var e in elements) {
+            var e_obj = {
+                name: e,
+                linetype: elements[e].linetype,
+                startposition: relative_positions[e].start,
+                endposition: relative_positions[e].end,
+                slope: "+"
+            }
+            answer.push(e_obj);
+        }
+    }
+    function checkAnswer() {
+        makeAnswer();
+        var fb = Marker.mark_array_of_objs(answer, solution);
+        // if (fb.details.linetype !== solution)
+        //alert("feedback: " + fb.percent.total)
+        $("#percent").text(fb.percent.total + "%");
+        var feedbacktext = "";
+        for (var i = 0, ii = fb.detailslist.length; i < ii; i++) {
+            var elementfeedbacktext = "";
+            elementfeedbacktext += "<div class='feedback-subsection'>"
+                + "<h1 style='text-align: left'>" + fb.detailslist[i]["name"] + "</h1>"
+                + getSubFeedback("Line Type", fb.detailslist[i]["linetype"])
+                + getSubFeedback("Start Position", fb.detailslist[i]["startposition"])
+                + getSubFeedback("End Position", fb.detailslist[i]["endposition"])
+                + getSubFeedback("Slope", fb.detailslist[i]["slope"])
+                + "</div>"
+            feedbacktext += elementfeedbacktext;
+        }
+        $("#feedback-body").html(feedbacktext);
+        $("#feedback").css({
+            display: "block"
+        });
+    }
+    function getSubFeedback(label, f) {
+        var fb = "";
+        if (f === false) {
+            fb += "<img class='mark-icon' src='../assets/wrong.png' width='30px'/>"
+        } else {
+            fb += "<img class='mark-icon' src='../assets/right.png' width='30px'/>"
+        }
+        fb += "<h4>" + label + "</h4>";
+        return fb;
+    }
+    function getAnswerPosition(e1, e2, point, abs) {
+        if (elements[e1] && elements[e2]) {
+            if (abs) {
+                console.log("abs " + (100 - (10 * (elements[e1][point].y - 30) / $space.y) + 10));
+                return ((100 - (10 * (elements[e1][point].y - 30) / $space.y) + 10))
+            }
+            if (elements[e1][point].y > elements[e2][point].y) {
+                return "below";
+            } else if (elements[e1][point].y < elements[e2][point].y) {
+                return "above";
+            }
+            return "equal";
+
+        }
+    }
+    function calcSlope(element) {
+        return "###"
+    }
     function makeGraphCanvas() {
         for (var edge = 0; edge < 4; edge++) {
             var x, y, dir;
@@ -85,27 +225,32 @@
     function makeSelectablePoints(edge, x, y, dir) {
         snap_points[edge.toString()] = [];
         for (var i = 0; i < $points.x; i++) {
-            var id = "point_" + + edge + "_" + i;
-            var newpoint = Point(x, y, id);
+            if (edge === 1 || edge === 3) {
+                var id = "point_" + + edge + "_" + i;
+                var newpoint = Point(x, y, id);
+                newpoint.edge = edge;
+                newpoint.toFront();
+                points[newpoint.id] = newpoint;
+                snap_points[edge].push({ id: newpoint.id, x: newpoint.x, y: newpoint.y });
+            }
             if (dir === "right") {
                 if (edge === 0) {
                     drawGridLine((x + $space.x), y, (x + $space.x), (y + $graph_c.height));
-                    Tick(x,($graph_c.height + y),i,"x-axis");
+                    //  Tick(x, ($graph_c.height + y), i, "x-axis");
+                    // AxisValue(i, x, (y + $graph_c.width + 30));
                 }
                 x += $space.x;
             } else {
                 if (edge === 3) {
                     drawGridLine(x, y, (x + $graph_c.width), y);
                     Tick(x, y, i, "y-axis");
+                    AxisValue((($points.y - 1 - i) * 10), (x - 30), y);
                 }
                 y += $space.y;
             }
-            newpoint.edge = edge;
-            points[newpoint.id] = newpoint;
-            snap_points[edge].push({ id: newpoint.id, x: newpoint.x, y: newpoint.y });
         }
-        AxisLabel("x", 10, 360);
-        AxisLabel("t", 320, 680);
+        AxisLabel("x", 20, 160);
+        AxisLabel("t", 350, 460);
     }
     function Tick(x, y, val, axis) {
         var size = 10;
@@ -120,9 +265,16 @@
             "stroke": "black"
         })
     }
+    function AxisValue(value, x, y) {
+        $stage.text(x, y, value).attr({
+            "font-size": "23px",
+            "font-family": "Arial",
+            "fill": "black"
+        })
+    }
     function AxisLabel(label, x, y) {
-        $stage.text(x, y, label).attr({
-            "font-size": "30px",
+        $stage.text((x + $stage.canvas.parentNode.offsetLeft), (y + $stage.canvas.parentNode.offsetTop), label).attr({
+            "font-size": "35px",
             "font-family": "Arial",
             "fill": "black"
         })
@@ -160,18 +312,19 @@
         spoint.name = spoint.belongsTo();
         spoint.stroke_color;
         spoint.mouseover(function () {
+            console.log("over " + spoint.id);
             app.over = bindToPoint(spoint);
             spoint.show();
             spoint.over = true;
-            // spoint.toFront();
+            spoint.toFront();
         });
         spoint.show = function () {
             spoint.stroke_color = app.rbody.color;
-            if (spoint.belongsTo() !== false && app.over.name) {
+            if (spoint.belongsTo() !== false && app.over) {
                 spoint.stroke_color = elements[app.over.name].color;
             } else if (app.dragging) {
                 spoint.stroke_color = elements[app.dragging.name].color;
-            } else if (current_point) {
+            } else if (current_point && elements[current_point].color) {
                 spoint.stroke_color = elements[current_point].color;
             }
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": spoint.stroke_color, "r": $linePoint_size });
@@ -185,14 +338,17 @@
             spoint.attr("opacity", 0);
         }
         spoint.mousedown(function () {
-            if ((spoint.edge === 3 && Tip.current === 1 && app.rbody.name === "runner1")
-                || (spoint.edge === 1 && Tip.current === 2 && app.rbody.name === "runner1")
-                || (spoint.edge === 3 && Tip.current === 4 && app.rbody.name === "runner2")
-                || (spoint.edge === 1 && Tip.current === 5 && app.rbody.name === "runner2")
+            if ((spoint.edge === 3 && Tip.current === 1 && app.rbody.name === "Linda")
+                || (spoint.edge === 1 && Tip.current === 2 && app.rbody.name === "Linda")
+                || (spoint.edge === 3 && Tip.current === 4 && app.rbody.name === "Jenny")
+                || (spoint.edge === 1 && Tip.current === 5 && app.rbody.name === "Jenny")
             ) {
                 nextTip();
                 if (Tip.current === 3) {
-                    addRidgidBody(650, 600, color2, "runner2", "../../img/runner1.jpg");
+                    addRidgidBody(580, 450, color2, "Jenny", "../../img/runner1.jpg");
+                }
+                if (Tip.current === 6) {
+                    $("#dt-submit").css("visibility", "visible");
                 }
             }
             spoint.selected = true;
@@ -235,6 +391,7 @@
             "stroke": app.rbody.color
         });
         lines[app.rbody.name] = line;
+        line.toBack();
         elements[app.rbody.name].line = line;
     }
     function DecCurve(x1, y1, x2, y2, slope, color) {
@@ -283,12 +440,17 @@
         var image_width = 120;
         var image_offset = 40;
         $("body").append("<img class='rbody' id='name" + "_" + color + "'"
-            + "style='top: " + (y - image_width) + "px; "
+            + "style='top: " + (y - image_width + $graph_c.y) + "px; "
             + "width: " + image_width + "px; "
             + "height: " + image_width + "px; "
-            + "left: " + (x + image_offset) + "px' src='" + imgsrc + "'>"
+            + "left: " + (x + image_offset + $graph_c.x + $stage.canvas.parentNode.offsetLeft) + "px' src='" + imgsrc + "'>"
             + "</img>");
-        var oset = ButtonSet(x, y, color, name);
+        $stage.text((x + 180), (y + 40), name).attr({
+            "font-size": "35px",
+            "font-family": "Arial",
+            "fill": color
+        });
+        var oset = ButtonSet(x, (y + 50), color, name);
         elements[name] = { color: color };
     }
     function ButtonSet(x, y, color, name) {
@@ -304,10 +466,12 @@
         return bset;
     }
     function LineButton(x, y, color, type, group) {
+        var xpos = x + $graph_c.x;
+        var ypos = y + $graph_c.y;
         var btnid = color + "_" + type;
         var offcolor = "lightgrey";
         var newbtn = $stage.set();
-        var btn1 = $stage.rect(x, y, 50, 50)
+        var btn1 = $stage.rect(xpos, ypos, 50, 50)
             .attr({ "fill": "white" });
         var btn2;
         newbtn.id = btnid;
@@ -316,13 +480,13 @@
         newbtn.push(btn1);
         switch (type) {
             case "line":
-                btn2 = $stage.path(["M", (x + 10), (y + 40), "l", 30, -30]);
+                btn2 = $stage.path(["M", (xpos + 10), (ypos + 40), "l", 30, -30]);
                 break;
             case "acc":
-                btn2 = new AccCurve((x + 10), (y + 40), (x + 40), (y + 10), 5, color);
+                btn2 = new AccCurve((xpos + 10), (ypos + 40), (xpos + 40), (ypos + 10), 5, color);
                 break;
             case "dec":
-                btn2 = new DecCurve((x + 10), (y + 40), (x + 40), (y + 10), (1 / 5), color);
+                btn2 = new DecCurve((xpos + 10), (ypos + 40), (xpos + 40), (ypos + 10), (1 / 5), color);
                 break;
         }
         newbtn.push(btn2);
@@ -345,12 +509,12 @@
             newbtn.state = "default";
         });
         newbtn.click(function () {
-            if ((Tip.current === 0 && (newbtn.group.name === "runner1")) || (Tip.current === 3 && (newbtn.group.name === "runner2"))) {
+            if ((Tip.current === 0 && (newbtn.group.name === "Linda")) || (Tip.current === 3 && (newbtn.group.name === "Jenny"))) {
                 nextTip();
             }
             setTimeout(function () {
                 newbtn.scale(1.1, 1.1);
-            }, 60);
+            }, 30);
             newbtn.scale((1 / 1.1), (1 / 1.1));
             newbtn.selectLine();
         });
@@ -438,10 +602,10 @@
         var snap = { x1: 70, x2: 620 };
         var p1x, p1y, p2x, p2y;
         if (app.dragging.anchor === "a1") {
-            stopAt = getStopPoint((snap.x1 - $stage.canvas.parentNode.offsetLeft), snapToY(3), elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
+            stopAt = getStopPoint($graph_c.x, snapToY(3), elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
             tpath = getUpdatedLinePath(app.dragging.name, stopAt.x1, stopAt.y1, elements[app.dragging.name].a2.x, elements[app.dragging.name].a2.y);
         } else if (app.dragging.anchor === "a2") {
-            stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (snap.x2 - $stage.canvas.parentNode.offsetLeft), snapToY(1));
+            stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (($graph_c.x + $graph_c.width)), snapToY(1));
             tpath = getUpdatedLinePath(app.dragging.name, elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
         }
         elements[app.dragging.name].line.attr("path", tpath);
@@ -485,18 +649,42 @@
         r.toFront();
     }
     makeGraphCanvas();
-    addRidgidBody(650, 300, color1, "runner1", "../../img/runner2.jpg");
+    setTimeout(function () {
+        addRidgidBody(580, 130, color1, "Linda", "../../img/runner2.jpg");
+    }, 100);
+    // addRidgidBody(580, 200, color1, "Linda", "../../img/Jenny.jpg");
     Tip.new($stage);
-    addTip("Select line type\nfor runner 1\n(linear, accelerating\nor decelerating)", 640, 320, "left", color1, "black");
-    addTip("Select a starting\npoint for runner 1\non the y axis", 60, 375, "right", color1, "black");
-    addTip("Select an end\npoint for runner 1\non the right \ny axis", 590, 300, "left", color1, "black");
-    addTip("Select line type\nfor runner 2\n(linear, accelerating\nor decelerating)", 640, 620, "left", color2, "white");
-    addTip("Select a starting\npoint for runner 2\non the y axis", 60, 375, "right", color2, "white");
-    addTip("Select an end\npoint for runner 2\non the right \ny axis", 590, 300, "left", color2, "white");
+    addTip("Select line type\nfor Linda\n(linear, accelerating\nor decelerating)", 650, 250, "left", color1, "black");
+    addTip("Select a starting\npoint for Linda\non the y axis", $graph_c.x, 375, "right", color1, "black");
+    addTip("Select an end\npoint for Linda\non the right \ny axis", ($graph_c.x + $graph_c.width), 300, "left", color1, "black");
+    addTip("Select line type\nfor Jenny\n(linear, accelerating\nor decelerating)", 650, 470, "left", color2, "white");
+    addTip("Select a starting\npoint for Jenny\non the y axis", $graph_c.x, 375, "right", color2, "white");
+    addTip("Select an end\npoint for Jenny\non the right \ny axis", ($graph_c.x + $graph_c.width), 300, "left", color2, "white");
     nextTip();
 
 </script>
 <style>
+    .feedback-subsection {
+        border-style: solid;
+        border-width: 1px;
+        border-color: lightgrey;
+        width: 150px;
+        padding: 25px;
+        margin-left: 5px;
+        margin-top: 20px;
+        position: relative;
+        display: block;
+        float: left;
+    }
+    
+    .mark-icon {
+        position: relative;
+        top: -4px;
+        left: -4px;
+        display: block;
+        float: left;
+    }
+    
     .linebtn {
         position: absolute;
         border-style: solid;
@@ -509,10 +697,60 @@
         position: absolute;
     }
     
-    #stage {
+    .title {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 35px;
+        text-align: center;
+        margin: 20px;
+    }
+    
+    #buttons {
+        text-align: center;
+    }
+    
+    .custombutton {
+        background-color: #246b8e;
+        color: white;
+        font-size: 25px;
+        font-family: Arial, Helvetica, sans-serif;
+        border-style: solid;
+        border-color: white;
+        cursor: default;
+        border-width: 1px;
+        padding: 20px;
+    }
+    
+    .custombutton:hover {
+        border-width: 5px;
+        cursor: pointer;
+    }
+    
+    #dt-instructions {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        padding: 20px;
+    }
+    
+    #left {
+        width: 400px;
+        height: 650px;
         position: absolute;
-        left: 20px;
-        top: 30px;
+        left: 0px;
+        top: 0px;
+        border-style: solid;
+        border-color: lightgrey;
+    }
+    
+    #stage {
+        border-style: solid;
+        border-color: lightgrey;
+        position: absolute;
+        left: 404px;
+        top: 0px;
+    }
+    
+    #dt-submit {
+        visibility: hidden;
     }
 </style>
 <style>
