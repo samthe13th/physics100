@@ -33,7 +33,7 @@
             </div>
             <h2>Directions</h2>
             <div id="dt-instructions">
-                Plot a rough position vs time graph for both runners.
+                Plot a rough <strong>position vs time</strong> graph for both runners.
             </div>
         </div>
         <div id="buttons">
@@ -90,7 +90,7 @@
         elements: {}
     };
     var positive_cp = false;
-    var dbg = Debugger();
+    //var dbg = Debugger();
     var nearest_point;
     var current_point;
     var answer = [];
@@ -110,8 +110,24 @@
             slope: "+"
         }
     ]
+    var solutionObj = {
+        "Linda": {
+            name: "Linda",
+            linetype: "line",
+            startposition: 0,
+            endposition: 100,
+            slope: "+"
+        },
+        "Jenny": {
+            name: "Jenny",
+            linetype: "acc",
+            startposition: 80,
+            endposition: 100,
+            slope: "+"
+        }
+    }
     // dbg.track("nearest_point");
-    dbg.track("current_point");
+    // dbg.track("current_point");
     // dbg.track("mousex");
     // dbg.track("mousey");
     // //dbg.track("elements.Linda");
@@ -125,7 +141,7 @@
         )
     }
     function makeAnswer() {
-        answer = [];
+        var ansObj = {};
         var relative_positions = {
             "Linda": {
                 start: getAnswerPosition("Linda", "Jenny", "a1", true),
@@ -144,8 +160,22 @@
                 endposition: relative_positions[e].end,
                 slope: "+"
             }
-            answer.push(e_obj);
+            // answer.push(e_obj);
+            ansObj[e] = e_obj;
         }
+        answer = objToArray(ansObj);
+        solution = objToArray(solutionObj);
+    }
+    function objToArray(o) {
+        var keys = [];
+        var sortedList = [];
+        for (var name in o) {
+            keys.push(name);
+        }
+        for (var j = 0, sortedKeys = keys.sort(), jj = sortedKeys.length; j < jj; j++) {
+            sortedList.push(o[sortedKeys[j]]);
+        }
+        return sortedList;
     }
     function checkAnswer() {
         makeAnswer();
@@ -161,7 +191,7 @@
                 + getSubFeedback("Line Type", fb.detailslist[i]["linetype"])
                 + getSubFeedback("Start Position", fb.detailslist[i]["startposition"])
                 + getSubFeedback("End Position", fb.detailslist[i]["endposition"])
-                + getSubFeedback("Slope", fb.detailslist[i]["slope"])
+                + getSubFeedback("Slope Direction", fb.detailslist[i]["slope"])
                 + "</div>"
             feedbacktext += elementfeedbacktext;
         }
@@ -348,9 +378,7 @@
                 if (Tip.current === 3) {
                     addRidgidBody(580, 450, color2, "Jenny", "../../img/runner1.jpg");
                 }
-                if (Tip.current === 6) {
-                }
-            }
+              }
             spoint.selected = true;
             //spoint.attr({ "fill": app.rbody.color, "opacity": 0 });
             if (!elements[app.rbody.name].a1) {
@@ -529,7 +557,6 @@
             newbtn.state = "default";
         });
         newbtn.click(function () {
-
             if ((Tip.current === 0 && (newbtn.group.name === "Linda")) || (Tip.current === 3 && (newbtn.group.name === "Jenny"))) {
                 nextTip();
             }
