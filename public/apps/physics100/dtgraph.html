@@ -90,7 +90,7 @@
         elements: {}
     };
     var positive_cp = false;
-    var dbg = Debugger();
+   // var dbg = Debugger();
     var nearest_point;
     var current_point;
     var answer = [];
@@ -113,13 +113,14 @@
     }
     // dbg.track("nearest_point");
     // dbg.track("current_point");
-    dbg.track("mousex");
-    dbg.track("mousey");
+    //  dbg.track("mousex");
+    //dbg.track("mousey");
     // //dbg.track("elements.Linda");
     // // dbg.track("elements.Jenny");
     // // dbg.track("app.rbody");
-    dbg.track("app.over");
+    //dbg.track("app.over");
     // dbg.track("app.dragging");
+    //dbg.track("Tip.current");
     function showAnswer() {
         $("#feedback-body").html(
             "<br><div class='centered'><img src='../assets/dtgraph/relayAnswer.jpg' width='400px'></div>"
@@ -332,11 +333,10 @@
         spoint.stroke_color;
         spoint.mouseover(function () {
             if (spoint.selectable) {
-                console.log("over " + spoint.id)
                 app.over = bindToPoint(spoint);
                 spoint.show();
                 spoint.over = true;
-               // spoint.toFront();
+                // spoint.toFront();
             }
         });
         spoint.show = function () {
@@ -351,10 +351,8 @@
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": spoint.stroke_color, "r": $linePoint_size });
         }
         spoint.mouseout(function () {
-            console.log("out");
             $("body").css("cursor", "default");
             app.over = null;
-            console.log("hide point " + spoint.id);
             spoint.hidePoint();
         })
         spoint.hidePoint = function () {
@@ -397,7 +395,7 @@
                     //  elements[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
                     elements[app.rbody.name].a2 = spoint;
                     elements[app.rbody.name][spoint.id] = spoint;
-                    console.log("point count: " + pointCount());
+                    addTip("Drag points to\nadjust positions", elements["Linda"].a1.x, elements["Linda"].a1.y, "right", "#72d077", "white");
                 }
                 else if (app.over.name !== false) {
                     app.dragging = app.over;
@@ -650,11 +648,9 @@
         }
     }
     $($stage.canvas).mousemove(function (e) {
-       // console.log("mouse move " + line);
         if (line) {
             mousex = e.pageX;
             mousey = e.pageY;
-           // console.log("app.dragging? " + app.dragging);
             if (app.dragging) {
                 dragHandler();
             } else if (elements[app.rbody.name] && elements[app.rbody.name].a1) {
@@ -663,17 +659,13 @@
         }
     });
     function updateLine(name) {
-        console.log("update line for " + name)
         var _a1 = elements[name].a1;
         var tpath, stopAt;
-        console.log("!elements[name].a2: " + !elements[name].a2);
         if (!elements[name].a2) {
-            console.log("app.over: " + app.over);
             if (app.over) {
                 stopAt = getStopPoint(_a1.x, _a1.y, app.over.x, app.over.y);
             } else {
                 stopAt = getStopPoint(_a1.x, _a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
-                console.log("stop point: " + stopAt);
             }
             tpath = getUpdatedLinePath(name, _a1.x, _a1.y, stopAt.x, stopAt.y);
         } else {
@@ -693,8 +685,11 @@
             stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (($graph_c.x + $graph_c.width)), snapToY(1));
             tpath = getUpdatedLinePath(app.dragging.name, elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
         }
-        console.log("update path")
         elements[app.dragging.name].line.attr("path", tpath);
+        if (Tip.current === 6){
+            nextTip();
+            nextTip();
+        }
     }
 
     function snapToY(edge) {
@@ -755,6 +750,7 @@
     }, 100);
     // addRidgidBody(580, 200, color1, "Linda", "../../img/Jenny.jpg");
     Tip.new($stage);
+    //    addTip("Select line type\nfor Linda\n(linear, accelerating\nor decelerating)", 100, 0, "left", color1, "black");
     addTip("Select line type\nfor Linda\n(linear, accelerating\nor decelerating)", 650, 250, "left", color1, "black");
     addTip("Select a starting\npoint for Linda\non the y axis", $graph_c.x, 375, "right", color1, "black");
     addTip("Select an end\npoint for Linda\non the right \ny axis", ($graph_c.x + $graph_c.width), 300, "left", color1, "black");

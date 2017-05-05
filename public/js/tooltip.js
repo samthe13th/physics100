@@ -10,7 +10,7 @@ var Tip = {
     }
 }
 function addTip(text, x, y, dir, background, fontcolor) {
-    timeline.push({ text: text, x: (x + paper.canvas.parentNode.offsetLeft), y: y, dir: dir, background: background, fontcolor: fontcolor });
+    timeline.push({ text: text, x: x, y: y, dir: dir, background: background, fontcolor: fontcolor });
 }
 function nextTip() {
     if (Tip.current < (timeline.length - 1)) {
