@@ -90,7 +90,7 @@
         elements: {}
     };
     var positive_cp = false;
-    //var dbg = Debugger();
+    var dbg = Debugger();
     var nearest_point;
     var current_point;
     var answer = [];
@@ -113,12 +113,12 @@
     }
     // dbg.track("nearest_point");
     // dbg.track("current_point");
-    // dbg.track("mousex");
-    // dbg.track("mousey");
+    dbg.track("mousex");
+    dbg.track("mousey");
     // //dbg.track("elements.Linda");
     // // dbg.track("elements.Jenny");
     // // dbg.track("app.rbody");
-    // dbg.track("app.over");
+    dbg.track("app.over");
     // dbg.track("app.dragging");
     function showAnswer() {
         $("#feedback-body").html(
@@ -331,10 +331,11 @@
         spoint.stroke_color;
         spoint.mouseover(function () {
             if (spoint.selectable) {
+                console.log("over " + spoint.id)
                 app.over = bindToPoint(spoint);
                 spoint.show();
                 spoint.over = true;
-                spoint.toFront();
+               // spoint.toFront();
             }
         });
         spoint.show = function () {
@@ -349,8 +350,10 @@
             spoint.attr({ "fill": "fff", "opacity": 1, "stroke-width": "4px", "stroke": spoint.stroke_color, "r": $linePoint_size });
         }
         spoint.mouseout(function () {
+            console.log("out");
             $("body").css("cursor", "default");
             app.over = null;
+            console.log("hide point " + spoint.id);
             spoint.hidePoint();
         })
         spoint.hidePoint = function () {
@@ -380,7 +383,7 @@
                     drawLine(spoint);
                     makeAxisSelectable(1);
                 } else if (elements[app.rbody.name].a1 && !elements[app.rbody.name].a2) {
-                    
+
                     //    makeAxisSelectable(1);
                     if (pointCount() === 3) {
                         $("#dt-submit").css("visibility", "visible");
@@ -646,9 +649,11 @@
         }
     }
     $($stage.canvas).mousemove(function (e) {
+       // console.log("mouse move " + line);
         if (line) {
             mousex = e.pageX;
             mousey = e.pageY;
+           // console.log("app.dragging? " + app.dragging);
             if (app.dragging) {
                 dragHandler();
             } else if (elements[app.rbody.name] && elements[app.rbody.name].a1) {
@@ -657,13 +662,17 @@
         }
     });
     function updateLine(name) {
+        console.log("update line for " + name)
         var _a1 = elements[name].a1;
         var tpath, stopAt;
+        console.log("!elements[name].a2: " + !elements[name].a2);
         if (!elements[name].a2) {
+            console.log("app.over: " + app.over);
             if (app.over) {
                 stopAt = getStopPoint(_a1.x, _a1.y, app.over.x, app.over.y);
             } else {
                 stopAt = getStopPoint(_a1.x, _a1.y, (mousex - $stage.canvas.parentNode.offsetLeft), (mousey - $stage.canvas.parentNode.offsetTop));
+                console.log("stop point: " + stopAt);
             }
             tpath = getUpdatedLinePath(name, _a1.x, _a1.y, stopAt.x, stopAt.y);
         } else {
@@ -683,6 +692,7 @@
             stopAt = getStopPoint(elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, (($graph_c.x + $graph_c.width)), snapToY(1));
             tpath = getUpdatedLinePath(app.dragging.name, elements[app.dragging.name].a1.x, elements[app.dragging.name].a1.y, stopAt.x, stopAt.y);
         }
+        console.log("update path")
         elements[app.dragging.name].line.attr("path", tpath);
     }
 
