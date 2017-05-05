@@ -277,6 +277,7 @@
         } else {
             tick = $stage.path(["M", x, y, "l", 0, size]);
         }
+        tick.toBack();
         tick.attr({
             "stroke-width": "4px",
             "stroke": "black"
