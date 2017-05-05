@@ -94,22 +94,7 @@
     var nearest_point;
     var current_point;
     var answer = [];
-    var solution = [
-        {
-            name: "Linda",
-            linetype: "line",
-            startposition: 0,
-            endposition: 100,
-            slope: "+"
-        },
-        {
-            name: "Jenny",
-            linetype: "acc",
-            startposition: 80,
-            endposition: 100,
-            slope: "+"
-        }
-    ]
+    var solution = [];
     var solutionObj = {
         "Linda": {
             name: "Linda",
@@ -328,6 +313,7 @@
         spoint.id = id;
         spoint.selected = false;
         spoint.over = false;
+        spoint.selectable = false;
         spoint.belongsTo = function () {
             for (var e in elements) {
                 if ((elements[e].a1 !== undefined) && (elements[e].a2 !== undefined)) {
@@ -344,10 +330,12 @@
         spoint.name = spoint.belongsTo();
         spoint.stroke_color;
         spoint.mouseover(function () {
-            app.over = bindToPoint(spoint);
-            spoint.show();
-            spoint.over = true;
-            spoint.toFront();
+            if (spoint.selectable) {
+                app.over = bindToPoint(spoint);
+                spoint.show();
+                spoint.over = true;
+                spoint.toFront();
+            }
         });
         spoint.show = function () {
             spoint.stroke_color = app.rbody.color;
@@ -369,36 +357,47 @@
             spoint.attr("opacity", 0);
         }
         spoint.mousedown(function () {
-            if ((spoint.edge === 3 && Tip.current === 1 && app.rbody.name === "Linda")
-                || (spoint.edge === 1 && Tip.current === 2 && app.rbody.name === "Linda")
-                || (spoint.edge === 3 && Tip.current === 4 && app.rbody.name === "Jenny")
-                || (spoint.edge === 1 && Tip.current === 5 && app.rbody.name === "Jenny")
-            ) {
-                nextTip();
-                if (Tip.current === 3) {
-                    addRidgidBody(580, 450, color2, "Jenny", "../../img/runner1.jpg");
+            if (spoint.selectable) {
+                if ((spoint.edge === 3 && Tip.current === 1 && app.rbody.name === "Linda")
+                    || (spoint.edge === 1 && Tip.current === 2 && app.rbody.name === "Linda")
+                    || (spoint.edge === 3 && Tip.current === 4 && app.rbody.name === "Jenny")
+                    || (spoint.edge === 1 && Tip.current === 5 && app.rbody.name === "Jenny")
+                ) {
+                    nextTip();
+                    if (Tip.current === 3) {
+                        addRidgidBody(580, 450, color2, "Jenny", "../../img/runner1.jpg");
+                    }
+                    if (Tip.current === 2) {
+                        makeAxisSelectable(1);
+                    }
                 }
-              }
-            spoint.selected = true;
-            //spoint.attr({ "fill": app.rbody.color, "opacity": 0 });
-            if (!elements[app.rbody.name].a1) {
-                //  elements[app.rbody.name].a1 = { id: spoint.id, x: spoint.x, y: spoint.y };
-                elements[app.rbody.name].a1 = spoint;
-                elements[app.rbody.name][spoint.id] = spoint;
-                drawLine(spoint);
-            } else if (elements[app.rbody.name].a1 && !elements[app.rbody.name].a2) {
-                if (pointCount() === 3) {
-                    $("#dt-submit").css("visibility", "visible");
-                    $("#dt-reset").css("visibility", "visible");
+                spoint.selected = true;
+                //spoint.attr({ "fill": app.rbody.color, "opacity": 0 });
+                if (!elements[app.rbody.name].a1) {
+                    //  elements[app.rbody.name].a1 = { id: spoint.id, x: spoint.x, y: spoint.y };
+                    elements[app.rbody.name].a1 = spoint;
+                    elements[app.rbody.name][spoint.id] = spoint;
+                    drawLine(spoint);
+                    makeAxisSelectable(1);
+                } else if (elements[app.rbody.name].a1 && !elements[app.rbody.name].a2) {
+                    
+                    //    makeAxisSelectable(1);
+                    if (pointCount() === 3) {
+                        $("#dt-submit").css("visibility", "visible");
+                        $("#dt-reset").css("visibility", "visible");
+                    }
+                    if (pointCount() === 1) {
+                        makeAxisNotSelectable(1);
+                    }
+                    var tpath = "M" + elements[app.rbody.name].a1.x + "," + elements[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
+                    //  elements[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
+                    elements[app.rbody.name].a2 = spoint;
+                    elements[app.rbody.name][spoint.id] = spoint;
+                    console.log("point count: " + pointCount());
                 }
-                var tpath = "M" + elements[app.rbody.name].a1.x + "," + elements[app.rbody.name].a1.y + ",L" + spoint.x + "," + spoint.y;
-                //  elements[app.rbody.name].a2 = { id: spoint.id, x: spoint.x, y: spoint.y };
-                elements[app.rbody.name].a2 = spoint;
-                elements[app.rbody.name][spoint.id] = spoint;
-                console.log("point count: " + pointCount());
-            }
-            else if (app.over.name !== false) {
-                app.dragging = app.over;
+                else if (app.over.name !== false) {
+                    app.dragging = app.over;
+                }
             }
         })
         return spoint;
@@ -416,6 +415,34 @@
             }
         }
         return count;
+    }
+    function makeAxisSelectable(edge) {
+        var pointslist = [];
+        for (var p in points) {
+            if (points[p].edge === edge) {
+                pointslist.push(points[p]);
+            }
+        }
+        makePointsSelectable(pointslist);
+    }
+    function makeAxisNotSelectable(edge) {
+        var pointslist = [];
+        for (var p in points) {
+            if (points[p].edge === edge) {
+                pointslist.push(points[p])
+            }
+        }
+        makePointsNotSelectable(pointslist);
+    }
+    function makePointsSelectable(p) {
+        for (var i = 0; i < p.length; i++) {
+            p[i].selectable = true;
+        }
+    }
+    function makePointsNotSelectable(p) {
+        for (var i = 0; i < p.length; i++) {
+            p[i].selectable = false;
+        }
     }
     function bindToPoint(point) {
         return { name: point.belongsTo(), anchor: getAnchor(point.belongsTo(), point.id), id: point.id, x: point.x, y: point.y, edge: point.edge };
@@ -697,18 +724,19 @@
         r.toFront();
     }
     function reset() {
-        for (var l in lines) {
-            for (var i = 0; i < elements[l].bset.length; i++) {
-                elements[l].bset[i].attr({
-                    "stroke": "lightgrey"
-                })
-            }
-            lines[l].remove();
-        }
-        elements = {};
+        location.reload();
+        // for (var l in lines) {
+        //     for (var i = 0; i < elements[l].bset.length; i++) {
+        //         elements[l].bset[i].attr({
+        //             "stroke": "lightgrey"
+        //         })
+        //     }
+        //     lines[l].remove();
+        // }
+        // elements = {};
 
-        $("#dt-submit").css("visibility", "hidden");
-        $("#dt-reset").css("visibility", "hidden");
+        // $("#dt-submit").css("visibility", "hidden");
+        // $("#dt-reset").css("visibility", "hidden");
     }
     makeGraphCanvas();
     setTimeout(function () {
@@ -723,6 +751,7 @@
     addTip("Select a starting\npoint for Jenny\non the y axis", $graph_c.x, 375, "right", color2, "white");
     addTip("Select an end\npoint for Jenny\non the right \ny axis", ($graph_c.x + $graph_c.width), 300, "left", color2, "white");
     nextTip();
+    makeAxisSelectable(3);
 
 </script>
 <style>
