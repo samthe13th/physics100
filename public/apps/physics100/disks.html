@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <h1>Rotating Disks</h1>
+    <h1>Stacking Rotating Disks</h1>
     <div id="stage"></div>
 </body>
 
@@ -82,7 +82,7 @@
                 "fill": "grey",
                 "stroke": "none"
             })
-        var mark = paper.circle((x + (r - 10)), y, 10)
+        var mark = paper.circle((x + (r - 15)), y, 10)
             .attr({
                 "fill": color,
                 "stroke": "none"
@@ -103,7 +103,7 @@
         disk.slot = null;
         disk.speed = 0;
         disk.update = function () {
-            if (disk.speed !== 0 && !window.dragging) {
+            if (disk.speed !== 0) {
                 disk.angle += disk.speed;
                 if (Math.abs(disk.angle) > 360) {
                     disk.angle = 0;
@@ -186,6 +186,7 @@
         scaled.speed = disk.speed;
         scaled.id = disk.id;
         scaled.slot = slot;
+        scaled.angle = disk.angle;
         scaled.base.attr({
             "stroke": disk.color
         })
@@ -267,7 +268,6 @@
 <style>
     #stage {
         position: relative;
-        left: 100px;
         border-style: solid;
         border-color: lightgrey;
         width: 400px;
