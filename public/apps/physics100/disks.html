@@ -16,7 +16,7 @@
 <script type='text/javascript' src="../../js/raphael.min.js"></script>
 <script type='text/javascript' src="../../js/debugger.js"></script>
 <script>
-   // var dbg = Debugger();
+    // var dbg = Debugger();
     window.dragging = null;
     var openslot = null;
     var overslot = null;
@@ -25,12 +25,22 @@
         radius: 40,
         stack: {
             x: 200,
-            y: 250
+            y: 260
         },
-        speed: {
-            d1: 10,
-            d2: -7,
-            d3: -3
+        d1: {
+            speed: 10,
+            x: 60,
+            y: 60
+        },
+        d2: {
+            speed: -7,
+            x: 150,
+            y: 60
+        },
+        d3: {
+            speed: -3,
+            x: 240,
+            y: 60
         }
     }
     var s1 = Slot(params.stack.x, params.stack.y, 120, 0);
@@ -39,13 +49,21 @@
     var slots = [s1, s2, s3];
     openslot = slots[0];
     var disks = {
-        d1: Disk(100, 60, params.radius, "red"),
-        d2: Disk(200, 60, params.radius, "blue"),
-        d3: Disk(300, 60, params.radius, "green")
+        d1: Disk(params.d1.x, params.d1.y, params.radius, "red"),
+        d2: Disk(params.d2.x, params.d2.y, params.radius, "blue"),
+        d3: Disk(params.d3.x, params.d3.y, params.radius, "green")
     }
     disks.d1.id = "d1";
     disks.d2.id = "d2";
     disks.d3.id = "d3";
+    paper.path(["M0", 120, "l400", 0, "M300", 0, "l0", 120])
+        .attr({
+            "stroke": "lightgrey",
+            "stroke-width": "2px"
+        })
+    paper.circle(params.d1.x, params.d3.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
+    paper.circle(params.d2.x, params.d3.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
+    paper.circle(params.d3.x, params.d3.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
     // dbg.track("slots[0].disk.id");
     // dbg.track("slots[1].disk.id");
     // dbg.track("slots[2].disk.id");
@@ -128,9 +146,9 @@
         })
         return disk
     }
-    disks.d1.speed = params.speed.d1;
-    disks.d2.speed = params.speed.d2;
-    disks.d3.speed = params.speed.d3;
+    disks.d1.speed = params.d1.speed;
+    disks.d2.speed = params.d2.speed;
+    disks.d3.speed = params.d3.speed;
     setInterval(function () {
         for (var d in disks) {
             disks[d].update();
@@ -173,13 +191,14 @@
         setSpeeds();
     }
     $(window).mouseup(function () {
-        console.log("up");
+        if (window.dragging && !window.dragging.slot) {
+            window.dragging.x = params[window.dragging.id].x;
+            window.dragging.y = params[window.dragging.id].y;
+        }
         window.dragging = null;
     });
     function fit(disk, slot) {
         if (disk.slot) {
-            // console.log("disk.slot: " + disk.slot.pos);
-            console.log("slots[disk.slot.pos].disk.id: " + slots[disk.slot.pos].disk.id);
             slots[disk.slot.pos].disk = null;
         }
         var scaled = Disk(slot.rx, slot.ry, slot.r, disk.color);
@@ -193,23 +212,18 @@
         disks[disk.id] = scaled;
         disk.remove();
         window.dragging = scaled;
-        console.log("slot.disk: " + slot.disk);
         slot.disk = disk;
         reposition(slot.pos);
         setSpeeds();
     }
     function setSpeeds() {
         var netSpeed = 0;
-        disks.d1.speed = params.speed.d1;
-        disks.d2.speed = params.speed.d2;
-        disks.d3.speed = params.speed.d3;
-        console.log("set speeds: d1: " + disks.d1.speed);
+        disks.d1.speed = params.d1.speed;
+        disks.d2.speed = params.d2.speed;
+        disks.d3.speed = params.d3.speed;
         for (var s in slots) {
             if (slots[s].disk) {
-                console.log("netSpeed0: " + netSpeed);
-                netSpeed += params.speed[slots[s].disk.id];
-                console.log("slot: " + slots[s].disk.id);
-                console.log("netSpeed1: " + netSpeed);
+                netSpeed += params[slots[s].disk.id].speed;
             }
         }
         for (var s in slots) {
@@ -217,13 +231,12 @@
                 disks[slots[s].disk.id].speed = netSpeed
             }
         }
-        console.log("netSpeed2: " + netSpeed);
     }
     function setSpeeds0() {
         var netSpeed = 0;
-        disks.d1.speed = params.speed.d1;
-        disks.d2.speed = params.speed.d2;
-        disks.d3.speed = params.speed.d3;
+        disks.d1.speed = params.d1.speed;
+        disks.d2.speed = params.d2.speed;
+        disks.d3.speed = params.d3.speed;
         if (slots[0].disk) {
             netSpeed = disks[slots[0].disk.id].speed;
         }
@@ -234,31 +247,27 @@
         if (slots[2].disk) {
             disks[slots[2].disk.id].speed = disks[slots[2].disk.id].speed + netSpeed;
         }
-        console.log("NET SPEED: " + netSpeed);
     }
     function reposition(pos) {
         for (var i = 0, ii = slots.length; i < ii; i++) {
             if (i > pos) {
-                // console.log("bring slot " + i + " to front")
                 slots[i].toFront();
                 if (slots[i].disk) {
                     disks[slots[i].disk.id].toFront();
-                    //  console.log("slot " + i + " has a disk on it")
-                }
+                 }
             }
         }
     }
     function pop(mx, my, disk) {
-        console.log("pop");
         var revert = Disk(mx, my, params.radius, disk.color);
         revert.transform([("T" + mx, my)]);
         revert.speed = disk.speed;
         revert.id = disk.id;
-        revert.speed = params.speed[revert.id];
+        revert.speed = params[revert.id].speed;
+        revert.angle = disk.angle;
         openslot = disk.slot;
         disks[disk.id] = revert;
         disk.remove();
-        // console.log("disk.slot.pos: " + disk.slot.pos);
         slots[disk.slot.pos].disk = null;
         window.dragging = revert;
         setSpeeds();
