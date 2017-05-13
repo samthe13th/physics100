@@ -1,0 +1,276 @@
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="../../stylesheets/css/debugger.css" />
+</head>
+
+<body>
+    <h1>Rotating Disks</h1>
+    <div id="stage"></div>
+</body>
+
+</html>
+<script src="../../js/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type='text/javascript' src="../../js/raphael.min.js"></script>
+<script type='text/javascript' src="../../js/debugger.js"></script>
+<script>
+   // var dbg = Debugger();
+    window.dragging = null;
+    var openslot = null;
+    var overslot = null;
+    var paper = Raphael("stage", 400, 400);
+    var params = {
+        radius: 40,
+        stack: {
+            x: 200,
+            y: 250
+        },
+        speed: {
+            d1: 10,
+            d2: -7,
+            d3: -3
+        }
+    }
+    var s1 = Slot(params.stack.x, params.stack.y, 120, 0);
+    var s2 = Slot(params.stack.x, params.stack.y, 80, 1);
+    var s3 = Slot(params.stack.x, params.stack.y, 40, 2);
+    var slots = [s1, s2, s3];
+    openslot = slots[0];
+    var disks = {
+        d1: Disk(100, 60, params.radius, "red"),
+        d2: Disk(200, 60, params.radius, "blue"),
+        d3: Disk(300, 60, params.radius, "green")
+    }
+    disks.d1.id = "d1";
+    disks.d2.id = "d2";
+    disks.d3.id = "d3";
+    // dbg.track("slots[0].disk.id");
+    // dbg.track("slots[1].disk.id");
+    // dbg.track("slots[2].disk.id");
+    // dbg.track("disks.d1.slot.pos");
+    // dbg.track("disks.d2.slot.pos");
+    // dbg.track("disks.d3.slot.pos");
+    // dbg.track("disks.d1.speed");
+    // dbg.track("disks.d2.speed");
+    // dbg.track("disks.d3.speed");
+    function Slot(x, y, r, pos) {
+        var slot = paper.circle(x, y, r)
+            .attr({
+                "stroke": "lightgrey",
+                "fill": "white",
+                "stroke-width": "4px"
+            })
+        slot.rx = x;
+        slot.ry = y;
+        slot.r = r;
+        slot.pos = pos;
+        slot.disk = null;
+        slot.filled = null;
+        return slot;
+    }
+    function Disk(x, y, r, color) {
+        var base = paper.circle(x, y, r)
+            .attr({
+                "fill": "white",
+                "stroke": "grey",
+                "stroke-width": "4px"
+            })
+        var axis = paper.circle(x, y, 5)
+            .attr({
+                "fill": "grey",
+                "stroke": "none"
+            })
+        var mark = paper.circle((x + (r - 10)), y, 10)
+            .attr({
+                "fill": color,
+                "stroke": "none"
+            })
+        var disk = paper.set();
+        disk.color = color;
+        disk.base = base;
+        disk.axis = axis;
+        disk.mark = mark;
+        disk.push(base);
+        disk.push(axis);
+        disk.push(mark);
+        disk.angle = 0;
+        disk.ox = x;
+        disk.oy = y;
+        disk.x = x;
+        disk.y = y;
+        disk.slot = null;
+        disk.speed = 0;
+        disk.update = function () {
+            if (disk.speed !== 0 && !window.dragging) {
+                disk.angle += disk.speed;
+                if (Math.abs(disk.angle) > 360) {
+                    disk.angle = 0;
+                }
+            }
+            disk.transform([("T" + (disk.x - disk.ox)), (disk.y - disk.oy), ("R" + disk.angle), disk.x, disk.y]);
+        }
+        disk.mouseover(function () {
+            $("body").css("cursor", "pointer");
+            disk.base.attr("stroke", color);
+        })
+        disk.mouseout(function () {
+            $("body").css("cursor", "default");
+            disk.base.attr("stroke", "grey");
+        })
+        disk.mousedown(function () {
+            window.dragging = disk;
+            disk.update();
+            if (!disk.slot) {
+                disk.toFront();
+            }
+        })
+        return disk
+    }
+    disks.d1.speed = params.speed.d1;
+    disks.d2.speed = params.speed.d2;
+    disks.d3.speed = params.speed.d3;
+    setInterval(function () {
+        for (var d in disks) {
+            disks[d].update();
+        }
+    }, 20);
+    $("#stage").mousemove(function (e) {
+        if (window.dragging) {
+            var newx = (e.pageX - paper.canvas.parentNode.offsetLeft);
+            var newy = (e.pageY - paper.canvas.parentNode.offsetTop);
+            checkCollisions(newx, newy);
+            if (!window.dragging.slot) {
+                window.dragging.x = newx;
+                window.dragging.y = newy;
+            }
+        }
+    })
+    function checkCollisions(mx, my) {
+        if (openslot) {
+            var dx = Math.abs(params.stack.x - mx);
+            var dy = Math.abs(params.stack.y - my);
+            var dist = Math.sqrt((Math.pow(dx, 2) + (Math.pow(dy, 2))))
+            if (dist < slots[2].r) {
+                overslot = slots[2];
+            } else if (dist >= slots[2].r && dist < slots[1].r) {
+                overslot = slots[1]
+            } else if (dist >= slots[1].r && dist < slots[0].r) {
+                overslot = slots[0]
+            } else {
+                overslot = null
+            }
+            if (overslot) {
+                if (!overslot.disk) {
+                    fit(window.dragging, overslot);
+                }
+            } else if (window.dragging.slot) {
+                pop(mx, my, window.dragging);
+                window.dragging.slot = null;
+            }
+        }
+        setSpeeds();
+    }
+    $(window).mouseup(function () {
+        console.log("up");
+        window.dragging = null;
+    });
+    function fit(disk, slot) {
+        if (disk.slot) {
+            // console.log("disk.slot: " + disk.slot.pos);
+            console.log("slots[disk.slot.pos].disk.id: " + slots[disk.slot.pos].disk.id);
+            slots[disk.slot.pos].disk = null;
+        }
+        var scaled = Disk(slot.rx, slot.ry, slot.r, disk.color);
+        scaled.speed = disk.speed;
+        scaled.id = disk.id;
+        scaled.slot = slot;
+        scaled.base.attr({
+            "stroke": disk.color
+        })
+        disks[disk.id] = scaled;
+        disk.remove();
+        window.dragging = scaled;
+        console.log("slot.disk: " + slot.disk);
+        slot.disk = disk;
+        reposition(slot.pos);
+        setSpeeds();
+    }
+    function setSpeeds() {
+        var netSpeed = 0;
+        disks.d1.speed = params.speed.d1;
+        disks.d2.speed = params.speed.d2;
+        disks.d3.speed = params.speed.d3;
+        console.log("set speeds: d1: " + disks.d1.speed);
+        for (var s in slots) {
+            if (slots[s].disk) {
+                console.log("netSpeed0: " + netSpeed);
+                netSpeed += params.speed[slots[s].disk.id];
+                console.log("slot: " + slots[s].disk.id);
+                console.log("netSpeed1: " + netSpeed);
+            }
+        }
+        for (var s in slots) {
+            if (slots[s].disk) {
+                disks[slots[s].disk.id].speed = netSpeed
+            }
+        }
+        console.log("netSpeed2: " + netSpeed);
+    }
+    function setSpeeds0() {
+        var netSpeed = 0;
+        disks.d1.speed = params.speed.d1;
+        disks.d2.speed = params.speed.d2;
+        disks.d3.speed = params.speed.d3;
+        if (slots[0].disk) {
+            netSpeed = disks[slots[0].disk.id].speed;
+        }
+        if (slots[1].disk) {
+            disks[slots[1].disk.id].speed = disks[slots[1].disk.id].speed + netSpeed;
+            netSpeed = disks[slots[1].disk.id].speed;
+        }
+        if (slots[2].disk) {
+            disks[slots[2].disk.id].speed = disks[slots[2].disk.id].speed + netSpeed;
+        }
+        console.log("NET SPEED: " + netSpeed);
+    }
+    function reposition(pos) {
+        for (var i = 0, ii = slots.length; i < ii; i++) {
+            if (i > pos) {
+                // console.log("bring slot " + i + " to front")
+                slots[i].toFront();
+                if (slots[i].disk) {
+                    disks[slots[i].disk.id].toFront();
+                    //  console.log("slot " + i + " has a disk on it")
+                }
+            }
+        }
+    }
+    function pop(mx, my, disk) {
+        console.log("pop");
+        var revert = Disk(mx, my, params.radius, disk.color);
+        revert.transform([("T" + mx, my)]);
+        revert.speed = disk.speed;
+        revert.id = disk.id;
+        revert.speed = params.speed[revert.id];
+        openslot = disk.slot;
+        disks[disk.id] = revert;
+        disk.remove();
+        // console.log("disk.slot.pos: " + disk.slot.pos);
+        slots[disk.slot.pos].disk = null;
+        window.dragging = revert;
+        setSpeeds();
+    }
+
+</script>
+<style>
+    #stage {
+        position: relative;
+        left: 100px;
+        border-style: solid;
+        border-color: lightgrey;
+        width: 400px;
+        height: 400px;
+    }
+</style>
