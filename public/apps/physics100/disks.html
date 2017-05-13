@@ -24,23 +24,23 @@
     var params = {
         radius: 40,
         stack: {
-            x: 200,
+            x: 250,
             y: 260
         },
         d1: {
             speed: 10,
             x: 60,
-            y: 60
+            y: 160
         },
         d2: {
             speed: -7,
-            x: 150,
-            y: 60
+            x: 60,
+            y: 250
         },
         d3: {
             speed: -3,
-            x: 240,
-            y: 60
+            x: 60,
+            y: 340
         }
     }
     var s1 = Slot(params.stack.x, params.stack.y, 120, 0);
@@ -56,13 +56,13 @@
     disks.d1.id = "d1";
     disks.d2.id = "d2";
     disks.d3.id = "d3";
-    paper.path(["M0", 120, "l400", 0, "M300", 0, "l0", 120])
+    paper.path(["M0", 100, "l400", 0])
         .attr({
             "stroke": "lightgrey",
             "stroke-width": "2px"
-        })
-    paper.circle(params.d1.x, params.d3.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
-    paper.circle(params.d2.x, params.d3.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
+        });
+    paper.circle(params.d1.x, params.d1.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
+    paper.circle(params.d2.x, params.d2.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
     paper.circle(params.d3.x, params.d3.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
     // dbg.track("slots[0].disk.id");
     // dbg.track("slots[1].disk.id");
