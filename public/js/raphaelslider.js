@@ -36,14 +36,18 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
     rtnSlider.labelGroup = stage.set();
     rtnSlider.labelBack = stage.path(["M", (rtnSlider.sliderX - 24), (rtnSlider.sliderY - 36), "l", 60, 0, "l", 0, 20, "l", -20, 0, "l", -10, 10, "l", -10, -10, "l", -20, 0, "Z"]).attr({ "stroke": "none", "fill": "white", "opacity": "0.8" });
     rtnSlider.label = stage.text(rtnSlider.sliderX + 4, (rtnSlider.sliderY - 26), "").attr({ "font-size": 16, "fill": "black" });
+    rtnSlider.showLabel = false;
     rtnSlider.labelGroup
         .push(rtnSlider.label)
         .push(rtnSlider.labelBack)
         .hide()
+    rtnSlider.div = stage.path(["M", (x + (l / 2)), (y), "l0", 10]).attr({"stroke":"white", "stroke-width": "2px"}).hide();
     rtnSlider.mouseover(function () {
         //console.log("move slider");
         // rtnSlider.labelGroup.show();
-        rtnSlider.labelGroup.show().animate({ opacity: 1 }, 300);
+        if (rtnSlider.showLabel) {
+            rtnSlider.labelGroup.show().animate({ opacity: 1 }, 300);
+        }
         $("body").css({ "cursor": "pointer" });
     });
     rtnSlider.mousedown(function () {
@@ -60,6 +64,9 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
             $("body").css({ "cursor": "default" });
         }
     })
+    rtnSlider.showDiv = function(){
+        rtnSlider.div.show();
+    }
     rtnSlider.setColor = function (c) {
         bar.attr({ fill: c });
     }
@@ -67,6 +74,7 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
         rtnSlider.step = s;
     }
     rtnSlider.setLabel = function (l) {
+        rtnSlider.showLabel = true;
         // console.log("slider point: " + rtnSlider.sliderPoint)
         rtnSlider.units = l;
         rtnSlider.label.attr({ "text": (rtnSlider.sliderPoint / rtnSlider.div) + l, "font-size": 12 });

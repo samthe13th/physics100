@@ -6,41 +6,43 @@
 </head>
 
 <body>
-    <h1>Stacking Rotating Disks</h1>
-    <div id="stage"></div>
 </body>
 
 </html>
 <script src="../../js/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
 <script type='text/javascript' src="../../js/raphael.min.js"></script>
 <script type='text/javascript' src="../../js/debugger.js"></script>
+<script type='text/javascript' src="../../js/raphaelslider.js"></script>
 <script>
     // var dbg = Debugger();
-    window.dragging = null;
+    window.$dragging = null;
     var openslot = null;
     var overslot = null;
-    var paper = Raphael("stage", 400, 400);
+    var paper = Raphael(0, 0, 400, 400);
     var params = {
         radius: 40,
         stack: {
             x: 250,
-            y: 260
-        },
-        d1: {
-            speed: 10,
-            x: 60,
-            y: 160
-        },
-        d2: {
-            speed: -7,
-            x: 60,
             y: 250
         },
-        d3: {
-            speed: -3,
+        d1: {
+            speed: 5,
             x: 60,
-            y: 340
+            y: 160,
+            color: "#ff7244"
+        },
+        d2: {
+            speed: -5,
+            x: 60,
+            y: 250,
+            color: "#3397c9"
+        },
+        d3: {
+            speed: -7,
+            x: 60,
+            y: 340,
+            color: "#ffca00"
         }
     }
     var s1 = Slot(params.stack.x, params.stack.y, 120, 0);
@@ -49,9 +51,9 @@
     var slots = [s1, s2, s3];
     openslot = slots[0];
     var disks = {
-        d1: Disk(params.d1.x, params.d1.y, params.radius, "#ff7244"),
-        d2: Disk(params.d2.x, params.d2.y, params.radius, "#3397c9"),
-        d3: Disk(params.d3.x, params.d3.y, params.radius, "#ffca00")
+        d1: Disk(params.d1.x, params.d1.y, params.radius, params.d1.color),
+        d2: Disk(params.d2.x, params.d2.y, params.radius, params.d2.color),
+        d3: Disk(params.d3.x, params.d3.y, params.radius, params.d3.color)
     }
     disks.d1.id = "d1";
     disks.d2.id = "d2";
@@ -61,9 +63,9 @@
             "stroke": "lightgrey",
             "stroke-width": "2px"
         });
-    paper.circle(params.d1.x, params.d1.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
-    paper.circle(params.d2.x, params.d2.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
-    paper.circle(params.d3.x, params.d3.y, params.radius).attr({ "stroke": "lightgrey" }).toBack();
+    paper.circle(params.d1.x, params.d1.y, params.radius).attr({ "stroke": disks.d1.color }).toBack();
+    paper.circle(params.d2.x, params.d2.y, params.radius).attr({ "stroke": disks.d2.color }).toBack();
+    paper.circle(params.d3.x, params.d3.y, params.radius).attr({ "stroke": disks.d3.color }).toBack();
     // dbg.track("slots[0].disk.id");
     // dbg.track("slots[1].disk.id");
     // dbg.track("slots[2].disk.id");
@@ -138,7 +140,7 @@
             disk.base.attr("stroke", "grey");
         })
         disk.mousedown(function () {
-            window.dragging = disk;
+            window.$dragging = disk;
             disk.update();
             if (!disk.slot) {
                 disk.toFront();
@@ -154,14 +156,14 @@
             disks[d].update();
         }
     }, 20);
-    $("#stage").mousemove(function (e) {
-        if (window.dragging) {
+    $("body").mousemove(function (e) {
+        if (window.$dragging) {
             var newx = (e.pageX - paper.canvas.parentNode.offsetLeft);
             var newy = (e.pageY - paper.canvas.parentNode.offsetTop);
             checkCollisions(newx, newy);
-            if (!window.dragging.slot) {
-                window.dragging.x = newx;
-                window.dragging.y = newy;
+            if (!window.$dragging.slot) {
+                window.$dragging.x = newx;
+                window.$dragging.y = newy;
             }
         }
     })
@@ -181,21 +183,21 @@
             }
             if (overslot) {
                 if (!overslot.disk) {
-                    fit(window.dragging, overslot);
+                    fit(window.$dragging, overslot);
                 }
-            } else if (window.dragging.slot) {
-                pop(mx, my, window.dragging);
-                window.dragging.slot = null;
+            } else if (window.$dragging.slot) {
+                pop(mx, my, window.$dragging);
+                window.$dragging.slot = null;
             }
         }
         setSpeeds();
     }
     $(window).mouseup(function () {
-        if (window.dragging && !window.dragging.slot) {
-            window.dragging.x = params[window.dragging.id].x;
-            window.dragging.y = params[window.dragging.id].y;
+        if (window.$dragging && !window.$dragging.slot) {
+            window.$dragging.x = params[window.$dragging.id].x;
+            window.$dragging.y = params[window.$dragging.id].y;
         }
-        window.dragging = null;
+        window.$dragging = null;
     });
     function fit(disk, slot) {
         if (disk.slot) {
@@ -211,7 +213,7 @@
         })
         disks[disk.id] = scaled;
         disk.remove();
-        window.dragging = scaled;
+        window.$dragging = scaled;
         slot.disk = disk;
         reposition(slot.pos);
         setSpeeds();
@@ -232,29 +234,13 @@
             }
         }
     }
-    function setSpeeds0() {
-        var netSpeed = 0;
-        disks.d1.speed = params.d1.speed;
-        disks.d2.speed = params.d2.speed;
-        disks.d3.speed = params.d3.speed;
-        if (slots[0].disk) {
-            netSpeed = disks[slots[0].disk.id].speed;
-        }
-        if (slots[1].disk) {
-            disks[slots[1].disk.id].speed = disks[slots[1].disk.id].speed + netSpeed;
-            netSpeed = disks[slots[1].disk.id].speed;
-        }
-        if (slots[2].disk) {
-            disks[slots[2].disk.id].speed = disks[slots[2].disk.id].speed + netSpeed;
-        }
-    }
     function reposition(pos) {
         for (var i = 0, ii = slots.length; i < ii; i++) {
             if (i > pos) {
                 slots[i].toFront();
                 if (slots[i].disk) {
                     disks[slots[i].disk.id].toFront();
-                 }
+                }
             }
         }
     }
@@ -269,8 +255,52 @@
         disks[disk.id] = revert;
         disk.remove();
         slots[disk.slot.pos].disk = null;
-        window.dragging = revert;
+        window.$dragging = revert;
         setSpeeds();
+    }
+    var sliderDrag = function () {
+        var L = this.sliderPoint - 10;
+        this.txt.attr("text", L);
+        disks[this.id].speed = L;
+        params[this.id].speed = L;
+        setSpeeds();
+        console.log("L: " + L);
+    }
+    var slider1 = makeSlider(20, 15, "1");
+    var slider2 = makeSlider(20, 45, "2");
+    var slider3 = makeSlider(20, 75, "3");
+    function makeSlider(x, y, id) {
+        var s = Slider(paper, x, y, 240, 20, sliderDrag, function () { });
+        s.id = "d" + id;
+        s.setColor(params[s.id].color);
+        s.setSlider(params[s.id].speed + 10);
+        s.showDiv();
+        paper.text((x + 270), (y + 5), "L =").attr({
+            "font": "Arial",
+            "font-size": "20px",
+            "fill": params[s.id].color
+        })
+        s.txt = paper.text((x + 300), (y + 5), (params[s.id].speed)).attr({
+            "font": "Arial",
+            "font-size": "20px",
+            "fill": "grey"
+        });
+        s.units = paper.text((x + 338), (y + 5), "kg m /s").attr({
+            "font": "Arial",
+            "font-size": "14px",
+            "fill": "grey"
+        });
+        s.sq = paper.text((x + 348), y, "2").attr({
+            "font": "Arial",
+            "font-size": "10px",
+            "fill": "grey"
+        })
+        paper.text((x + 270), (y + 14), id).attr({
+            "font": "Arial",
+            "font-size": "12px",
+            "fill": params[s.id].color
+        })
+        return s;
     }
 
 </script>
@@ -278,6 +308,7 @@
     #stage {
         position: relative;
         border-style: solid;
+        left: 100px;
         border-color: lightgrey;
         width: 400px;
         height: 400px;
