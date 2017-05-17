@@ -1,5 +1,5 @@
 
-(function () {
+// (function () {
     "use strict";
     var angle, ground, newdx, newdy, sandbox, positions, parameters, stage, slider;
     var startx, starty, height, current_height, current_dx, v, vx, vy, a;
@@ -302,6 +302,7 @@
             ball2.y;
             var drag_angle = function () {
                 da = angle_slider.sliderPoint - arrow.angle;
+                console.log("SP: " + this.sliderPoint);
             };
             var rot_arrow = function () {
                 if (arrow.angle !== angle_slider.sliderPoint) {
@@ -322,8 +323,8 @@
             angle_slider = Slider(paramsScreen, 90, param_offset_y + 40, 300, 180, drag_angle, function () { });
             eventList = [];
             eventList.push(rot_arrow);
-            angle_slider.setLabel("degs");
             angle_slider.setSlider(parameters.angle);
+            angle_slider.setLabel("degs");
             angle_slider.setColor("rgba(255, 255, 255, 0.5)");
             arrow.rotate(parameters.angle, cx, (csize / 2));
             arrow.angle = parameters.angle;
@@ -390,4 +391,4 @@
                 })
         }, 10);
     }
-})();
+// })();

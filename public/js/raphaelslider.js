@@ -41,7 +41,7 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
         .push(rtnSlider.label)
         .push(rtnSlider.labelBack)
         .hide()
-    rtnSlider.div = stage.path(["M", (x + (l / 2)), (y), "l0", 10]).attr({"stroke":"white", "stroke-width": "2px"}).hide();
+    rtnSlider.bisec = stage.path(["M", (x + (l / 2)), (y), "l0", 10]).attr({"stroke":"white", "stroke-width": "2px"}).hide();
     rtnSlider.mouseover(function () {
         //console.log("move slider");
         // rtnSlider.labelGroup.show();
@@ -65,7 +65,7 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
         }
     })
     rtnSlider.showDiv = function(){
-        rtnSlider.div.show();
+        rtnSlider.bisec.show();
     }
     rtnSlider.setColor = function (c) {
         bar.attr({ fill: c });
@@ -77,7 +77,7 @@ window.Slider = function (stage, x, y, l, m, drag, up) {
         rtnSlider.showLabel = true;
         // console.log("slider point: " + rtnSlider.sliderPoint)
         rtnSlider.units = l;
-        rtnSlider.label.attr({ "text": (rtnSlider.sliderPoint / rtnSlider.div) + l, "font-size": 12 });
+        rtnSlider.label.attr({ "text": (rtnSlider.sliderPoint / rtnSlider.div) + " " + l, "font-size": 12 });
         // rtnSlider.label.hide();
     }
     rtnSlider.hideSlider = function () {
