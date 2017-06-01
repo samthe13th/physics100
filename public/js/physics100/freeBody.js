@@ -962,7 +962,7 @@ function update() {
     }
     rotateHandle();
     setDegs();
-    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
+    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xffca00);
 }
 function setAlpha(rotH) {
     var alphaVal = 1 - (rotH.proximity / (fb.rotHyp / 2));
@@ -1075,7 +1075,7 @@ function handleUp() {
     }
     fb.moveArrow = null;
     removeUnusedTypes();
-    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
+    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xffca00);
     if (tutorial) {
         tutorialMark();
     }
@@ -1189,7 +1189,7 @@ function rotHandleUp(h) {
     state = null;
     rotHandlesGroup.handleSelected = false;
     fb.currentRotHandle = "";
-    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xFF9900);
+    drawResultant(fb.rArrow, calcNetForce().a, calcNetForce().mag, 0xffca00);
     if (tutorial) {
         tutorialMark();
     }
