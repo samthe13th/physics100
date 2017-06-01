@@ -19,29 +19,29 @@
     window.$dragging = null;
     var openslot = null;
     var overslot = null;
-    var paper = Raphael(0, 0, 400, 400);
+    var paper = Raphael(0, 0, 400, 500);
     var params = {
         radius: 40,
         stack: {
             x: 250,
-            y: 250
+            y: 300
         },
         d1: {
             speed: 5,
             x: 60,
-            y: 160,
+            y: 210,
             color: "#ff7244"
         },
         d2: {
             speed: -5,
             x: 60,
-            y: 250,
+            y: 300,
             color: "#3397c9"
         },
         d3: {
             speed: -7,
             x: 60,
-            y: 340,
+            y: 390,
             color: "#ffca00"
         }
     }
@@ -66,6 +66,17 @@
     paper.circle(params.d1.x, params.d1.y, params.radius).attr({ "stroke": disks.d1.color }).toBack();
     paper.circle(params.d2.x, params.d2.y, params.radius).attr({ "stroke": disks.d2.color }).toBack();
     paper.circle(params.d3.x, params.d3.y, params.radius).attr({ "stroke": disks.d3.color }).toBack();
+    paper.path(["M", 60, 150, "l", 0, -30, "l", 190, 0, "l", 0, 40, "m", -15, -15, "l", 15, 15, "l", 15, -15])
+        .attr({
+            "stroke": "lightgrey",
+            "stroke-width": "8px"
+        })
+    paper.text(150, 140, "Drag disks onto slots")
+        .attr({
+            "font": "Arial",
+            "font-size": "14px",
+            "fill": "lightgrey"
+        })
     // dbg.track("slots[0].disk.id");
     // dbg.track("slots[1].disk.id");
     // dbg.track("slots[2].disk.id");
