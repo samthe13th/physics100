@@ -159,9 +159,9 @@
         })
         return disk
     }
-    disks.d1.speed = params.d1.speed;
-    disks.d2.speed = params.d2.speed;
-    disks.d3.speed = params.d3.speed;
+    disks.d1.speed = params.d1.speed * (-1);
+    disks.d2.speed = params.d2.speed * (-1);
+    disks.d3.speed = params.d3.speed * (-1);
     setInterval(function () {
         for (var d in disks) {
             disks[d].update();
@@ -231,9 +231,9 @@
     }
     function setSpeeds() {
         var netSpeed = 0;
-        disks.d1.speed = params.d1.speed;
-        disks.d2.speed = params.d2.speed;
-        disks.d3.speed = params.d3.speed;
+        disks.d1.speed = params.d1.speed * (-1);
+        disks.d2.speed = params.d2.speed * (-1);
+        disks.d3.speed = params.d3.speed * (-1);
         for (var s in slots) {
             if (slots[s].disk) {
                 netSpeed += params[slots[s].disk.id].speed;
@@ -241,7 +241,7 @@
         }
         for (var s in slots) {
             if (slots[s].disk) {
-                disks[slots[s].disk.id].speed = netSpeed
+                disks[slots[s].disk.id].speed = (-1) * netSpeed
             }
         }
         Lnet.attr("text", netSpeed);
