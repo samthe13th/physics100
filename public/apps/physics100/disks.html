@@ -66,12 +66,12 @@
     paper.circle(params.d1.x, params.d1.y, params.radius).attr({ "stroke": disks.d1.color }).toBack();
     paper.circle(params.d2.x, params.d2.y, params.radius).attr({ "stroke": disks.d2.color }).toBack();
     paper.circle(params.d3.x, params.d3.y, params.radius).attr({ "stroke": disks.d3.color }).toBack();
-    paper.path(["M", 60, 150, "l", 0, -30, "l", 190, 0, "l", 0, 40, "m", -15, -15, "l", 15, 15, "l", 15, -15])
+    paper.path(["M", 60, 150, "l", 0, -30, "l", 170, 0, "l", 0, 40, "m", -15, -15, "l", 15, 15, "l", 15, -15])
         .attr({
             "stroke": "lightgrey",
             "stroke-width": "8px"
         })
-    paper.text(150, 140, "Drag disks onto slots")
+    paper.text(140, 140, "Drag disks onto slots")
         .attr({
             "font": "Arial",
             "font-size": "14px",
@@ -244,7 +244,8 @@
                 disks[slots[s].disk.id].speed = netSpeed
             }
         }
-    }
+        Lnet.attr("text", netSpeed);
+     }
     function reposition(pos) {
         for (var i = 0, ii = slots.length; i < ii; i++) {
             if (i > pos) {
@@ -280,6 +281,36 @@
     var slider1 = makeSlider(20, 15, "1");
     var slider2 = makeSlider(20, 45, "2");
     var slider3 = makeSlider(20, 75, "3");
+    var Lnet = paper.text(325, 130, "0").attr({
+        "font": "Arial",
+        "font-size": "20px",
+        "fill": "grey"
+    });
+    paper.text(260, 130, "L").attr({
+        "font": "Arial",
+        "font-size": "30px",
+        "fill": "black"
+    })
+    paper.text(280, 140, "net").attr({
+        "font": "Arial",
+        "font-size": "16px",
+        "fill": "black"
+    })
+    paper.text(300, 130, "=").attr({
+        "font": "Arial",
+        "font-size": "30px",
+        "fill": "black"
+    })
+    paper.text(370, 130, "kg m /s").attr({
+        "font": "Arial",
+        "font-size": "18px",
+        "fill": "grey"
+    });
+    paper.text(382, 120, "2").attr({
+        "font": "Arial",
+        "font-size": "12px",
+        "fill": "grey"
+    })
     function makeSlider(x, y, id) {
         var s = Slider(paper, x, y, 240, 20, sliderDrag, function () { });
         s.id = "d" + id;
